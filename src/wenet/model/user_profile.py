@@ -1,6 +1,7 @@
 from __future__ import absolute_import, annotations
 
 import re
+from numbers import Number
 from typing import List, Optional
 
 from wenet.model.common import Gender, Date, UserLanguage
@@ -21,8 +22,8 @@ class WeNetUserProfile:
                  nationality: Optional[str],
                  languages: List[UserLanguage],
                  occupation: Optional[str],
-                 creation_ts: Optional[int],
-                 last_update_ts: Optional[int],
+                 creation_ts: Optional[Number],
+                 last_update_ts: Optional[Number],
                  profile_id: str,
                  norms: List[Norm],
                  planned_activities: list,
@@ -89,10 +90,10 @@ class WeNetUserProfile:
                 raise TypeError("Occupation should be a string")
 
         if creation_ts:
-            if not isinstance(creation_ts, int):
+            if not isinstance(creation_ts, Number):
                 raise TypeError("CreationTs should be a string")
         if last_update_ts:
-            if not isinstance(last_update_ts, int):
+            if not isinstance(last_update_ts, Number):
                 raise TypeError("LastUpdateTs should be a string")
 
         if not isinstance(profile_id, str):

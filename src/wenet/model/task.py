@@ -1,6 +1,7 @@
 from __future__ import absolute_import, annotations
 
 from enum import Enum
+from numbers import Number
 from typing import Optional, List
 
 from wenet.model.norm import Norm
@@ -20,12 +21,12 @@ class Task:
 
     def __init__(self,
                  task_id: str,
-                 creation_ts: Optional[int],
+                 creation_ts: Optional[Number],
                  state: Optional[TaskState],
                  requester_user_id: Optional[str],
-                 start_ts: Optional[int],
-                 end_ts: Optional[int],
-                 deadline_ts: Optional[int],
+                 start_ts: Optional[Number],
+                 end_ts: Optional[Number],
+                 deadline_ts: Optional[Number],
                  norms: List[Norm]
                  ):
 
@@ -41,7 +42,7 @@ class Task:
         if not isinstance(task_id, str):
             raise TypeError("TaskId should be a string")
         if creation_ts is not None:
-            if not isinstance(creation_ts, int):
+            if not isinstance(creation_ts, Number):
                 raise TypeError("CreationTs should be a string")
         if state:
             if not isinstance(state, TaskState):
@@ -50,13 +51,13 @@ class Task:
             if not isinstance(requester_user_id, str):
                 raise TypeError("RequestUserId should be a string")
         if start_ts is not None:
-            if not isinstance(start_ts, int):
+            if not isinstance(start_ts, Number):
                 raise TypeError("StartTs should be an integer")
         if end_ts is not None:
-            if not isinstance(end_ts, int):
+            if not isinstance(end_ts, Number):
                 raise TypeError("EndTs should be an integer")
         if deadline_ts is not None:
-            if not isinstance(deadline_ts, int):
+            if not isinstance(deadline_ts, Number):
                 raise TypeError("DeadlineTs should be an integer")
 
         if not isinstance(norms, list):
