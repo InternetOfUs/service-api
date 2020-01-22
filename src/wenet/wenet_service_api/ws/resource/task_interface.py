@@ -62,13 +62,13 @@ class TaskResourceInterface(Resource):
         posted_data["taskId"] = task_id
         try:
             task = Task.from_repr(posted_data)
-        except ValueError as v:
+        except (ValueError, TypeError) as v:
             logger.exception("Unable to build a Task from [%s]" % posted_data, exc_info=v)
             abort(400, message="Some fields contains invalid parameters")
             return
-        except TypeError as t:
-            logger.exception("Unable to build a Task from [%s]" % posted_data, exc_info=t)
-            abort(400, message="Some fields contains invalid parameters")
+        except KeyError as k:
+            logger.exception("Unable to build a Task from [%s]" % posted_data, exc_info=k)
+            abort(400, message="The field [%s] is missing" % k)
             return
 
         logger.info("Created task [%s]" % task)
@@ -86,13 +86,13 @@ class TaskResourceInterface(Resource):
         posted_data["taskId"] = task_id
         try:
             task = Task.from_repr(posted_data)
-        except ValueError as v:
+        except (ValueError, TypeError) as v:
             logger.exception("Unable to build a Task from [%s]" % posted_data, exc_info=v)
             abort(400, message="Some fields contains invalid parameters")
             return
-        except TypeError as t:
-            logger.exception("Unable to build a Task from [%s]" % posted_data, exc_info=t)
-            abort(400, message="Some fields contains invalid parameters")
+        except KeyError as k:
+            logger.exception("Unable to build a Task from [%s]" % posted_data, exc_info=k)
+            abort(400, message="The field [%s] is missing" % k)
             return
 
         logger.info("Updated task [%s]" % task)
