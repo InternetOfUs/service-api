@@ -97,4 +97,4 @@ class TaskResourcePostInterface(Resource):
             return
 
         logger.info("Created task [%s]" % task)
-        return task.to_repr(), 200
+        return task.to_repr(), 201

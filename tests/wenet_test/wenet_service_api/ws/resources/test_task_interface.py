@@ -94,7 +94,7 @@ class TestTaskPostInterface(CommonTestCase):
         )
 
         response = self.client.post("/task", json=task.to_repr())
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 201)
 
         json_data = json.loads(response.data)
 
