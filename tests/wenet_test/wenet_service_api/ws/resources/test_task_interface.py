@@ -70,8 +70,10 @@ class TestTaskInterface(CommonTestCase):
         response = self.client.put("/task/%s" % task_id, json=data)
         self.assertEqual(response.status_code, 400)
 
+
+class TestTaskPostInterface(CommonTestCase):
+
     def test_post(self):
-        task_id = "task-id"
         task = Task(
             task_id="task-id",
             creation_ts=1577833200,
@@ -91,7 +93,7 @@ class TestTaskInterface(CommonTestCase):
             ]
         )
 
-        response = self.client.post("/task/%s" % task_id, json=task.to_repr())
+        response = self.client.post("/task", json=task.to_repr())
         self.assertEqual(response.status_code, 200)
 
         json_data = json.loads(response.data)
@@ -101,7 +103,6 @@ class TestTaskInterface(CommonTestCase):
         self.assertIsInstance(task, Task)
 
     def test_post_wrong(self):
-        task_id = "task-id"
         task = Task(
             task_id="task-id",
             creation_ts=1577833200,
@@ -123,5 +124,6 @@ class TestTaskInterface(CommonTestCase):
 
         data = task.to_repr()
         data.pop("norms")
-        response = self.client.put("/task/%s" % task_id, json=data)
+        response = self.client.post("/task", json=data)
         self.assertEqual(response.status_code, 400)
+

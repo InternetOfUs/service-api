@@ -80,9 +80,13 @@ class Task:
         }
 
     @staticmethod
-    def from_repr(raw_data: dict) -> Task:
+    def from_repr(raw_data: dict, task_id: Optional[str] = None) -> Task:
+
+        if task_id is None:
+            task_id = raw_data["taskId"]
+
         return Task(
-            task_id=raw_data["taskId"],
+            task_id=task_id,
             creation_ts=raw_data.get("creationTs"),
             state=TaskState(raw_data["state"]) if raw_data.get("state", None) else None,
             requester_user_id=raw_data.get("requesterUserId", None),

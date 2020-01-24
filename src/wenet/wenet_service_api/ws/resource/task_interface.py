@@ -18,7 +18,8 @@ class TaskResourceInterfaceBuilder:
     @staticmethod
     def routes():
         return [
-            (TaskResourceInterface, "/<string:task_id>", ())
+            (TaskResourceInterface, "/<string:task_id>", ()),
+            (TaskResourcePostInterface, "", ())
         ]
 
 
@@ -49,31 +50,6 @@ class TaskResourceInterface(Resource):
 
         return task.to_repr(), 200
 
-    def post(self, task_id: str):
-        # TODO check path parameter task_id
-        try:
-            posted_data: dict = request.get_json()
-        except Exception as e:
-            logger.exception("Invalid message body", exc_info=e)
-            abort(400, message="Invalid JSON - Unable to parse message body")
-            return
-
-        # remove id from body, the id in the path parameter is used
-        posted_data["taskId"] = task_id
-        try:
-            task = Task.from_repr(posted_data)
-        except (ValueError, TypeError) as v:
-            logger.exception("Unable to build a Task from [%s]" % posted_data, exc_info=v)
-            abort(400, message="Some fields contains invalid parameters")
-            return
-        except KeyError as k:
-            logger.exception("Unable to build a Task from [%s]" % posted_data, exc_info=k)
-            abort(400, message="The field [%s] is missing" % k)
-            return
-
-        logger.info("Created task [%s]" % task)
-        return task.to_repr(), 200
-
     def put(self, task_id: str):
         try:
             posted_data: dict = request.get_json()
@@ -96,4 +72,29 @@ class TaskResourceInterface(Resource):
             return
 
         logger.info("Updated task [%s]" % task)
+        return task.to_repr(), 200
+
+
+class TaskResourcePostInterface(Resource):
+
+    def post(self):
+        try:
+            posted_data: dict = request.get_json()
+        except Exception as e:
+            logger.exception("Invalid message body", exc_info=e)
+            abort(400, message="Invalid JSON - Unable to parse message body")
+            return
+
+        try:
+            task = Task.from_repr(posted_data, str(uuid.uuid4()))
+        except (ValueError, TypeError) as v:
+            logger.exception("Unable to build a Task from [%s]" % posted_data, exc_info=v)
+            abort(400, message="Some fields contains invalid parameters")
+            return
+        except KeyError as k:
+            logger.exception("Unable to build a Task from [%s]" % posted_data, exc_info=k)
+            abort(400, message="The field [%s] is missing" % k)
+            return
+
+        logger.info("Created task [%s]" % task)
         return task.to_repr(), 200
