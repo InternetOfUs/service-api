@@ -1,4 +1,4 @@
-FROM registry.u-hopper.com:5000/uhopper/utils-py:0.7.2
+FROM python:3.8
 
 MAINTAINER Stefano Tavonatti <stefano.tavonatti@u-hopper.com>
 
@@ -9,7 +9,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY run.sh .
 
+COPY run_tests.sh .
+
 ADD src/ /scripts/
+ADD tests/ /scripts/tests/
 
 ENV PYTHONPATH /scripts
 
