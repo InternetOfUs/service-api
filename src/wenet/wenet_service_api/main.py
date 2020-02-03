@@ -2,6 +2,7 @@ from __future__ import absolute_import, annotations
 
 import logging.config
 
+from wenet.service_connector.collector import ServiceConnectorCollector
 from wenet.wenet_service_api.log.logging import get_logging_configuration
 from wenet.wenet_service_api.ws.ws import WsInterface
 
@@ -13,8 +14,9 @@ logger = logging.getLogger("wenet.wenet_service_api.main")
 def init_ws() -> WsInterface:
 
     # Initializations here
+    service_connector_collector = ServiceConnectorCollector.build()
 
-    ws_interface = WsInterface()
+    ws_interface = WsInterface(service_connector_collector)
     return ws_interface
 
 

@@ -5,20 +5,21 @@ from flask_restful import Api
 
 import logging
 
+from wenet.service_connector.collector import ServiceConnectorCollector
 from wenet.wenet_service_api.ws.resource.task_interface import TaskResourceInterfaceBuilder
 from wenet.wenet_service_api.ws.resource.user_profile import WeNetUserProfileInterfaceBuilder
 
 
 class WsInterface:
 
-    def __init__(self) -> None:
+    def __init__(self, service_connector_collector: ServiceConnectorCollector) -> None:
         self._app = Flask("wenet_service_api")
         self._api = Api(app=self._app)
-        self._init_modules()
+        self._init_modules(service_connector_collector)
 
-    def _init_modules(self) -> None:
+    def _init_modules(self, service_connector_collector: ServiceConnectorCollector) -> None:
         active_routes = [
-            (WeNetUserProfileInterfaceBuilder.routes(), "/user"),
+            (WeNetUserProfileInterfaceBuilder.routes(service_connector_collector), "/user"),
             (TaskResourceInterfaceBuilder.routes(), "/task")
         ]
 
