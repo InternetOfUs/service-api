@@ -141,7 +141,11 @@ class WeNetUserProfile:
         }
 
     @staticmethod
-    def from_repr(raw_data: dict) -> WeNetUserProfile:
+    def from_repr(raw_data: dict, profile_id: Optional[str] = None) -> WeNetUserProfile:
+
+        if profile_id is None:
+            profile_id = raw_data["id"]
+
         return WeNetUserProfile(
             name=UserName.from_repr(raw_data["name"]),
             date_of_birth=Date.from_repr(raw_data["dateOfBirth"]),
@@ -155,7 +159,7 @@ class WeNetUserProfile:
             occupation=raw_data.get("occupation", None),
             creation_ts=raw_data.get("_creationTs", None),
             last_update_ts=raw_data.get("_lastUpdateTs", None),
-            profile_id=raw_data["id"],
+            profile_id=profile_id,
             norms=list(Norm.from_repr(x) for x in raw_data["norms"]),
             planned_activities=raw_data["plannedActivities"],
             relevant_locations=raw_data["relevantLocations"],
