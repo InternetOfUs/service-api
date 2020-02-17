@@ -5,6 +5,11 @@
 
 The dummy service is available at [https://wenet.u-hopper.com](https://wenet.u-hopper.com)
 
+## Maintainers
+
+- Carlo Caprini (carlo.caprini@u-hopper.com)
+- Stefano Tavonatti (stefano.tavonatti@u-hopper.com)
+
 ## Build with docker
 
 A build script is available in the `docker-support` folder, simply type:
