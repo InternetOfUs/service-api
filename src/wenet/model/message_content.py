@@ -74,7 +74,7 @@ class TextualMessage(MessageContent):
     @staticmethod
     def from_repr(raw_data: dict) -> TextualMessage:
         return TextualMessage(
-            value=raw_data["text"]
+            value=raw_data["value"]
         )
 
     def __eq__(self, o):

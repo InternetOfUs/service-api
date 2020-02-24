@@ -52,7 +52,7 @@ class MessageIntent:
 
 class MessageEntity:
 
-    def __init__(self, name: str, value: str, confidence: float):
+    def __init__(self, name: str, value: str, confidence: Optional[float]):
         self.name = name
         self.value = value
         self.confidence = confidence
