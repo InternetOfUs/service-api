@@ -4,4 +4,5 @@ from tests.wenet_test.wenet_service_api.common.common_test_case import CommonTes
 
 
 class TestAppPostInterface(CommonTestCase):
-    
+
+    pass
