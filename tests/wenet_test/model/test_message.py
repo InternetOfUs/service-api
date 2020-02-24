@@ -3,7 +3,7 @@ from __future__ import absolute_import, annotations
 from unittest import TestCase
 
 from wenet.model.message import MessageIntent, MessageEntity, Message, MessageType
-from wenet.model.message_content import TextualMessage
+from wenet.model.message_content import TextualMessage, ActionRequest
 
 
 class TestMessageIntent(TestCase):
@@ -90,6 +90,38 @@ class TestMessage(TestCase):
 
         self.assertEqual(message.entities, [])
         self.assertEqual(message.metadata, {})
+
+        from_repr = Message.from_repr(message.to_repr())
+
+        self.assertIsInstance(from_repr, Message)
+        self.assertEqual(message, from_repr)
+
+    def test_repr3(self):
+        message = Message(
+            message_id="message id",
+            channel="channel",
+            user_id="user_id",
+            app_id="app_id",
+            message_type=MessageType.REQUEST,
+            content=ActionRequest(
+                "value",
+                "payload"
+            ),
+            domain="domain",
+            intent=MessageIntent(
+                "name",
+                0.9
+            ),
+            entities=[
+                MessageEntity(
+                    "name",
+                    "value",
+                    0.9
+                )
+            ],
+            language="it",
+            metadata={}
+        )
 
         from_repr = Message.from_repr(message.to_repr())
 

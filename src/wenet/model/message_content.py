@@ -23,7 +23,7 @@ class MessageContent(abc.ABC):
 
     def base_repr(self) -> dict:
         return {
-            "type": self.get_type()
+            "type": self.get_type().value
         }
 
     @staticmethod
