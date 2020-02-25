@@ -24,6 +24,11 @@ A docker-compose file for deploy this service is available in the [wenet-service
 
 ## Versions
 
+### 0.0.2
+
+- Model and endpoints for App
+- Model and endpoints for Message
+
 ### 0.0.1
 
 - Model WeNetUserProfile and Task models

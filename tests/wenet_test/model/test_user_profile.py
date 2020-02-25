@@ -182,3 +182,43 @@ class TestUserProfile(TestCase):
 
         self.assertIsInstance(from_repr, WeNetUserProfile)
         self.assertEqual(user_profile, from_repr)
+
+    def test_repr2(self):
+
+        user_profile = WeNetUserProfile(
+            name=UserName(
+                first=None,
+                middle=None,
+                last=None,
+                prefix=None,
+                suffix=None
+            ),
+            date_of_birth=Date(
+                year=2020,
+                month=1,
+                day=20
+            ),
+            gender=None,
+            email=None,
+            phone_number=None,
+            locale=None,
+            avatar=None,
+            nationality=None,
+            languages=[],
+            occupation=None,
+            creation_ts=None,
+            last_update_ts=None,
+            profile_id="profile_id",
+            norms=[],
+            planned_activities=[],
+            relevant_locations=[],
+            relationships=[],
+            social_practices=[],
+            personal_behaviours=[]
+        )
+
+        to_repr = user_profile.to_repr()
+        from_repr = user_profile.from_repr(to_repr, "profile_id1")
+
+        self.assertIsInstance(from_repr, WeNetUserProfile)
+        self.assertEqual("profile_id1", from_repr.profile_id)

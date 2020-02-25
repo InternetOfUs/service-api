@@ -78,10 +78,8 @@ class WeNetUserProfileInterface(Resource):
             abort(400, message="Invalid JSON - Unable to parse message body")
             return
 
-        # remove id from body, the id in the path parameter is used
-        posted_data["id"] = profile_id
         try:
-            user_profile = WeNetUserProfile.from_repr(posted_data)
+            user_profile = WeNetUserProfile.from_repr(posted_data, profile_id)
         except (ValueError, TypeError) as v:
             logger.exception("Unable to build a WeNetUserProfile from [%s]" % posted_data, exc_info=v)
             abort(400, message="Some fields contains invalid parameters")
