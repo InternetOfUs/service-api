@@ -5,6 +5,7 @@ from flask_restful import Api
 
 import logging
 
+from wenet.dao.dao_collector import DaoCollector
 from wenet.wenet_service_api.ws.resource.app_interface import AppResourceInterfaceBuilder
 from wenet.wenet_service_api.ws.resource.message_interface import MessageInterfaceBuilder
 from wenet.wenet_service_api.ws.resource.task_interface import TaskResourceInterfaceBuilder
@@ -13,9 +14,11 @@ from wenet.wenet_service_api.ws.resource.user_profile import WeNetUserProfileInt
 
 class WsInterface:
 
-    def __init__(self) -> None:
+    def __init__(self, dao_collector: DaoCollector) -> None:
         self._app = Flask("wenet_service_api")
         self._api = Api(app=self._app)
+        self._dao_collector = dao_collector
+
         self._init_modules()
 
     def _init_modules(self) -> None:
@@ -23,7 +26,7 @@ class WsInterface:
             (WeNetUserProfileInterfaceBuilder.routes(), "/user"),
             (TaskResourceInterfaceBuilder.routes(), "/task"),
             (MessageInterfaceBuilder.routes(), "/messages"),
-            (AppResourceInterfaceBuilder.routes(), "/app")
+            (AppResourceInterfaceBuilder.routes(self._dao_collector), "/app")
         ]
 
         for module_routes, prefix in active_routes:

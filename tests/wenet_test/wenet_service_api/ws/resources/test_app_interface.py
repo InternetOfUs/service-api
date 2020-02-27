@@ -3,7 +3,7 @@ from __future__ import absolute_import, annotations
 import json
 
 from tests.wenet_test.wenet_service_api.common.common_test_case import CommonTestCase
-from wenet.model.App import App
+from wenet.model.app import App
 
 
 class TestAppPostInterface(CommonTestCase):
