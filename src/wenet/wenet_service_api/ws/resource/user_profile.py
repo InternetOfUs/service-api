@@ -5,7 +5,7 @@ from flask_restful import Resource, abort
 
 import logging
 
-from wenet.common.exception.excpetions import ResourceNotFound
+from wenet.common.exception.excpetions import ResourceNotFound, NotAuthorized
 from wenet.model.user_profile import WeNetUserProfile
 from wenet.service_connector.collector import ServiceConnectorCollector
 
@@ -31,9 +31,14 @@ class WeNetUserProfileInterface(Resource):
 
         try:
             profile = self._service_connector_collector.profile_manager_collector.get_profile(profile_id)
+            logger.info(f"Retrieved profile [{profile_id}] from profile manager connector")
         except ResourceNotFound as e:
             logger.exception("Unable to retrieve the profile", exc_info=e)
             abort(404, message="Resource not found")
+            return
+        except NotAuthorized as e:
+            logger.exception(f"Unauthorized to retrieve the task [{profile_id}]", exc_info=e)
+            abort(403)
             return
         except Exception as e:
             logger.exception("Unable to retrieve the profile", exc_info=e)

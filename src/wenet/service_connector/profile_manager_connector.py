@@ -18,8 +18,14 @@ class ProfileManagerConnector(ServiceConnector):
 
     @staticmethod
     def build_from_env() -> ProfileManagerConnector:
+
+        base_url = os.getenv("PROFILE_MANAGER_CONNECTOR_BASE_URL")
+
+        if not base_url:
+            raise RuntimeError("ENV: PROFILE_MANAGER_CONNECTOR_BASE_URL is not defined")
+
         return ProfileManagerConnector(
-            base_url=os.getenv("PROFILE_MANAGER_CONNECTOR_BASE_URL"),
+            base_url=base_url,
             base_headers={
                 "Accept": "application/json",
                 "Content-Type": "application/json"

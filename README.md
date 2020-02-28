@@ -27,6 +27,7 @@ A docker-compose file for deploy this service is available in the [wenet-service
 ### Environmental variables:
 
 - PROFILE_MANAGER_CONNECTOR_BASE_URL: base url for the profile manager connection
+- TASK_MANAGER_CONNECTOR_BASE_URL: base url for the task manager endpoints
 
 ## Versions
 

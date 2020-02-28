@@ -22,7 +22,7 @@ class WsInterface:
     def _init_modules(self, service_connector_collector: ServiceConnectorCollector) -> None:
         active_routes = [
             (WeNetUserProfileInterfaceBuilder.routes(service_connector_collector), "/user"),
-            (TaskResourceInterfaceBuilder.routes(), "/task"),
+            (TaskResourceInterfaceBuilder.routes(service_connector_collector), "/task"),
             (MessageInterfaceBuilder.routes(), "/messages"),
             (AppResourceInterfaceBuilder.routes(), "/app")
         ]

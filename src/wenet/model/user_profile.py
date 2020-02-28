@@ -20,7 +20,7 @@ class WeNetUserProfile:
                  locale: Optional[str],
                  avatar: Optional[str],
                  nationality: Optional[str],
-                 languages: List[UserLanguage],
+                 languages: Optional[List[UserLanguage]],
                  occupation: Optional[str],
                  creation_ts: Optional[Number],
                  last_update_ts: Optional[Number],
@@ -79,12 +79,15 @@ class WeNetUserProfile:
             if not isinstance(nationality, str):
                 raise TypeError("Nationality should be a string")
 
-        if not isinstance(languages, list):
-            raise TypeError("Languages should be list of UserLanguage")
+        if languages:
+            if not isinstance(languages, list):
+                raise TypeError("Languages should be list of UserLanguage")
+            else:
+                for language in languages:
+                    if not isinstance(language, UserLanguage):
+                        raise TypeError("Languages should be list of UserLanguage")
         else:
-            for language in languages:
-                if not isinstance(language, UserLanguage):
-                    raise TypeError("Languages should be list of UserLanguage")
+            self.languages = []
         if occupation:
             if not isinstance(occupation, str):
                 raise TypeError("Occupation should be a string")
@@ -177,7 +180,7 @@ class WeNetUserProfile:
             locale=raw_data.get("locale", None),
             avatar=raw_data.get("avatar", None),
             nationality=raw_data.get("nationality", None),
-            languages=list(UserLanguage.from_repr(x) for x in raw_data["languages"]),
+            languages=list(UserLanguage.from_repr(x) for x in raw_data["languages"]) if raw_data.get("languages", None) else None,
             occupation=raw_data.get("occupation", None),
             creation_ts=raw_data.get("_creationTs", None),
             last_update_ts=raw_data.get("_lastUpdateTs", None),
