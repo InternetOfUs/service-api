@@ -6,6 +6,8 @@ from flask_restful import Api
 import logging
 
 from wenet.service_connector.collector import ServiceConnectorCollector
+from wenet.wenet_service_api.ws.resource.app_interface import AppResourceInterfaceBuilder
+from wenet.wenet_service_api.ws.resource.message_interface import MessageInterfaceBuilder
 from wenet.wenet_service_api.ws.resource.task_interface import TaskResourceInterfaceBuilder
 from wenet.wenet_service_api.ws.resource.user_profile import WeNetUserProfileInterfaceBuilder
 
@@ -20,7 +22,9 @@ class WsInterface:
     def _init_modules(self, service_connector_collector: ServiceConnectorCollector) -> None:
         active_routes = [
             (WeNetUserProfileInterfaceBuilder.routes(service_connector_collector), "/user"),
-            (TaskResourceInterfaceBuilder.routes(), "/task")
+            (TaskResourceInterfaceBuilder.routes(), "/task"),
+            (MessageInterfaceBuilder.routes(), "/messages"),
+            (AppResourceInterfaceBuilder.routes(), "/app")
         ]
 
         for module_routes, prefix in active_routes:

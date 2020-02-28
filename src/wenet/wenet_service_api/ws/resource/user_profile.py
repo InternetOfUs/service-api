@@ -1,7 +1,5 @@
 from __future__ import absolute_import, annotations
 
-from datetime import datetime
-
 from flask import request
 from flask_restful import Resource, abort
 
