@@ -10,7 +10,9 @@ from flask_restful import Resource, abort
 
 import logging
 
-from wenet.model.App import App
+from wenet.common.exception.exceptions import ResourceNotFound
+from wenet.dao.dao_collector import DaoCollector
+from wenet.model.app import App
 
 logger = logging.getLogger("wenet.wenet_service_api.ws.resource.app")
 
@@ -18,14 +20,18 @@ logger = logging.getLogger("wenet.wenet_service_api.ws.resource.app")
 class AppResourceInterfaceBuilder:
 
     @staticmethod
-    def routes():
+    def routes(dao_collector: DaoCollector):
         return [
-            (AppPostResourceInterface, "", ()),
-            (AppResourceInterface, "/<string:app_id>", ())
+            (AppPostResourceInterface, "", (dao_collector,)),
+            (AppResourceInterface, "/<string:app_id>", (dao_collector,))
         ]
 
 
 class AppPostResourceInterface(Resource):
+
+    def __init__(self, dao_collector: DaoCollector) -> None:
+        super().__init__()
+        self._dao_collector = dao_collector
 
     def post(self):
 
@@ -52,21 +58,35 @@ class AppPostResourceInterface(Resource):
             last_update_ts=now
         )
 
+        try:
+            self._dao_collector.app_dao.create_or_update(app)
+        except Exception as e:
+            logger.exception(f"Unable to save the app [{app}]", exc_info=e)
+            abort(500, message="Unable to save the new application")
+            return
+
         logger.info(f"Created new app [{app}]")
         return app.to_repr(), 201
 
 
 class AppResourceInterface(Resource):
 
+    def __init__(self, dao_collector: DaoCollector) -> None:
+        super().__init__()
+        self._dao_collector = dao_collector
+
     def get(self, app_id: str):
 
-        app = App(
-            app_id=app_id,
-            app_token="fHTj98iRx_NEcTDmnVDDK_wKcLsw6vH-Y9OmqRGUu94",
-            name="WeNet scenario app",
-            creation_ts=datetime(2020, 2, 24, tzinfo=pytz.utc),
-            last_update_ts=datetime.now(pytz.utc)
-        )
+        try:
+            app = self._dao_collector.app_dao.get(app_id)
+        except ResourceNotFound:
+            logger.info(f"Resource with id [{app_id}] not found")
+            abort(404, message=f"Resource with id [{app_id}] not found")
+            return
+        except Exception as e:
+            logger.exception(f"Unable to retrieve the resource with id [{app_id}]", exc_info=e)
+            abort(500, message=f"Unable to retrieve the resource with id [{app_id}]")
+            return
 
         logger.info(f"Retrieved app [{app}]")
         return app.to_repr(), 200
@@ -88,6 +108,20 @@ class AppResourceInterface(Resource):
         except KeyError as k:
             logger.exception(f"Unable to build an App from [{posted_data}]", exc_info=k)
             abort(400, message=f"The field [{k}] is missing")
+            return
+
+        try:
+            stored_app = self._dao_collector.app_dao.get(app_id)
+            stored_app.name = app.name
+            stored_app.app_token = app.app_token
+            stored_app.last_update_ts = datetime.now(pytz.utc)
+            self._dao_collector.app_dao.create_or_update(stored_app)
+        except ResourceNotFound:
+            logger.info(f"Resource [{app_id}] not found in update operation")
+            abort(404, message=f"Resource [{app_id}] not found")
+        except Exception as e:
+            logger.exception(f"Unable to update resource [{app_id}]", exc_info=e)
+            abort(500, message=f"Unable to update resource [{app_id}]")
             return
 
         logger.info(f"Updated app [{app}]")
