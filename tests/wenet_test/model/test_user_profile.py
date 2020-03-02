@@ -183,7 +183,7 @@ class TestUserProfile(TestCase):
         self.assertIsInstance(from_repr, WeNetUserProfile)
         self.assertEqual(user_profile, from_repr)
 
-    def test_repr2(self):
+    def test_repr3(self):
 
         user_profile = WeNetUserProfile(
             name=UserName(
@@ -222,3 +222,56 @@ class TestUserProfile(TestCase):
 
         self.assertIsInstance(from_repr, WeNetUserProfile)
         self.assertEqual("profile_id1", from_repr.profile_id)
+
+    def test_repr4(self):
+
+        user_profile = WeNetUserProfile(
+            name=UserName(
+                first="first",
+                middle="middle",
+                last="last",
+                prefix="prefix",
+                suffix="suffix"
+            ),
+            date_of_birth=Date(
+                year=2020,
+                month=1,
+                day=20
+            ),
+            gender=Gender.OTHER,
+            email="email@example.com",
+            phone_number="phone number",
+            locale="it_IT",
+            avatar="avatar",
+            nationality="it",
+            languages=[
+                UserLanguage(
+                    name="ita",
+                    level="C2",
+                    code="it"
+                )
+            ],
+            occupation="occupation",
+            creation_ts=1579536160,
+            last_update_ts=1579536160,
+            profile_id="profile_id", norms=[
+                Norm(
+                    norm_id="norm-id",
+                    attribute="attribute",
+                    operator=NormOperator.EQUALS,
+                    comparison=True,
+                    negation=False
+                )
+            ],
+            planned_activities=[],
+            relevant_locations=[],
+            relationships=[],
+            social_practices=[],
+            personal_behaviours=[]
+        )
+
+        to_repr = user_profile.to_repr()
+        from_repr = user_profile.from_repr(to_repr)
+
+        self.assertIsInstance(from_repr, WeNetUserProfile)
+        self.assertEqual(user_profile, from_repr)
