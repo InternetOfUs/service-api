@@ -69,6 +69,8 @@ class TaskManagerConnector(ServiceConnector):
             task = Task.from_repr(response.json())
         elif response.status_code == 401 or response.status_code == 403:
             raise NotAuthorized("Not authorized")
+        elif response.status_code == 400:
+            raise BadRequestException(f"Bad request {response.text}")
         else:
             raise Exception(f"Unable to create the task, server respond with [{response.status_code}] [{response.text}]")
 
@@ -92,6 +94,8 @@ class TaskManagerConnector(ServiceConnector):
             return Task.from_repr(response.json())
         elif response.status_code == 401 or response.status_code == 403:
             raise NotAuthorized(f"Not authorized {response.text}")
+        elif response.status_code == 404:
+            raise ResourceNotFound(f"Resource [{task.task_id}] not found on resource manager")
         elif response.status_code == 400:
             raise BadRequestException(f"Bad request {response.text}")
         else:

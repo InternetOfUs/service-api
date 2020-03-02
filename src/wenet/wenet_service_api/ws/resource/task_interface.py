@@ -76,6 +76,14 @@ class TaskResourceInterface(Resource):
             logger.exception(f"Unauthorized to update the task [{task_id}]", exc_info=e)
             abort(403)
             return
+        except BadRequestException as e:
+            logger.exception(f"Bad request exception during update for task [{task_id}] [{task}]", exc_info=e)
+            abort(400, message=str(e))
+            return
+        except ResourceNotFound:
+            logger.warning(f"Resource [{task_id}] not found")
+            abort(404, message=f"Resource [{task_id}] not found")
+            return
         except Exception as e:
             logger.exception("Unable to update the task", exc_info=e)
             abort(500)
@@ -115,6 +123,10 @@ class TaskResourcePostInterface(Resource):
         except NotAuthorized as e:
             logger.exception(f"Not authorized to create the task [{task}]", exc_info=e)
             abort(403, message="Not authorized")
+            return
+        except BadRequestException as e:
+            logger.exception(f"Bad request exception during creation of task [{task}]", exc_info=e)
+            abort(400, message=str(e))
             return
         except Exception as e:
             logger.exception(f"Unable to create the task [{task}]", exc_info=e)
