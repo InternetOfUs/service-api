@@ -6,7 +6,7 @@ from typing import Optional
 
 import requests
 
-from wenet.common.exception.excpetions import ResourceNotFound, NotAuthorized
+from wenet.common.exception.excpetions import ResourceNotFound, NotAuthorized, BadRequestException
 from wenet.model.user_profile import WeNetUserProfile
 from wenet.service_connector.service_connector import ServiceConnector
 
@@ -48,6 +48,8 @@ class ProfileManagerConnector(ServiceConnector):
             raise ResourceNotFound("Unable to found a profile with id [%s]" % profile_id)
         elif response.status_code == 401 or response.status_code == 403:
             raise NotAuthorized("Not authorized")
+        elif response.status_code == 400:
+            raise BadRequestException(f"Bad request: {response.text}")
         else:
             raise Exception("Unable to found a profile with id [%s], server respond [%s] [%s]" % (profile_id, response.status_code, response.text))
 
@@ -70,5 +72,7 @@ class ProfileManagerConnector(ServiceConnector):
             raise ResourceNotFound("Unable to found a profile with id [%s]" % profile.profile_id)
         elif response.status_code == 401 or response.status_code == 403:
             raise NotAuthorized("Not authorized")
+        elif response.status_code == 400:
+            raise BadRequestException(f"Bad request: {response.text}")
         else:
             raise Exception("Unable to edit the profile with id [%s], server respond [%s] [%s]" % (profile.profile_id, response.status_code, response.text))

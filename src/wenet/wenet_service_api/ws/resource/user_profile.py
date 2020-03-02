@@ -5,7 +5,7 @@ from flask_restful import Resource, abort
 
 import logging
 
-from wenet.common.exception.excpetions import ResourceNotFound, NotAuthorized
+from wenet.common.exception.excpetions import ResourceNotFound, NotAuthorized, BadRequestException
 from wenet.model.user_profile import WeNetUserProfile
 from wenet.service_connector.collector import ServiceConnectorCollector
 
@@ -74,6 +74,10 @@ class WeNetUserProfileInterface(Resource):
         except ResourceNotFound as e:
             logger.exception("Unable to retrieve the profile", exc_info=e)
             abort(404, message="Resource not found")
+            return
+        except BadRequestException as e:
+            logger.exception(f"Bad request during update of profile [{profile_id}][{user_profile}] - [{str(e)}")
+            abort(400, message=f"Bad request: {str(e)}")
             return
         except Exception as e:
             logger.exception("Unable to retrieve the profile", exc_info=e)
