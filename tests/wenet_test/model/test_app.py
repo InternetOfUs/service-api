@@ -3,7 +3,7 @@ from __future__ import absolute_import, annotations
 from datetime import datetime
 from unittest import TestCase
 
-from wenet.model.App import App
+from wenet.model.app import App
 
 
 class TestApp(TestCase):
@@ -35,3 +35,14 @@ class TestApp(TestCase):
 
         self.assertIsInstance(from_repr, App)
         self.assertEqual(app, from_repr)
+
+    def test_repr3(self):
+        self.assertRaises(
+            TypeError,
+            App,
+            app_id="app id",
+            app_token="token",
+            name="name",
+            creation_ts=None,
+            last_update_ts="asdsad"
+        )
