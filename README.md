@@ -59,6 +59,12 @@ A docker-compose file for deploy this service is available in the [wenet-service
 
 ## Versions
 
+### 0.0.3
+
+- Added DB an Dao for Apps
+- Integrated Profile Manager and Task Manager services
+- Updated WeNetUserProfile model
+
 ### 0.0.2
 
 - Model and endpoints for App
