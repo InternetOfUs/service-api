@@ -21,6 +21,7 @@ A build script is available in the `docker-support` folder, simply type:
 ## Environmental variables
 
 - DB_CONNECTION_STRING: connection string for database, for example `sqlite:///db/service_api.db`
+- APIKEY: apikey for used fo authenticate the requests
 
 ## Migration
 

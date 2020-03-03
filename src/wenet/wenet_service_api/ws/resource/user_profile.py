@@ -9,6 +9,7 @@ import logging
 
 from wenet.model.common import Gender, UserLanguage, Date
 from wenet.model.user_profile import WeNetUserProfile, UserName
+from wenet.wenet_service_api.ws.resource.common import AuthenticatedResource
 
 logger = logging.getLogger("wenet.wenet_service_api.ws.resource.wenet_user_profile")
 
@@ -16,18 +17,20 @@ logger = logging.getLogger("wenet.wenet_service_api.ws.resource.wenet_user_profi
 class WeNetUserProfileInterfaceBuilder:
 
     @staticmethod
-    def routes():
+    def routes(authorized_apikey: str):
         return [
-            (WeNetUserProfileInterface, "/profile/<string:profile_id>", ())
+            (WeNetUserProfileInterface, "/profile/<string:profile_id>", (authorized_apikey,))
         ]
 
 
-class WeNetUserProfileInterface(Resource):
+class WeNetUserProfileInterface(AuthenticatedResource):
 
-    def __init__(self) -> None:
-        super().__init__()
+    def __init__(self, authorized_apikey: str) -> None:
+        super().__init__(authorized_apikey)
 
     def get(self, profile_id: str):
+
+        self._check_authentication()
 
         user_profile = WeNetUserProfile(
             name=UserName(
@@ -70,6 +73,8 @@ class WeNetUserProfileInterface(Resource):
         return user_profile.to_repr(), 200
 
     def put(self, profile_id: str):
+
+        self._check_authentication()
 
         try:
             posted_data: dict = request.get_json()

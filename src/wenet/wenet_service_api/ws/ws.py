@@ -14,19 +14,21 @@ from wenet.wenet_service_api.ws.resource.user_profile import WeNetUserProfileInt
 
 class WsInterface:
 
-    def __init__(self, dao_collector: DaoCollector) -> None:
+    def __init__(self, dao_collector: DaoCollector, authorized_apikey: str) -> None:
         self._app = Flask("wenet_service_api")
         self._api = Api(app=self._app)
         self._dao_collector = dao_collector
+
+        self._authorized_api_key = authorized_apikey
 
         self._init_modules()
 
     def _init_modules(self) -> None:
         active_routes = [
-            (WeNetUserProfileInterfaceBuilder.routes(), "/user"),
-            (TaskResourceInterfaceBuilder.routes(), "/task"),
-            (MessageInterfaceBuilder.routes(), "/messages"),
-            (AppResourceInterfaceBuilder.routes(self._dao_collector), "/app")
+            (WeNetUserProfileInterfaceBuilder.routes(self._authorized_api_key), "/user"),
+            (TaskResourceInterfaceBuilder.routes(self._authorized_api_key), "/task"),
+            (MessageInterfaceBuilder.routes(self._authorized_api_key), "/messages"),
+            (AppResourceInterfaceBuilder.routes(self._dao_collector, self._authorized_api_key), "/app")
         ]
 
         for module_routes, prefix in active_routes:

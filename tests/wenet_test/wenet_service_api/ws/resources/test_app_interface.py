@@ -11,7 +11,7 @@ class TestAppPostInterface(CommonTestCase):
 
     def test_post(self):
 
-        response = self.client.post("/app", json={"name": "app_name"})
+        response = self.client.post("/app", json={"name": "app_name"}, headers={"apikey": self.AUTHORIZED_APIKEY})
 
         self.assertEqual(response.status_code, 201)
 
@@ -21,6 +21,18 @@ class TestAppPostInterface(CommonTestCase):
 
         self.assertIsInstance(app, App)
         self.assertEqual("app_name", app.name)
+
+    def test_post_not_authorized(self):
+
+        response = self.client.post("/app", json={"name": "app_name"}, headers={"apikey": self.AUTHORIZED_APIKEY + "1"})
+
+        self.assertEqual(response.status_code, 403)
+
+    def test_post_not_authorized2(self):
+
+        response = self.client.post("/app", json={"name": "app_name"})
+
+        self.assertEqual(response.status_code, 403)
 
 
 class TestAppResourceInterface(CommonTestCase):
@@ -41,7 +53,7 @@ class TestAppResourceInterface(CommonTestCase):
 
         app_id = self.app.app_id
 
-        response = self.client.get(f"/app/{app_id}")
+        response = self.client.get(f"/app/{app_id}", headers={"apikey": self.AUTHORIZED_APIKEY})
 
         self.assertEqual(response.status_code, 200)
 
@@ -52,11 +64,19 @@ class TestAppResourceInterface(CommonTestCase):
         self.assertEqual(app_id, app.app_id)
         self.assertEqual(self.app, app)
 
+    def test_get_not_authorized(self):
+
+        app_id = self.app.app_id
+
+        response = self.client.get(f"/app/{app_id}")
+
+        self.assertEqual(response.status_code, 403)
+
     def test_get2(self):
 
         app_id = "5354f062-ace2-4da9-bee8-b2d286814636"
 
-        response = self.client.get(f"/app/{app_id}")
+        response = self.client.get(f"/app/{app_id}", headers={"apikey": self.AUTHORIZED_APIKEY})
 
         self.assertEqual(response.status_code, 404)
 
@@ -70,7 +90,7 @@ class TestAppResourceInterface(CommonTestCase):
             "name": app_name
         }
 
-        response = self.client.put(f"/app/{app_id}", json=app_repr)
+        response = self.client.put(f"/app/{app_id}", json=app_repr, headers={"apikey": self.AUTHORIZED_APIKEY})
 
         self.assertEqual(response.status_code, 200)
 
@@ -82,6 +102,20 @@ class TestAppResourceInterface(CommonTestCase):
         self.assertEqual(app_name, app.name)
         self.assertEqual(app_token, app.app_token)
 
+    def test_put_not_authorized(self):
+        app_id = self.app.app_id
+        app_name = "updated app name"
+        app_token = "XkLOHcHbtDEGusT982Ji-gd1qBp9U_WiPXWI7XMGwfM"
+        app_repr = {
+            "appId": "asd",
+            "appToken": app_token,
+            "name": app_name
+        }
+
+        response = self.client.put(f"/app/{app_id}", json=app_repr)
+
+        self.assertEqual(response.status_code, 403)
+
     def test_put2(self):
         app_id = "5354f062-ace2-4da9-bee8-b2d286814636"
         app_name = "updated app name"
@@ -92,6 +126,6 @@ class TestAppResourceInterface(CommonTestCase):
             "name": app_name
         }
 
-        response = self.client.put(f"/app/{app_id}", json=app_repr)
+        response = self.client.put(f"/app/{app_id}", json=app_repr, headers={"apikey": self.AUTHORIZED_APIKEY})
 
         self.assertEqual(response.status_code, 404)

@@ -9,6 +9,7 @@ from flask_restful import Resource, abort
 
 from wenet.model.norm import Norm, NormOperator
 from wenet.model.task import Task, TaskState
+from wenet.wenet_service_api.ws.resource.common import AuthenticatedResource
 
 logger = logging.getLogger("wenet.wenet_service_api.ws.resource.task")
 
@@ -16,19 +17,21 @@ logger = logging.getLogger("wenet.wenet_service_api.ws.resource.task")
 class TaskResourceInterfaceBuilder:
 
     @staticmethod
-    def routes():
+    def routes(authorized_apikey: str):
         return [
-            (TaskResourceInterface, "/<string:task_id>", ()),
-            (TaskResourcePostInterface, "", ())
+            (TaskResourceInterface, "/<string:task_id>", (authorized_apikey,)),
+            (TaskResourcePostInterface, "", (authorized_apikey,))
         ]
 
 
-class TaskResourceInterface(Resource):
+class TaskResourceInterface(AuthenticatedResource):
 
-    def __init__(self) -> None:
-        super().__init__()
+    def __init__(self, authorized_apikey) -> None:
+        super().__init__(authorized_apikey)
 
     def get(self, task_id: str):
+        self._check_authentication()
+
         task = Task(
             task_id=task_id,
             creation_ts=datetime(2020, 1, 21).timestamp(),
@@ -51,6 +54,8 @@ class TaskResourceInterface(Resource):
         return task.to_repr(), 200
 
     def put(self, task_id: str):
+        self._check_authentication()
+
         try:
             posted_data: dict = request.get_json()
         except Exception as e:
@@ -75,9 +80,14 @@ class TaskResourceInterface(Resource):
         return task.to_repr(), 200
 
 
-class TaskResourcePostInterface(Resource):
+class TaskResourcePostInterface(AuthenticatedResource):
+
+    def __init__(self, authorized_apikey: str) -> None:
+        super().__init__(authorized_apikey)
 
     def post(self):
+        self._check_authentication()
+
         try:
             posted_data: dict = request.get_json()
         except Exception as e:

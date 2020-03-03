@@ -6,6 +6,7 @@ from flask import request
 from flask_restful import Resource, abort
 
 from wenet.model.message import Message
+from wenet.wenet_service_api.ws.resource.common import AuthenticatedResource
 
 logger = logging.getLogger("wenet.wenet_service_api.ws.resource.message")
 
@@ -13,18 +14,20 @@ logger = logging.getLogger("wenet.wenet_service_api.ws.resource.message")
 class MessageInterfaceBuilder:
 
     @staticmethod
-    def routes():
+    def routes(authorized_apikey: str):
         return [
-            (MessageInterface, "", ())
+            (MessageInterface, "", (authorized_apikey, ))
         ]
 
 
-class MessageInterface(Resource):
+class MessageInterface(AuthenticatedResource):
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, authorized_apikey: str):
+        super().__init__(authorized_apikey)
 
     def post(self):
+
+        self._check_authentication()
 
         try:
             posted_data: dict = request.get_json()

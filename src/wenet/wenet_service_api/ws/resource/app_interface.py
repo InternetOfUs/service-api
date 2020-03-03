@@ -13,6 +13,7 @@ import logging
 from wenet.common.exception.exceptions import ResourceNotFound
 from wenet.dao.dao_collector import DaoCollector
 from wenet.model.app import App
+from wenet.wenet_service_api.ws.resource.common import AuthenticatedResource
 
 logger = logging.getLogger("wenet.wenet_service_api.ws.resource.app")
 
@@ -20,20 +21,21 @@ logger = logging.getLogger("wenet.wenet_service_api.ws.resource.app")
 class AppResourceInterfaceBuilder:
 
     @staticmethod
-    def routes(dao_collector: DaoCollector):
+    def routes(dao_collector: DaoCollector, authorized_apikey: str):
         return [
-            (AppPostResourceInterface, "", (dao_collector,)),
-            (AppResourceInterface, "/<string:app_id>", (dao_collector,))
+            (AppPostResourceInterface, "", (dao_collector, authorized_apikey)),
+            (AppResourceInterface, "/<string:app_id>", (dao_collector, authorized_apikey))
         ]
 
 
-class AppPostResourceInterface(Resource):
+class AppPostResourceInterface(AuthenticatedResource):
 
-    def __init__(self, dao_collector: DaoCollector) -> None:
-        super().__init__()
+    def __init__(self, dao_collector: DaoCollector, authorized_apikey: str) -> None:
+        super().__init__(authorized_apikey)
         self._dao_collector = dao_collector
 
     def post(self):
+        self._check_authentication()
 
         try:
             posted_data: dict = request.get_json()
@@ -69,13 +71,15 @@ class AppPostResourceInterface(Resource):
         return app.to_repr(), 201
 
 
-class AppResourceInterface(Resource):
+class AppResourceInterface(AuthenticatedResource):
 
-    def __init__(self, dao_collector: DaoCollector) -> None:
-        super().__init__()
+    def __init__(self, dao_collector: DaoCollector, authorized_apikey: str) -> None:
+        super().__init__(authorized_apikey)
         self._dao_collector = dao_collector
 
     def get(self, app_id: str):
+
+        self._check_authentication()
 
         try:
             app = self._dao_collector.app_dao.get(app_id)
@@ -92,6 +96,9 @@ class AppResourceInterface(Resource):
         return app.to_repr(), 200
 
     def put(self, app_id: str):
+
+        self._check_authentication()
+
         try:
             posted_data: dict = request.get_json()
         except Exception as e:
