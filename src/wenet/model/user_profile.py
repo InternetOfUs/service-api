@@ -20,17 +20,17 @@ class WeNetUserProfile:
                  locale: Optional[str],
                  avatar: Optional[str],
                  nationality: Optional[str],
-                 languages: List[UserLanguage],
+                 languages: Optional[List[UserLanguage]],
                  occupation: Optional[str],
                  creation_ts: Optional[Number],
                  last_update_ts: Optional[Number],
                  profile_id: str,
-                 norms: List[Norm],
-                 planned_activities: list,
-                 relevant_locations: list,
-                 relationships: list,
-                 social_practices: list,
-                 personal_behaviours: list
+                 norms: Optional[List[Norm]],
+                 planned_activities: Optional[list],
+                 relevant_locations: Optional[list],
+                 relationships: Optional[list],
+                 social_practices: Optional[list],
+                 personal_behaviours: Optional[list]
                  ):
         self.name = name
         self.date_of_birth = date_of_birth
@@ -79,12 +79,15 @@ class WeNetUserProfile:
             if not isinstance(nationality, str):
                 raise TypeError("Nationality should be a string")
 
-        if not isinstance(languages, list):
-            raise TypeError("Languages should be list of UserLanguage")
+        if languages:
+            if not isinstance(languages, list):
+                raise TypeError("Languages should be list of UserLanguage")
+            else:
+                for language in languages:
+                    if not isinstance(language, UserLanguage):
+                        raise TypeError("Languages should be list of UserLanguage")
         else:
-            for language in languages:
-                if not isinstance(language, UserLanguage):
-                    raise TypeError("Languages should be list of UserLanguage")
+            self.languages = []
         if occupation:
             if not isinstance(occupation, str):
                 raise TypeError("Occupation should be a string")
@@ -99,23 +102,45 @@ class WeNetUserProfile:
         if not isinstance(profile_id, str):
             raise TypeError("Profile id should be a string")
 
-        if not isinstance(norms, list):
-            raise TypeError("Norms should be a list of norms")
+        if norms:
+            if not isinstance(norms, list):
+                raise TypeError("Norms should be a list of norms")
+            else:
+                for norm in norms:
+                    if not isinstance(norm, Norm):
+                        raise TypeError("Norms should be a list of norms")
         else:
-            for norm in norms:
-                if not isinstance(norm, Norm):
-                    raise TypeError("Norms should be a list of norms")
+            self.norms = []
 
-        if not isinstance(planned_activities, list):
-            raise TypeError("PlannedActivities should be a list")
-        if not isinstance(relevant_locations, list):
-            raise TypeError("RelevantLocations should be a list")
-        if not isinstance(relationships, list):
-            raise TypeError("Relationship should be a list")
-        if not isinstance(social_practices, list):
-            raise TypeError("SocialPractices should be a list")
-        if not isinstance(personal_behaviours, list):
-            raise TypeError("personalBehaviors should be a list")
+        if planned_activities:
+            if not isinstance(planned_activities, list):
+                raise TypeError("PlannedActivities should be a list")
+        else:
+            self.planned_activities = []
+
+        if relevant_locations:
+            if not isinstance(relevant_locations, list):
+                raise TypeError("RelevantLocations should be a list")
+        else:
+            self.relevant_locations = []
+
+        if relationships:
+            if not isinstance(relationships, list):
+                raise TypeError("Relationship should be a list")
+        else:
+            self.relationships = []
+
+        if social_practices:
+            if not isinstance(social_practices, list):
+                raise TypeError("SocialPractices should be a list")
+        else:
+            self.social_practices = []
+
+        if personal_behaviours:
+            if not isinstance(personal_behaviours, list):
+                raise TypeError("personalBehaviors should be a list")
+        else:
+            self.personal_behaviours = []
 
     def to_repr(self) -> dict:
         return {
@@ -132,7 +157,7 @@ class WeNetUserProfile:
             "_creationTs": self.creation_ts,
             "_lastUpdateTs": self.last_update_ts,
             "id": self.profile_id,
-            "norms": list(x.to_repr() for x in self.norms),
+            "norms": list(x.to_repr() for x in self.norms) if self.norms else None,
             "plannedActivities": self.planned_activities,
             "relevantLocations": self.relevant_locations,
             "relationships": self.relationships,
@@ -155,17 +180,17 @@ class WeNetUserProfile:
             locale=raw_data.get("locale", None),
             avatar=raw_data.get("avatar", None),
             nationality=raw_data.get("nationality", None),
-            languages=list(UserLanguage.from_repr(x) for x in raw_data["languages"]),
+            languages=list(UserLanguage.from_repr(x) for x in raw_data["languages"]) if raw_data.get("languages", None) else None,
             occupation=raw_data.get("occupation", None),
             creation_ts=raw_data.get("_creationTs", None),
             last_update_ts=raw_data.get("_lastUpdateTs", None),
             profile_id=profile_id,
-            norms=list(Norm.from_repr(x) for x in raw_data["norms"]),
-            planned_activities=raw_data["plannedActivities"],
-            relevant_locations=raw_data["relevantLocations"],
-            relationships=raw_data["relationships"],
-            social_practices=raw_data["socialPractices"],
-            personal_behaviours=raw_data["personalBehaviors"]
+            norms=list(Norm.from_repr(x) for x in raw_data["norms"]) if raw_data.get("norms", None) else None,
+            planned_activities=raw_data.get("plannedActivities", None),
+            relevant_locations=raw_data.get("relevantLocations", None),
+            relationships=raw_data.get("relationships", None),
+            social_practices=raw_data.get("socialPractices", None),
+            personal_behaviours=raw_data.get("personalBehaviors", None)
         )
 
     @staticmethod

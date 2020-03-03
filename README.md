@@ -18,10 +18,6 @@ A build script is available in the `docker-support` folder, simply type:
 ./docker-support/build.sh
 ```
 
-## Environmental variables
-
-- DB_CONNECTION_STRING: connection string for database, for example `sqlite:///db/service_api.db`
-
 ## Migration
 
 ### Execute the existing migrations
@@ -51,6 +47,14 @@ A build script is available in the `docker-support` folder, simply type:
 ## Deploy
 
 A docker-compose file for deploy this service is available in the [wenet-service-api-deployment](https://bitbucket.org/wenet/wenet-service-api-deployment/src/master/) repository.
+
+## Configuration
+
+### Environmental variables:
+
+- DB_CONNECTION_STRING: connection string for database, for example `sqlite:///db/service_api.db`
+- PROFILE_MANAGER_CONNECTOR_BASE_URL: base url for the profile manager connection
+- TASK_MANAGER_CONNECTOR_BASE_URL: base url for the task manager endpoints
 
 ## Versions
 
