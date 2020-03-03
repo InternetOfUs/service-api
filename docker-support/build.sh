@@ -1,12 +1,13 @@
 #!/bin/bash
 
-DEFAULT_VERSION="0.0.2"
+DEFAULT_VERSION="0.0.3"
 
 clean () {
     rm -R -f ${SCRIPT_DIR}/src
     rm -R ${SCRIPT_DIR}/requirements.txt
     rm -R ${SCRIPT_DIR}/tests
     rm -R ${SCRIPT_DIR}/docs
+    rm -R ${SCRIPT_DIR}/migrations
 }
 
 SCRIPT_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
@@ -25,10 +26,12 @@ fi
 mkdir ${SCRIPT_DIR}/src
 mkdir ${SCRIPT_DIR}/tests
 mkdir ${SCRIPT_DIR}/docs
+mkdir ${SCRIPT_DIR}/migrations
 cp -R ${PROJECT_DIR}/src/* ${SCRIPT_DIR}/src
 cp ${PROJECT_DIR}/requirements.txt ${SCRIPT_DIR}
 cp -R ${PROJECT_DIR}/tests/* ${SCRIPT_DIR}/tests
 cp -R ${PROJECT_DIR}/docs/* ${SCRIPT_DIR}/docs
+cp -R ${PROJECT_DIR}/migrations/* ${SCRIPT_DIR}/migrations
 
 
 # Building image

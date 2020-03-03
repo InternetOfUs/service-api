@@ -11,6 +11,7 @@ class Gender(Enum):
 
     MALE = "M"
     FEMALE = "F"
+    OTHER = "O"
 
 
 class Date:

@@ -2,3 +2,5 @@ venv3
 .idea
 *.pyc
 carborem_ws.log
+/manage.py
+/db

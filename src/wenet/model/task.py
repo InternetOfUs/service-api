@@ -27,7 +27,7 @@ class Task:
                  start_ts: Optional[Number],
                  end_ts: Optional[Number],
                  deadline_ts: Optional[Number],
-                 norms: List[Norm]
+                 norms: Optional[List[Norm]]
                  ):
 
         self.task_id = task_id
@@ -60,12 +60,15 @@ class Task:
             if not isinstance(deadline_ts, Number):
                 raise TypeError("DeadlineTs should be an integer")
 
-        if not isinstance(norms, list):
-            raise ValueError("Norms should be a list of Norm")
+        if norms:
+            if not isinstance(norms, list):
+                raise ValueError("Norms should be a list of Norm")
+            else:
+                for norm in norms:
+                    if not isinstance(norm, Norm):
+                        raise ValueError("Norms should be a list of Norm")
         else:
-            for norm in norms:
-                if not isinstance(norm, Norm):
-                    raise ValueError("Norms should be a list of Norm")
+            self.norms = []
 
     def to_repr(self) -> dict:
         return {
@@ -93,7 +96,7 @@ class Task:
             start_ts=raw_data.get("startTs", None),
             end_ts=raw_data.get("endTs", None),
             deadline_ts=raw_data.get("deadlineTs", None),
-            norms=list(Norm.from_repr(x) for x in raw_data["norms"])
+            norms=list(Norm.from_repr(x) for x in raw_data["norms"]) if raw_data.get("norms", None) else None
         )
 
     def __repr__(self):
