@@ -19,7 +19,11 @@ def init_ws() -> WsInterface:
     service_connector_collector = ServiceConnectorCollector.build()
 
     dao_collector = DaoCollector.build_from_env()
-    ws_interface = WsInterface(service_connector_collector, dao_collector)
+
+    authorized_api_key = os.getenv("APIKEY")
+    if authorized_api_key is None:
+        raise RuntimeError("Missing environmental variable APIKEY")
+    ws_interface = WsInterface(service_connector_collector, dao_collector, authorized_api_key)
     return ws_interface
 
 

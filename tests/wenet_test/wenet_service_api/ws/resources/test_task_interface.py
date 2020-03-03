@@ -34,7 +34,7 @@ class TestTaskInterface(CommonTestCase):
 
         mock_get = Mock(return_value=task)
         self.service_collector_connector.task_manager_connector.get_task = mock_get
-        response = self.client.get("/task/%s" % task_id)
+        response = self.client.get("/task/%s" % task_id, headers={"apikey": self.AUTHORIZED_APIKEY})
 
         self.assertEqual(response.status_code, 200)
         mock_get.assert_called_once()
@@ -42,6 +42,11 @@ class TestTaskInterface(CommonTestCase):
 
         from_repr = Task.from_repr(json_data)
         self.assertEqual(from_repr, task)
+
+    def test_get_not_authorized(self):
+        task_id = "task-id"
+        response = self.client.get("/task/%s" % task_id)
+        self.assertEqual(response.status_code, 403)
 
     def test_put(self):
         task_id = "task-id"
@@ -67,7 +72,7 @@ class TestTaskInterface(CommonTestCase):
         mock_put = Mock(return_value=task)
         self.service_collector_connector.task_manager_connector.updated_task = mock_put
 
-        response = self.client.put("/task/%s" % task_id, json=task.to_repr())
+        response = self.client.put("/task/%s" % task_id, json=task.to_repr(), headers={"apikey": self.AUTHORIZED_APIKEY})
         self.assertEqual(response.status_code, 200)
 
         json_data = json.loads(response.data)
@@ -76,6 +81,30 @@ class TestTaskInterface(CommonTestCase):
 
         self.assertIsInstance(task, Task)
         mock_put.assert_called_once()
+
+    def test_put_not_authorized(self):
+        task_id = "task-id"
+        task = Task(
+            task_id="task-id",
+            creation_ts=1577833200,
+            state=TaskState.ASSIGNED,
+            requester_user_id="req_user_id",
+            start_ts=1577833100,
+            end_ts=1577833300,
+            deadline_ts=1577833350,
+            norms=[
+                Norm(
+                    norm_id="norm-id",
+                    attribute="attribute",
+                    operator=NormOperator.EQUALS,
+                    comparison=True,
+                    negation=False
+                )
+            ]
+        )
+
+        response = self.client.put("/task/%s" % task_id, json=task.to_repr())
+        self.assertEqual(response.status_code, 403)
 
     def test_put_wrong(self):
         task_id = "task-id"
@@ -104,7 +133,7 @@ class TestTaskInterface(CommonTestCase):
         mock_put = Mock()
         self.service_collector_connector.task_manager_connector.get_task = mock_put
 
-        response = self.client.put("/task/%s" % task_id, json=data)
+        response = self.client.put("/task/%s" % task_id, json=data, headers={"apikey": self.AUTHORIZED_APIKEY})
         self.assertEqual(response.status_code, 400)
 
         mock_put.assert_not_called()
@@ -135,7 +164,7 @@ class TestTaskPostInterface(CommonTestCase):
         mock_post = Mock(return_value=task)
         self.service_collector_connector.task_manager_connector.create_task = mock_post
 
-        response = self.client.post("/task", json=task.to_repr())
+        response = self.client.post("/task", json=task.to_repr(), headers={"apikey": self.AUTHORIZED_APIKEY})
         self.assertEqual(response.status_code, 201)
 
         json_data = json.loads(response.data)
@@ -145,6 +174,30 @@ class TestTaskPostInterface(CommonTestCase):
         self.assertIsInstance(created_task, Task)
         # self.assertNotEqual(task.task_id, created_task.task_id)
         mock_post.assert_called_once()
+
+
+    def test_post(self):
+        task = Task(
+            task_id="task-id",
+            creation_ts=1577833200,
+            state=TaskState.ASSIGNED,
+            requester_user_id="req_user_id",
+            start_ts=1577833100,
+            end_ts=1577833300,
+            deadline_ts=1577833350,
+            norms=[
+                Norm(
+                    norm_id="norm-id",
+                    attribute="attribute",
+                    operator=NormOperator.EQUALS,
+                    comparison=True,
+                    negation=False
+                )
+            ]
+        )
+
+        response = self.client.post("/task", json=task.to_repr())
+        self.assertEqual(response.status_code, 403)
 
     def test_post_wrong(self):
         task = Task(
@@ -171,7 +224,7 @@ class TestTaskPostInterface(CommonTestCase):
 
         data = task.to_repr()
         data["norms"] = "text"
-        response = self.client.post("/task", json=data)
+        response = self.client.post("/task", json=data, headers={"apikey": self.AUTHORIZED_APIKEY})
         self.assertEqual(response.status_code, 400)
         mock_post.assert_not_called()
 

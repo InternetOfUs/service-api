@@ -53,6 +53,7 @@ A docker-compose file for deploy this service is available in the [wenet-service
 ### Environmental variables:
 
 - DB_CONNECTION_STRING: connection string for database, for example `sqlite:///db/service_api.db`
+- APIKEY: apikey for used fo authenticate the requests
 - PROFILE_MANAGER_CONNECTOR_BASE_URL: base url for the profile manager connection
 - TASK_MANAGER_CONNECTOR_BASE_URL: base url for the task manager endpoints
 

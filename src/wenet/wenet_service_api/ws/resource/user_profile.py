@@ -1,13 +1,14 @@
 from __future__ import absolute_import, annotations
 
 from flask import request
-from flask_restful import Resource, abort
+from flask_restful import abort
 
 import logging
 
 from wenet.common.exception.excpetions import ResourceNotFound, NotAuthorized, BadRequestException
-from wenet.model.user_profile import WeNetUserProfile
 from wenet.service_connector.collector import ServiceConnectorCollector
+from wenet.model.user_profile import WeNetUserProfile
+from wenet.wenet_service_api.ws.resource.common import AuthenticatedResource
 
 logger = logging.getLogger("wenet.wenet_service_api.ws.resource.wenet_user_profile")
 
@@ -15,19 +16,21 @@ logger = logging.getLogger("wenet.wenet_service_api.ws.resource.wenet_user_profi
 class WeNetUserProfileInterfaceBuilder:
 
     @staticmethod
-    def routes(service_connector_collector: ServiceConnectorCollector):
+    def routes(service_connector_collector: ServiceConnectorCollector, authorized_apikey: str):
         return [
-            (WeNetUserProfileInterface, "/profile/<string:profile_id>", (service_connector_collector,))
+            (WeNetUserProfileInterface, "/profile/<string:profile_id>", (service_connector_collector, authorized_apikey))
         ]
 
 
-class WeNetUserProfileInterface(Resource):
+class WeNetUserProfileInterface(AuthenticatedResource):
 
-    def __init__(self, service_connector_collector: ServiceConnectorCollector) -> None:
-        super().__init__()
+    def __init__(self, service_connector_collector: ServiceConnectorCollector, authorized_apikey: str) -> None:
+        super().__init__(authorized_apikey)
         self._service_connector_collector = service_connector_collector
 
     def get(self, profile_id: str):
+
+        self._check_authentication()
 
         try:
             profile = self._service_connector_collector.profile_manager_collector.get_profile(profile_id)
@@ -47,6 +50,8 @@ class WeNetUserProfileInterface(Resource):
         return profile.to_repr(), 200
 
     def put(self, profile_id: str):
+
+        self._check_authentication()
 
         try:
             posted_data: dict = request.get_json()

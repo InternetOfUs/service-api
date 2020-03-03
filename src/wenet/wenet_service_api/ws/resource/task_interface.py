@@ -4,11 +4,12 @@ import logging
 import uuid
 
 from flask import request
-from flask_restful import Resource, abort
+from flask_restful import abort
 
 from wenet.common.exception.excpetions import ResourceNotFound, NotAuthorized, BadRequestException
-from wenet.model.task import Task
 from wenet.service_connector.collector import ServiceConnectorCollector
+from wenet.model.task import Task
+from wenet.wenet_service_api.ws.resource.common import AuthenticatedResource
 
 logger = logging.getLogger("wenet.wenet_service_api.ws.resource.task")
 
@@ -16,20 +17,22 @@ logger = logging.getLogger("wenet.wenet_service_api.ws.resource.task")
 class TaskResourceInterfaceBuilder:
 
     @staticmethod
-    def routes(service_connector_collector: ServiceConnectorCollector):
+    def routes(service_connector_collector: ServiceConnectorCollector, authorized_apikey: str):
         return [
-            (TaskResourceInterface, "/<string:task_id>", (service_connector_collector,)),
-            (TaskResourcePostInterface, "", (service_connector_collector,))
+            (TaskResourceInterface, "/<string:task_id>", (service_connector_collector, authorized_apikey)),
+            (TaskResourcePostInterface, "", (service_connector_collector, authorized_apikey))
         ]
 
 
-class TaskResourceInterface(Resource):
+class TaskResourceInterface(AuthenticatedResource):
 
-    def __init__(self, service_connector_collector: ServiceConnectorCollector) -> None:
-        super().__init__()
+    def __init__(self, service_connector_collector: ServiceConnectorCollector, authorized_apikey: str) -> None:
+        super().__init__(authorized_apikey)
         self.service_connector_collector = service_connector_collector
 
     def get(self, task_id: str):
+
+        self._check_authentication()
 
         try:
             task = self.service_connector_collector.task_manager_connector.get_task(task_id)
@@ -50,6 +53,8 @@ class TaskResourceInterface(Resource):
         return task.to_repr(), 200
 
     def put(self, task_id: str):
+        self._check_authentication()
+
         try:
             posted_data: dict = request.get_json()
         except Exception as e:
@@ -93,13 +98,16 @@ class TaskResourceInterface(Resource):
         return updated_task.to_repr(), 200
 
 
-class TaskResourcePostInterface(Resource):
+class TaskResourcePostInterface(AuthenticatedResource):
 
-    def __init__(self, service_connector_collector: ServiceConnectorCollector) -> None:
-        super().__init__()
+
+    def __init__(self, service_connector_collector: ServiceConnectorCollector, authorized_apikey: str) -> None:
+        super().__init__(authorized_apikey)
         self._service_connector_collector = service_connector_collector
 
     def post(self):
+        self._check_authentication()
+
         try:
             posted_data: dict = request.get_json()
         except Exception as e:
