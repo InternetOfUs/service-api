@@ -5,6 +5,7 @@ from flask_restful import Api
 
 import logging
 
+from wenet.service_connector.collector import ServiceConnectorCollector
 from wenet.dao.dao_collector import DaoCollector
 from wenet.wenet_service_api.ws.resource.app_interface import AppResourceInterfaceBuilder
 from wenet.wenet_service_api.ws.resource.message_interface import MessageInterfaceBuilder
@@ -14,19 +15,19 @@ from wenet.wenet_service_api.ws.resource.user_profile import WeNetUserProfileInt
 
 class WsInterface:
 
-    def __init__(self, dao_collector: DaoCollector, authorized_apikey: str) -> None:
+    def __init__(self, service_connector_collector: ServiceConnectorCollector, dao_collector: DaoCollector, authorized_apikey: str) -> None:
         self._app = Flask("wenet_service_api")
         self._api = Api(app=self._app)
         self._dao_collector = dao_collector
 
         self._authorized_api_key = authorized_apikey
 
-        self._init_modules()
+        self._init_modules(service_connector_collector)
 
-    def _init_modules(self) -> None:
+    def _init_modules(self, service_connector_collector: ServiceConnectorCollector) -> None:
         active_routes = [
-            (WeNetUserProfileInterfaceBuilder.routes(self._authorized_api_key), "/user"),
-            (TaskResourceInterfaceBuilder.routes(self._authorized_api_key), "/task"),
+            (WeNetUserProfileInterfaceBuilder.routes(service_connector_collector, self._authorized_api_key), "/user"),
+            (TaskResourceInterfaceBuilder.routes(service_connector_collector, self._authorized_api_key), "/task"),
             (MessageInterfaceBuilder.routes(self._authorized_api_key), "/messages"),
             (AppResourceInterfaceBuilder.routes(self._dao_collector, self._authorized_api_key), "/app")
         ]

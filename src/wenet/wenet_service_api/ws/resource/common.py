@@ -1,6 +1,5 @@
 from __future__ import absolute_import, annotations
 
-import os
 import logging
 
 from flask import request

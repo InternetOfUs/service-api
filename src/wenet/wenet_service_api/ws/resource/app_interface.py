@@ -6,7 +6,7 @@ from datetime import datetime
 
 import pytz
 from flask import request
-from flask_restful import Resource, abort
+from flask_restful import abort
 
 import logging
 

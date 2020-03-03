@@ -1,14 +1,13 @@
 from __future__ import absolute_import, annotations
 
-from datetime import datetime
-
 from flask import request
-from flask_restful import Resource, abort
+from flask_restful import abort
 
 import logging
 
-from wenet.model.common import Gender, UserLanguage, Date
-from wenet.model.user_profile import WeNetUserProfile, UserName
+from wenet.common.exception.excpetions import ResourceNotFound, NotAuthorized, BadRequestException
+from wenet.service_connector.collector import ServiceConnectorCollector
+from wenet.model.user_profile import WeNetUserProfile
 from wenet.wenet_service_api.ws.resource.common import AuthenticatedResource
 
 logger = logging.getLogger("wenet.wenet_service_api.ws.resource.wenet_user_profile")
@@ -17,60 +16,38 @@ logger = logging.getLogger("wenet.wenet_service_api.ws.resource.wenet_user_profi
 class WeNetUserProfileInterfaceBuilder:
 
     @staticmethod
-    def routes(authorized_apikey: str):
+    def routes(service_connector_collector: ServiceConnectorCollector, authorized_apikey: str):
         return [
-            (WeNetUserProfileInterface, "/profile/<string:profile_id>", (authorized_apikey,))
+            (WeNetUserProfileInterface, "/profile/<string:profile_id>", (service_connector_collector, authorized_apikey))
         ]
 
 
 class WeNetUserProfileInterface(AuthenticatedResource):
 
-    def __init__(self, authorized_apikey: str) -> None:
+    def __init__(self, service_connector_collector: ServiceConnectorCollector, authorized_apikey: str) -> None:
         super().__init__(authorized_apikey)
+        self._service_connector_collector = service_connector_collector
 
     def get(self, profile_id: str):
 
         self._check_authentication()
 
-        user_profile = WeNetUserProfile(
-            name=UserName(
-                first="John",
-                middle="Francis",
-                last="Doe",
-                prefix="Dr.",
-                suffix="Jr."
-            ),
-            date_of_birth=Date(
-                year=1976,
-                month=4,
-                day=23
-            ),
-            gender=Gender.MALE,
-            email="john.doe@gmail.com",
-            phone_number="+34 6888233133",
-            locale="es_ES",
-            avatar="avatar",
-            nationality="Spanish",
-            languages=[
-                UserLanguage(
-                    name="Spanish",
-                    level="C2",
-                    code="es"
-                )
-            ],
-            occupation="nurse",
-            creation_ts=datetime(2020, 1, 21).timestamp(),
-            last_update_ts=datetime.now().timestamp(),
-            profile_id=profile_id,
-            norms=[],
-            planned_activities=[],
-            relevant_locations=[],
-            relationships=[],
-            social_practices=[],
-            personal_behaviours=[]
-        )
-
-        return user_profile.to_repr(), 200
+        try:
+            profile = self._service_connector_collector.profile_manager_collector.get_profile(profile_id)
+            logger.info(f"Retrieved profile [{profile_id}] from profile manager connector")
+        except ResourceNotFound as e:
+            logger.exception("Unable to retrieve the profile", exc_info=e)
+            abort(404, message="Resource not found")
+            return
+        except NotAuthorized as e:
+            logger.exception(f"Unauthorized to retrieve the task [{profile_id}]", exc_info=e)
+            abort(403)
+            return
+        except Exception as e:
+            logger.exception("Unable to retrieve the profile", exc_info=e)
+            abort(500)
+            return
+        return profile.to_repr(), 200
 
     def put(self, profile_id: str):
 
@@ -95,5 +72,21 @@ class WeNetUserProfileInterface(AuthenticatedResource):
             return
 
         logger.info("updated profile [%s]" % user_profile)
+
+        try:
+            self._service_connector_collector.profile_manager_collector.update_profile(user_profile)
+            logger.info("Profile [%s] updated successfully" % profile_id)
+        except ResourceNotFound as e:
+            logger.exception("Unable to retrieve the profile", exc_info=e)
+            abort(404, message="Resource not found")
+            return
+        except BadRequestException as e:
+            logger.exception(f"Bad request during update of profile [{profile_id}][{user_profile}] - [{str(e)}")
+            abort(400, message=f"Bad request: {str(e)}")
+            return
+        except Exception as e:
+            logger.exception("Unable to retrieve the profile", exc_info=e)
+            abort(500)
+            return
 
         return user_profile.to_repr(), 200

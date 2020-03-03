@@ -3,7 +3,7 @@ from __future__ import absolute_import, annotations
 import logging
 
 from flask import request
-from flask_restful import Resource, abort
+from flask_restful import abort
 
 from wenet.model.message import Message
 from wenet.wenet_service_api.ws.resource.common import AuthenticatedResource
