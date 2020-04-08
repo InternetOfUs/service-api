@@ -90,3 +90,19 @@ class WeNetUserProfileInterface(AuthenticatedResource):
             return
 
         return user_profile.to_repr(), 200
+
+    def post(self):
+        self._check_authentication()
+
+        try:
+            user_profile = self._service_connector_collector.profile_manager_collector.create_empty_profile()
+        except BadRequestException as e:
+            logger.exception(f"Bad request during profile creation [{str(e)}")
+            abort(400, message=f"Bad request: {str(e)}")
+            return
+        except Exception as e:
+            logger.exception("Unable to create the profile", exc_info=e)
+            abort(500)
+            return
+
+        return user_profile.to_repr()

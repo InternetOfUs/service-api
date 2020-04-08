@@ -76,3 +76,25 @@ class ProfileManagerConnector(ServiceConnector):
             raise BadRequestException(f"Bad request: {response.text}")
         else:
             raise Exception("Unable to edit the profile with id [%s], server respond [%s] [%s]" % (profile.profile_id, response.status_code, response.text))
+
+    def create_empty_profile(self, headers: Optional[dict] = None) -> WeNetUserProfile:
+        url = "%s/profiles" % self._base_url
+
+        if headers is not None:
+            headers.update(self._base_headers)
+        else:
+            headers = self._base_headers
+
+        empty_profile = WeNetUserProfile.create_empty_profile()
+        data_repr = empty_profile.to_repr()
+        data = json.dumps(data_repr)
+
+        response = requests.post(url, data=data, headers=headers)
+        if response.status_code == 200:
+            return empty_profile # TODO check
+        elif response.status_code == 401 or response.status_code == 403:
+            raise NotAuthorized("Not authorized")
+        elif response.status_code == 400:
+            raise BadRequestException(f"Bad request: {response.text}")
+        else:
+            raise Exception("Unable to create an empty profile")

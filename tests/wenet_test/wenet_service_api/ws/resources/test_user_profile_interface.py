@@ -191,7 +191,10 @@ class TestUser(CommonTestCase):
         self.assertEqual(403, response.status_code)
 
     def test_put2(self):
+        mock_put = Mock(return_value=None)
+        self.service_collector_connector.profile_manager_collector.update_profile = mock_put
+        
         user_profile = {'name': {'first': 'first', 'middle': 'middle', 'last': 'last', 'prefix': 'prefix', 'suffix': 'suffix'}, 'gender': 'M', 'email': 'email@example.com', 'phoneNumber': 'phone number', 'locale': 'it_IT', 'avatar': 'avatar', 'nationality': 'it', 'languages': [{'name': 'ita', 'level': 'C2', 'code': 'it'}], 'occupation': 'occupation', '_creationTs': 1579536160, '_lastUpdateTs': 1579536160, 'id': 'profile_id', 'norms': [{'id': 'norm-id', 'attribute': 'attribute', 'operator': 'EQUALS', 'comparison': True, 'negation': False}], 'plannedActivities': [], 'relevantLocations': [], 'relationships': [], 'socialPractices': [], 'personalBehaviors': []}
 
-        response = self.client.put("/user/profile/<string:profile_id>", json=user_profile, headers={"apikey": self.AUTHORIZED_APIKEY})
-        self.assertEqual(400, response.status_code)
+        response = self.client.put("/user/profile/profile_id", json=user_profile, headers={"apikey": self.AUTHORIZED_APIKEY})
+        self.assertEqual(200, response.status_code)

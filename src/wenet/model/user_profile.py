@@ -12,8 +12,8 @@ from babel.core import Locale
 class WeNetUserProfile:
 
     def __init__(self,
-                 name: UserName,
-                 date_of_birth: Date,
+                 name: Optional[UserName],
+                 date_of_birth: Optional[Date],
                  gender: Optional[Gender],
                  email: Optional[str],
                  phone_number: Optional[str],
@@ -24,7 +24,7 @@ class WeNetUserProfile:
                  occupation: Optional[str],
                  creation_ts: Optional[Number],
                  last_update_ts: Optional[Number],
-                 profile_id: str,
+                 profile_id: Optional[str],
                  norms: Optional[List[Norm]],
                  planned_activities: Optional[list],
                  relevant_locations: Optional[list],
@@ -52,10 +52,12 @@ class WeNetUserProfile:
         self.social_practices = social_practices
         self.personal_behaviours = personal_behaviours
 
-        if not isinstance(name, UserName):
-            raise TypeError("Name should be a UserName object")
-        if not isinstance(date_of_birth, Date):
-            raise TypeError("Date of birth should be a Date")
+        if name:
+            if not isinstance(name, UserName):
+                raise TypeError("Name should be a UserName object")
+        if date_of_birth:
+            if not isinstance(date_of_birth, Date):
+                raise TypeError("Date of birth should be a Date")
         if gender:
             if not isinstance(gender, Gender):
                 raise TypeError("Gender should be a Gender object")
@@ -99,8 +101,9 @@ class WeNetUserProfile:
             if not isinstance(last_update_ts, Number):
                 raise TypeError("LastUpdateTs should be a string")
 
-        if not isinstance(profile_id, str):
-            raise TypeError("Profile id should be a string")
+        if profile_id:
+            if not isinstance(profile_id, str):
+                raise TypeError("Profile id should be a string")
 
         if norms:
             if not isinstance(norms, list):
@@ -144,8 +147,8 @@ class WeNetUserProfile:
 
     def to_repr(self) -> dict:
         return {
-            "name": self.name.to_repr(),
-            "dateOfBirth": self.date_of_birth.to_repr(),
+            "name": self.name.to_repr() if self.name is not None else None,
+            "dateOfBirth": self.date_of_birth.to_repr() if self.date_of_birth is not None else None,
             "gender": self.gender.value if self.gender else None,
             "email": self.email,
             "phoneNumber": self.phone_number,
@@ -169,11 +172,11 @@ class WeNetUserProfile:
     def from_repr(raw_data: dict, profile_id: Optional[str] = None) -> WeNetUserProfile:
 
         if profile_id is None:
-            profile_id = raw_data["id"]
+            profile_id = raw_data.get("id")
 
         return WeNetUserProfile(
-            name=UserName.from_repr(raw_data["name"]),
-            date_of_birth=Date.from_repr(raw_data["dateOfBirth"]),
+            name=UserName.from_repr(raw_data["name"]) if raw_data.get("name") is not None else None,
+            date_of_birth=Date.from_repr(raw_data["dateOfBirth"]) if raw_data.get("dateOfBirth") is not None else None,
             gender=Gender(raw_data["gender"]) if raw_data.get("gender", None) else None,
             email=raw_data.get("email", None),
             phone_number=raw_data.get("phoneNumber", None),
@@ -220,6 +223,30 @@ class WeNetUserProfile:
             and self.languages == o.languages and self.occupation == o.occupation and self.creation_ts == o.creation_ts and self.last_update_ts == o.last_update_ts \
             and self.profile_id == o.profile_id and self.norms == o.norms and self.planned_activities == o.planned_activities and self.relevant_locations == o.relationships \
             and self.relationships == o.relationships and self.social_practices == o.social_practices and self.personal_behaviours == o.personal_behaviours
+
+    @staticmethod
+    def create_empty_profile() -> WeNetUserProfile:
+        return WeNetUserProfile(
+            name=None,
+            date_of_birth=None,
+            gender=None,
+            email=None,
+            phone_number=None,
+            locale=None,
+            avatar=None,
+            nationality=None,
+            languages=None,
+            occupation=None,
+            creation_ts=None,
+            last_update_ts=None,
+            profile_id=None,
+            norms=None,
+            planned_activities=None,
+            relevant_locations=None,
+            relationships=None,
+            social_practices=None,
+            personal_behaviours=None
+        )
 
 
 class UserName:
