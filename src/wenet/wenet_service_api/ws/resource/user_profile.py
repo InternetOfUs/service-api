@@ -18,7 +18,8 @@ class WeNetUserProfileInterfaceBuilder:
     @staticmethod
     def routes(service_connector_collector: ServiceConnectorCollector, authorized_apikey: str):
         return [
-            (WeNetUserProfileInterface, "/profile/<string:profile_id>", (service_connector_collector, authorized_apikey))
+            (WeNetUserProfileInterface, "/profile/<string:profile_id>", (service_connector_collector, authorized_apikey)),
+            (WeNetUserProfilePostInterface, "/profile", (service_connector_collector, authorized_apikey))
         ]
 
 
@@ -90,6 +91,9 @@ class WeNetUserProfileInterface(AuthenticatedResource):
             return
 
         return user_profile.to_repr(), 200
+
+
+class WeNetUserProfilePostInterface(AuthenticatedResource):
 
     def post(self):
         self._check_authentication()
