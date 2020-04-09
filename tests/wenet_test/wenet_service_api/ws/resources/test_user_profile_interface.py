@@ -132,12 +132,16 @@ class TestUser(CommonTestCase):
         mock_put = Mock(return_value=None)
         self.service_collector_connector.profile_manager_collector.update_profile = mock_put
 
+        mock_get = Mock(return_value=user_profile)
+        self.service_collector_connector.profile_manager_collector.get_profile = mock_get
+
         response = self.client.put("/user/profile/%s" % profile_id, json=user_profile.to_repr(), headers={"apikey": self.AUTHORIZED_APIKEY})
         self.assertEqual(200, response.status_code)
-        json_response = json.loads(response.data)
-        user_profile = WeNetUserProfile.from_repr(json_response)
-        self.assertIsInstance(user_profile, WeNetUserProfile)
+        # json_response = json.loads(response.data)
+        # user_profile = WeNetUserProfile.from_repr(json_response)
+        # self.assertIsInstance(user_profile, WeNetUserProfile)
         mock_put.assert_called_once()
+        mock_get.assert_called_once()
 
     def test_put_not_authorized(self):
         profile_id = "profile_id"
@@ -196,5 +200,11 @@ class TestUser(CommonTestCase):
         
         user_profile = {'name': {'first': 'first', 'middle': 'middle', 'last': 'last', 'prefix': 'prefix', 'suffix': 'suffix'}, 'gender': 'M', 'email': 'email@example.com', 'phoneNumber': 'phone number', 'locale': 'it_IT', 'avatar': 'avatar', 'nationality': 'it', 'languages': [{'name': 'ita', 'level': 'C2', 'code': 'it'}], 'occupation': 'occupation', '_creationTs': 1579536160, '_lastUpdateTs': 1579536160, 'id': 'profile_id', 'norms': [{'id': 'norm-id', 'attribute': 'attribute', 'operator': 'EQUALS', 'comparison': True, 'negation': False}], 'plannedActivities': [], 'relevantLocations': [], 'relationships': [], 'socialPractices': [], 'personalBehaviors': []}
 
+        mock_get = Mock(return_value=WeNetUserProfile.from_repr(user_profile))
+        self.service_collector_connector.profile_manager_collector.get_profile = mock_get
+
         response = self.client.put("/user/profile/profile_id", json=user_profile, headers={"apikey": self.AUTHORIZED_APIKEY})
         self.assertEqual(200, response.status_code)
+
+        mock_put.assert_called_once()
+        mock_get.assert_called_once()

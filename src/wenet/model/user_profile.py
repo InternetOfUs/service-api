@@ -9,7 +9,7 @@ from wenet.model.norm import Norm
 from babel.core import Locale
 
 
-class CoreWenetUserProfile:
+class CoreWeNetUserProfile:
 
     def __init__(self,
                  name: Optional[UserName],
@@ -39,7 +39,6 @@ class CoreWenetUserProfile:
         self.creation_ts = creation_ts
         self.last_update_ts = last_update_ts
         self.profile_id = profile_id
-
 
         if name:
             if not isinstance(name, UserName):
@@ -112,11 +111,11 @@ class CoreWenetUserProfile:
         }
 
     @staticmethod
-    def from_repr(raw_data: dict, profile_id: Optional[str] = None) -> CoreWenetUserProfile:
+    def from_repr(raw_data: dict, profile_id: Optional[str] = None) -> CoreWeNetUserProfile:
         if profile_id is None:
             profile_id = raw_data.get("id")
 
-        return CoreWenetUserProfile(
+        return CoreWeNetUserProfile(
             name=UserName.from_repr(raw_data["name"]) if raw_data.get("name") is not None else None,
             date_of_birth=Date.from_repr(raw_data["dateOfBirth"]) if raw_data.get("dateOfBirth") is not None else None,
             gender=Gender(raw_data["gender"]) if raw_data.get("gender", None) else None,
@@ -131,6 +130,23 @@ class CoreWenetUserProfile:
             last_update_ts=raw_data.get("_lastUpdateTs", None),
             profile_id=profile_id
         )
+
+    def update(self, other: CoreWeNetUserProfile) -> CoreWeNetUserProfile:
+        self.profile_id = other.profile_id
+        self.name = other.name
+        self.date_of_birth = other.date_of_birth
+        self.gender = other.gender
+        self.email = other.email
+        self.phone_number = other.phone_number
+        self.locale = other.locale
+        self.avatar = other.avatar
+        self.nationality = other.nationality
+        self.languages = other.languages
+        self.occupation = other.occupation
+        self.creation_ts = other.creation_ts
+        self.last_update_ts = other.last_update_ts
+
+        return self
 
     @staticmethod
     def is_valid_mail(mail: str):
@@ -152,7 +168,7 @@ class CoreWenetUserProfile:
         return self.__repr__()
 
     def __eq__(self, o) -> bool:
-        if not isinstance(o, CoreWenetUserProfile):
+        if not isinstance(o, CoreWeNetUserProfile):
             return False
         return self.name == o.name and self.date_of_birth == o.date_of_birth and self.gender == o.gender and self.email == o.email \
             and self.phone_number == o.phone_number and self.locale == o.locale and self.avatar == o.avatar and self.nationality == o.nationality \
@@ -160,8 +176,8 @@ class CoreWenetUserProfile:
             and self.profile_id == o.profile_id
 
     @staticmethod
-    def create_empty_profile() -> CoreWenetUserProfile:
-        return CoreWenetUserProfile(
+    def empty(wenet_user_id: str) -> CoreWeNetUserProfile:
+        return CoreWeNetUserProfile(
             name=None,
             date_of_birth=None,
             gender=None,
@@ -178,7 +194,7 @@ class CoreWenetUserProfile:
         )
 
 
-class WeNetUserProfile(CoreWenetUserProfile):
+class WeNetUserProfile(CoreWeNetUserProfile):
 
     def __init__(self,
                  name: Optional[UserName],
@@ -305,6 +321,20 @@ class WeNetUserProfile(CoreWenetUserProfile):
             personal_behaviours=raw_data.get("personalBehaviors", None)
         )
 
+    def update(self, other: CoreWeNetUserProfile) -> WeNetUserProfile:
+
+        super().update(other)
+
+        if isinstance(other, WeNetUserProfile):
+            self.norms = other.norms
+            self.planned_activities = other.planned_activities
+            self.relevant_locations = other.relevant_locations
+            self.relationships = other.relationships
+            self.social_practices = other.social_practices
+            self.personal_behaviours = other.personal_behaviours
+
+        return self
+
     def __repr__(self):
         return str(self.to_repr())
 
@@ -318,7 +348,7 @@ class WeNetUserProfile(CoreWenetUserProfile):
             and self.relationships == o.relationships and self.social_practices == o.social_practices and self.personal_behaviours == o.personal_behaviours
 
     @staticmethod
-    def create_empty_profile() -> WeNetUserProfile:
+    def empty(wenet_user_id: str) -> WeNetUserProfile:
         return WeNetUserProfile(
             name=None,
             date_of_birth=None,
@@ -333,6 +363,30 @@ class WeNetUserProfile(CoreWenetUserProfile):
             creation_ts=None,
             last_update_ts=None,
             profile_id=None,
+            norms=None,
+            planned_activities=None,
+            relevant_locations=None,
+            relationships=None,
+            social_practices=None,
+            personal_behaviours=None
+        )
+
+    @staticmethod
+    def create_from_core_profile(profile: CoreWeNetUserProfile) -> WeNetUserProfile:
+        return WeNetUserProfile(
+            name=profile.name,
+            date_of_birth=profile.date_of_birth,
+            gender=profile.gender,
+            email=profile.email,
+            phone_number=profile.phone_number,
+            locale=profile.locale,
+            avatar=profile.avatar,
+            nationality=profile.nationality,
+            languages=profile.languages,
+            occupation=profile.occupation,
+            creation_ts=profile.creation_ts,
+            last_update_ts=profile.last_update_ts,
+            profile_id=profile.profile_id,
             norms=None,
             planned_activities=None,
             relevant_locations=None,

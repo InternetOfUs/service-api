@@ -7,7 +7,7 @@ from typing import Optional
 import requests
 
 from wenet.common.exception.excpetions import ResourceNotFound, NotAuthorized, BadRequestException
-from wenet.model.user_profile import WeNetUserProfile
+from wenet.model.user_profile import WeNetUserProfile, CoreWeNetUserProfile
 from wenet.service_connector.service_connector import ServiceConnector
 
 
@@ -77,7 +77,7 @@ class ProfileManagerConnector(ServiceConnector):
         else:
             raise Exception("Unable to edit the profile with id [%s], server respond [%s] [%s]" % (profile.profile_id, response.status_code, response.text))
 
-    def create_empty_profile(self, headers: Optional[dict] = None) -> WeNetUserProfile:
+    def create_empty_profile(self, wenet_user_id: str, headers: Optional[dict] = None) -> WeNetUserProfile:
         url = "%s/profiles" % self._base_url
 
         if headers is not None:
@@ -85,7 +85,7 @@ class ProfileManagerConnector(ServiceConnector):
         else:
             headers = self._base_headers
 
-        empty_profile = WeNetUserProfile.create_empty_profile()
+        empty_profile = WeNetUserProfile.empty(wenet_user_id)
         data_repr = empty_profile.to_repr()
         data = json.dumps(data_repr)
 
