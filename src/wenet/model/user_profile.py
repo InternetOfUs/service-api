@@ -9,7 +9,7 @@ from wenet.model.norm import Norm
 from babel.core import Locale
 
 
-class WeNetUserProfile:
+class CoreWenetUserProfile:
 
     def __init__(self,
                  name: Optional[UserName],
@@ -25,12 +25,6 @@ class WeNetUserProfile:
                  creation_ts: Optional[Number],
                  last_update_ts: Optional[Number],
                  profile_id: Optional[str],
-                 norms: Optional[List[Norm]],
-                 planned_activities: Optional[list],
-                 relevant_locations: Optional[list],
-                 relationships: Optional[list],
-                 social_practices: Optional[list],
-                 personal_behaviours: Optional[list]
                  ):
         self.name = name
         self.date_of_birth = date_of_birth
@@ -45,12 +39,7 @@ class WeNetUserProfile:
         self.creation_ts = creation_ts
         self.last_update_ts = last_update_ts
         self.profile_id = profile_id
-        self.norms = norms
-        self.planned_activities = planned_activities
-        self.relevant_locations = relevant_locations
-        self.relationships = relationships
-        self.social_practices = social_practices
-        self.personal_behaviours = personal_behaviours
+
 
         if name:
             if not isinstance(name, UserName):
@@ -105,6 +94,136 @@ class WeNetUserProfile:
             if not isinstance(profile_id, str):
                 raise TypeError("Profile id should be a string")
 
+    def to_repr(self) -> dict:
+        return {
+            "name": self.name.to_repr() if self.name is not None else None,
+            "dateOfBirth": self.date_of_birth.to_repr() if self.date_of_birth is not None else None,
+            "gender": self.gender.value if self.gender else None,
+            "email": self.email,
+            "phoneNumber": self.phone_number,
+            "locale": self.locale,
+            "avatar": self.avatar,
+            "nationality": self.nationality,
+            "languages": list(x.to_repr() for x in self.languages),
+            "occupation": self.occupation,
+            "_creationTs": self.creation_ts,
+            "_lastUpdateTs": self.last_update_ts,
+            "id": self.profile_id,
+        }
+
+    @staticmethod
+    def from_repr(raw_data: dict, profile_id: Optional[str] = None) -> CoreWenetUserProfile:
+        if profile_id is None:
+            profile_id = raw_data.get("id")
+
+        return CoreWenetUserProfile(
+            name=UserName.from_repr(raw_data["name"]) if raw_data.get("name") is not None else None,
+            date_of_birth=Date.from_repr(raw_data["dateOfBirth"]) if raw_data.get("dateOfBirth") is not None else None,
+            gender=Gender(raw_data["gender"]) if raw_data.get("gender", None) else None,
+            email=raw_data.get("email", None),
+            phone_number=raw_data.get("phoneNumber", None),
+            locale=raw_data.get("locale", None),
+            avatar=raw_data.get("avatar", None),
+            nationality=raw_data.get("nationality", None),
+            languages=list(UserLanguage.from_repr(x) for x in raw_data["languages"]) if raw_data.get("languages", None) else None,
+            occupation=raw_data.get("occupation", None),
+            creation_ts=raw_data.get("_creationTs", None),
+            last_update_ts=raw_data.get("_lastUpdateTs", None),
+            profile_id=profile_id
+        )
+
+    @staticmethod
+    def is_valid_mail(mail: str):
+        reg_exp = r"^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w+)+$"
+        return re.search(reg_exp, mail)
+
+    @staticmethod
+    def is_valid_locale(locale: str) -> bool:
+        try:
+            Locale.parse(locale)
+            return True
+        except ValueError:
+            return False
+
+    def __repr__(self):
+        return str(self.to_repr())
+
+    def __str__(self):
+        return self.__repr__()
+
+    def __eq__(self, o) -> bool:
+        if not isinstance(o, CoreWenetUserProfile):
+            return False
+        return self.name == o.name and self.date_of_birth == o.date_of_birth and self.gender == o.gender and self.email == o.email \
+            and self.phone_number == o.phone_number and self.locale == o.locale and self.avatar == o.avatar and self.nationality == o.nationality \
+            and self.languages == o.languages and self.occupation == o.occupation and self.creation_ts == o.creation_ts and self.last_update_ts == o.last_update_ts \
+            and self.profile_id == o.profile_id
+
+    @staticmethod
+    def create_empty_profile() -> CoreWenetUserProfile:
+        return CoreWenetUserProfile(
+            name=None,
+            date_of_birth=None,
+            gender=None,
+            email=None,
+            phone_number=None,
+            locale=None,
+            avatar=None,
+            nationality=None,
+            languages=None,
+            occupation=None,
+            creation_ts=None,
+            last_update_ts=None,
+            profile_id=None
+        )
+
+
+class WeNetUserProfile(CoreWenetUserProfile):
+
+    def __init__(self,
+                 name: Optional[UserName],
+                 date_of_birth: Optional[Date],
+                 gender: Optional[Gender],
+                 email: Optional[str],
+                 phone_number: Optional[str],
+                 locale: Optional[str],
+                 avatar: Optional[str],
+                 nationality: Optional[str],
+                 languages: Optional[List[UserLanguage]],
+                 occupation: Optional[str],
+                 creation_ts: Optional[Number],
+                 last_update_ts: Optional[Number],
+                 profile_id: Optional[str],
+                 norms: Optional[List[Norm]],
+                 planned_activities: Optional[list],
+                 relevant_locations: Optional[list],
+                 relationships: Optional[list],
+                 social_practices: Optional[list],
+                 personal_behaviours: Optional[list]
+                 ):
+
+        super().__init__(
+            name=name,
+            date_of_birth=date_of_birth,
+            gender=gender,
+            email=email,
+            phone_number=phone_number,
+            locale=locale,
+            avatar=avatar,
+            nationality=nationality,
+            languages=languages,
+            occupation=occupation,
+            creation_ts=creation_ts,
+            last_update_ts=last_update_ts,
+            profile_id=profile_id
+        )
+        self.norms = norms
+        self.planned_activities = planned_activities
+        self.relevant_locations = relevant_locations
+        self.relationships = relationships
+        self.social_practices = social_practices
+        self.personal_behaviours = personal_behaviours
+
         if norms:
             if not isinstance(norms, list):
                 raise TypeError("Norms should be a list of norms")
@@ -146,27 +265,17 @@ class WeNetUserProfile:
             self.personal_behaviours = []
 
     def to_repr(self) -> dict:
-        return {
-            "name": self.name.to_repr() if self.name is not None else None,
-            "dateOfBirth": self.date_of_birth.to_repr() if self.date_of_birth is not None else None,
-            "gender": self.gender.value if self.gender else None,
-            "email": self.email,
-            "phoneNumber": self.phone_number,
-            "locale": self.locale,
-            "avatar": self.avatar,
-            "nationality": self.nationality,
-            "languages": list(x.to_repr() for x in self.languages),
-            "occupation": self.occupation,
-            "_creationTs": self.creation_ts,
-            "_lastUpdateTs": self.last_update_ts,
-            "id": self.profile_id,
+        base_repr = super().to_repr()
+        base_repr.update({
             "norms": list(x.to_repr() for x in self.norms) if self.norms else None,
             "plannedActivities": self.planned_activities,
             "relevantLocations": self.relevant_locations,
             "relationships": self.relationships,
             "socialPractices": self.social_practices,
             "personalBehaviors": self.personal_behaviours
-        }
+        })
+
+        return base_repr
 
     @staticmethod
     def from_repr(raw_data: dict, profile_id: Optional[str] = None) -> WeNetUserProfile:
@@ -196,19 +305,6 @@ class WeNetUserProfile:
             personal_behaviours=raw_data.get("personalBehaviors", None)
         )
 
-    @staticmethod
-    def is_valid_mail(mail: str):
-        reg_exp = r"^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w+)+$"
-        return re.search(reg_exp, mail)
-
-    @staticmethod
-    def is_valid_locale(locale: str) -> bool:
-        try:
-            Locale.parse(locale)
-            return True
-        except ValueError:
-            return False
-
     def __repr__(self):
         return str(self.to_repr())
 
@@ -218,10 +314,7 @@ class WeNetUserProfile:
     def __eq__(self, o):
         if not isinstance(o, WeNetUserProfile):
             return False
-        return self.name == o.name and self.date_of_birth == o.date_of_birth and self.gender == o.gender and self.email == o.email \
-            and self.phone_number == o.phone_number and self.locale == o.locale and self.avatar == o.avatar and self.nationality == o.nationality \
-            and self.languages == o.languages and self.occupation == o.occupation and self.creation_ts == o.creation_ts and self.last_update_ts == o.last_update_ts \
-            and self.profile_id == o.profile_id and self.norms == o.norms and self.planned_activities == o.planned_activities and self.relevant_locations == o.relationships \
+        return super().__eq__(o) and self.norms == o.norms and self.planned_activities == o.planned_activities and self.relevant_locations == o.relationships \
             and self.relationships == o.relationships and self.social_practices == o.social_practices and self.personal_behaviours == o.personal_behaviours
 
     @staticmethod
