@@ -175,8 +175,7 @@ class TestTaskPostInterface(CommonTestCase):
         # self.assertNotEqual(task.task_id, created_task.task_id)
         mock_post.assert_called_once()
 
-
-    def test_post(self):
+    def test_post_2(self):
         task = Task(
             task_id="task-id",
             creation_ts=1577833200,

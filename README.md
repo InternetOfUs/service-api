@@ -56,6 +56,8 @@ A docker-compose file for deploy this service is available in the [wenet-service
 - APIKEY: apikey for used fo authenticate the requests
 - PROFILE_MANAGER_CONNECTOR_BASE_URL: base url for the profile manager connection
 - TASK_MANAGER_CONNECTOR_BASE_URL: base url for the task manager endpoints
+- DEBUG: if set put the ws in "DEBUG" mode, the debug mode consist in:
+    - use dummy endpoint for profile and task manager instead of the production one
 
 ## Versions
 

@@ -7,7 +7,8 @@ from typing import Optional
 import requests
 
 from wenet.common.exception.excpetions import ResourceNotFound, NotAuthorized, BadRequestException
-from wenet.model.task import Task
+from wenet.model.norm import Norm, NormOperator
+from wenet.model.task import Task, TaskState
 from wenet.service_connector.service_connector import ServiceConnector
 
 
@@ -100,3 +101,40 @@ class TaskManagerConnector(ServiceConnector):
             raise BadRequestException(f"Bad request {response.text}")
         else:
             raise Exception(f"Unable to edit the task [{task.task_id}], server respond with [{response.status_code}] [{response.text}]")
+
+
+class DummyTaskManagerConnector(TaskManagerConnector):
+
+    def __init__(self):
+        super().__init__("")
+
+    @staticmethod
+    def build_from_env() -> TaskManagerConnector:
+        return DummyTaskManagerConnector()
+
+    def get_task(self, task_id: str, headers: Optional[dict] = None) -> Task:
+        task = Task(
+            task_id=task_id,
+            creation_ts=1577833200,
+            state=TaskState.ASSIGNED,
+            requester_user_id="req_user_id",
+            start_ts=1577833100,
+            end_ts=1577833300,
+            deadline_ts=1577833350,
+            norms=[
+                Norm(
+                    norm_id="norm-id",
+                    attribute="attribute",
+                    operator=NormOperator.EQUALS,
+                    comparison=True,
+                    negation=False
+                )
+            ]
+        )
+        return task
+
+    def create_task(self, task: Task, headers: Optional[dict] = None) -> Task:
+        return task
+
+    def updated_task(self, task: Task, headers: Optional[dict] = None) -> Task:
+        return task
