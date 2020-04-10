@@ -178,8 +178,8 @@ class CoreWeNetUserProfile:
     @staticmethod
     def empty(wenet_user_id: str) -> CoreWeNetUserProfile:
         return CoreWeNetUserProfile(
-            name=None,
-            date_of_birth=None,
+            name=UserName.empty(),
+            date_of_birth=Date.empty(),
             gender=None,
             email=None,
             phone_number=None,
@@ -190,7 +190,7 @@ class CoreWeNetUserProfile:
             occupation=None,
             creation_ts=None,
             last_update_ts=None,
-            profile_id=None
+            profile_id=wenet_user_id
         )
 
 
@@ -283,7 +283,7 @@ class WeNetUserProfile(CoreWeNetUserProfile):
     def to_repr(self) -> dict:
         base_repr = super().to_repr()
         base_repr.update({
-            "norms": list(x.to_repr() for x in self.norms) if self.norms else None,
+            "norms": list(x.to_repr() for x in self.norms),
             "plannedActivities": self.planned_activities,
             "relevantLocations": self.relevant_locations,
             "relationships": self.relationships,
@@ -350,8 +350,8 @@ class WeNetUserProfile(CoreWeNetUserProfile):
     @staticmethod
     def empty(wenet_user_id: str) -> WeNetUserProfile:
         return WeNetUserProfile(
-            name=None,
-            date_of_birth=None,
+            name=UserName.empty(),
+            date_of_birth=Date.empty(),
             gender=None,
             email=None,
             phone_number=None,
@@ -362,7 +362,7 @@ class WeNetUserProfile(CoreWeNetUserProfile):
             occupation=None,
             creation_ts=None,
             last_update_ts=None,
-            profile_id=None,
+            profile_id=wenet_user_id,
             norms=None,
             planned_activities=None,
             relevant_locations=None,
@@ -438,6 +438,17 @@ class UserName:
             last=raw_data.get("last", None),
             prefix=raw_data.get("prefix", None),
             suffix=raw_data.get("suffix", None)
+        )
+
+
+    @staticmethod
+    def empty() -> UserName:
+        return UserName(
+            first=None,
+            middle=None,
+            last=None,
+            prefix=None,
+            suffix=None
         )
 
     def __repr__(self):
