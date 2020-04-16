@@ -6,7 +6,7 @@ from mock import Mock
 
 from tests.wenet_test.wenet_service_api.common.common_test_case import CommonTestCase
 from wenet.model.norm import Norm, NormOperator
-from wenet.model.task import Task, TaskState
+from wenet.model.task import Task, TaskState, TaskGoal, TaskAttribute
 
 
 class TestTaskInterface(CommonTestCase):
@@ -16,8 +16,14 @@ class TestTaskInterface(CommonTestCase):
         task = Task(
             task_id="task-id",
             creation_ts=1577833200,
-            state=TaskState.ASSIGNED,
-            requester_user_id="req_user_id",
+            last_update_ts=1577833200,
+            task_type_id="task_type_id",
+            requester_id="requester_id",
+            app_id="app_id",
+            goal=TaskGoal(
+                name="goal",
+                description="description"
+            ),
             start_ts=1577833100,
             end_ts=1577833300,
             deadline_ts=1577833350,
@@ -28,6 +34,12 @@ class TestTaskInterface(CommonTestCase):
                     operator=NormOperator.EQUALS,
                     comparison=True,
                     negation=False
+                )
+            ],
+            attributes=[
+                TaskAttribute(
+                    name="name",
+                    value="value"
                 )
             ]
         )
@@ -53,8 +65,14 @@ class TestTaskInterface(CommonTestCase):
         task = Task(
             task_id="task-id",
             creation_ts=1577833200,
-            state=TaskState.ASSIGNED,
-            requester_user_id="req_user_id",
+            last_update_ts=1577833200,
+            task_type_id="task_type_id",
+            requester_id="requester_id",
+            app_id="app_id",
+            goal=TaskGoal(
+                name="goal",
+                description="description"
+            ),
             start_ts=1577833100,
             end_ts=1577833300,
             deadline_ts=1577833350,
@@ -65,6 +83,12 @@ class TestTaskInterface(CommonTestCase):
                     operator=NormOperator.EQUALS,
                     comparison=True,
                     negation=False
+                )
+            ],
+            attributes=[
+                TaskAttribute(
+                    name="name",
+                    value="value"
                 )
             ]
         )
@@ -87,8 +111,14 @@ class TestTaskInterface(CommonTestCase):
         task = Task(
             task_id="task-id",
             creation_ts=1577833200,
-            state=TaskState.ASSIGNED,
-            requester_user_id="req_user_id",
+            last_update_ts=1577833200,
+            task_type_id="task_type_id",
+            requester_id="requester_id",
+            app_id="app_id",
+            goal=TaskGoal(
+                name="goal",
+                description="description"
+            ),
             start_ts=1577833100,
             end_ts=1577833300,
             deadline_ts=1577833350,
@@ -99,6 +129,12 @@ class TestTaskInterface(CommonTestCase):
                     operator=NormOperator.EQUALS,
                     comparison=True,
                     negation=False
+                )
+            ],
+            attributes=[
+                TaskAttribute(
+                    name="name",
+                    value="value"
                 )
             ]
         )
@@ -111,8 +147,14 @@ class TestTaskInterface(CommonTestCase):
         task = Task(
             task_id="task-id",
             creation_ts=1577833200,
-            state=TaskState.ASSIGNED,
-            requester_user_id="req_user_id",
+            last_update_ts=1577833200,
+            task_type_id="task_type_id",
+            requester_id="requester_id",
+            app_id="app_id",
+            goal=TaskGoal(
+                name="goal",
+                description="description"
+            ),
             start_ts=1577833100,
             end_ts=1577833300,
             deadline_ts=1577833350,
@@ -123,6 +165,12 @@ class TestTaskInterface(CommonTestCase):
                     operator=NormOperator.EQUALS,
                     comparison=True,
                     negation=False
+                )
+            ],
+            attributes=[
+                TaskAttribute(
+                    name="name",
+                    value="value"
                 )
             ]
         )
@@ -145,8 +193,14 @@ class TestTaskPostInterface(CommonTestCase):
         task = Task(
             task_id="task-id",
             creation_ts=1577833200,
-            state=TaskState.ASSIGNED,
-            requester_user_id="req_user_id",
+            last_update_ts=1577833200,
+            task_type_id="task_type_id",
+            requester_id="requester_id",
+            app_id="app_id",
+            goal=TaskGoal(
+                name="goal",
+                description="description"
+            ),
             start_ts=1577833100,
             end_ts=1577833300,
             deadline_ts=1577833350,
@@ -157,6 +211,12 @@ class TestTaskPostInterface(CommonTestCase):
                     operator=NormOperator.EQUALS,
                     comparison=True,
                     negation=False
+                )
+            ],
+            attributes=[
+                TaskAttribute(
+                    name="name",
+                    value="value"
                 )
             ]
         )
@@ -175,13 +235,18 @@ class TestTaskPostInterface(CommonTestCase):
         # self.assertNotEqual(task.task_id, created_task.task_id)
         mock_post.assert_called_once()
 
-
-    def test_post(self):
+    def test_post2(self):
         task = Task(
             task_id="task-id",
             creation_ts=1577833200,
-            state=TaskState.ASSIGNED,
-            requester_user_id="req_user_id",
+            last_update_ts=1577833200,
+            task_type_id="task_type_id",
+            requester_id="requester_id",
+            app_id="app_id",
+            goal=TaskGoal(
+                name="goal",
+                description="description"
+            ),
             start_ts=1577833100,
             end_ts=1577833300,
             deadline_ts=1577833350,
@@ -193,6 +258,12 @@ class TestTaskPostInterface(CommonTestCase):
                     comparison=True,
                     negation=False
                 )
+            ],
+            attributes=[
+                TaskAttribute(
+                    name="name",
+                    value="value"
+                )
             ]
         )
 
@@ -203,8 +274,14 @@ class TestTaskPostInterface(CommonTestCase):
         task = Task(
             task_id="task-id",
             creation_ts=1577833200,
-            state=TaskState.ASSIGNED,
-            requester_user_id="req_user_id",
+            last_update_ts=1577833200,
+            task_type_id="task_type_id",
+            requester_id="requester_id",
+            app_id="app_id",
+            goal=TaskGoal(
+                name="goal",
+                description="description"
+            ),
             start_ts=1577833100,
             end_ts=1577833300,
             deadline_ts=1577833350,
@@ -215,6 +292,12 @@ class TestTaskPostInterface(CommonTestCase):
                     operator=NormOperator.EQUALS,
                     comparison=True,
                     negation=False
+                )
+            ],
+            attributes=[
+                TaskAttribute(
+                    name="name",
+                    value="value"
                 )
             ]
         )
