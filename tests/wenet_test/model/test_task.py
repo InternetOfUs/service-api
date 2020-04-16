@@ -3,7 +3,7 @@ from __future__ import absolute_import, annotations
 from unittest import TestCase
 
 from wenet.model.norm import Norm, NormOperator
-from wenet.model.task import Task, TaskState, TaskGoal, TaskAttribute
+from wenet.model.task import Task, TaskGoal, TaskAttribute
 
 
 class TestTask(TestCase):
@@ -386,3 +386,45 @@ class TestTask(TestCase):
         self.assertNotEqual(task, task8)
         self.assertNotEqual(task, task9)
         self.assertNotEqual(task, task10)
+
+
+class TestTaskGoal(TestCase):
+
+    def test_repr(self):
+
+        task_goal = TaskGoal("name", "description")
+
+        from_repr = TaskGoal.from_repr(task_goal.to_repr())
+
+        self.assertIsInstance(from_repr, TaskGoal)
+        self.assertEqual(task_goal, from_repr)
+
+    def test_equal(self):
+        task_goal = TaskGoal("name", "description")
+        task_goal1 = TaskGoal("name", "description")
+        task_goal2 = TaskGoal("name1", "description")
+        task_goal3 = TaskGoal("name", "description1")
+
+        self.assertEqual(task_goal, task_goal1)
+        self.assertNotEqual(task_goal, task_goal2)
+        self.assertNotEqual(task_goal, task_goal3)
+
+
+class TestTaskAttribute(TestCase):
+
+    def test_repr(self):
+        task_attribute = TaskAttribute("name", "description")
+        from_repr = TaskAttribute.from_repr(task_attribute.to_repr())
+
+        self.assertIsInstance(from_repr, TaskAttribute)
+        self.assertEqual(task_attribute, from_repr)
+
+    def test_equal(self):
+        task_attribute = TaskAttribute("name", "description")
+        task_attribute1 = TaskAttribute("name", "description")
+        task_attribute2 = TaskAttribute("name1", "description")
+        task_attribute3 = TaskAttribute("name", "description1")
+
+        self.assertEqual(task_attribute, task_attribute1)
+        self.assertNotEqual(task_attribute, task_attribute2)
+        self.assertNotEqual(task_attribute, task_attribute3)
