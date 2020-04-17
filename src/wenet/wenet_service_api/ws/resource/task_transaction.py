@@ -52,4 +52,4 @@ class TaskTransactionInterface(AuthenticatedResource):
 
         logger.info(f"Received TaskTransaction {task_transaction}")
 
-        return {}, 200
+        return {}, 201

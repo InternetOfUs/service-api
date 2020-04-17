@@ -16,7 +16,7 @@ class TestTaskTransactionInterface(CommonTestCase):
         task_transaction = TaskTransaction("taskId", "typeId", [TaskAttribute("name", "value")])
 
         response = self.client.post("/task_transaction", json=task_transaction.to_repr(), headers={"apikey": self.AUTHORIZED_APIKEY})
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 201)
 
     def test_post_not_authenticated(self):
 
