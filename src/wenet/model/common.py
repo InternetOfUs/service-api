@@ -45,6 +45,8 @@ class Date:
             return 1 <= self.month <= 12
         elif self.year is not None and self.month is None and self.day is None:
             return True
+        elif self.year is None and self.month is None and self.day is None:
+            return True
         else:
             return False
 
@@ -80,6 +82,14 @@ class Date:
         if not isinstance(o, Date):
             return False
         return self.year == o.year and self.month == o.month and self.day == o.day
+
+    @staticmethod
+    def empty() -> Date:
+        return Date(
+            year=None,
+            month=None,
+            day=None
+        )
 
 
 class UserLanguage:

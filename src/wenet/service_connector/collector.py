@@ -1,7 +1,12 @@
 from __future__ import absolute_import, annotations
 
-from wenet.service_connector.profile_manager_connector import ProfileManagerConnector
-from wenet.service_connector.task_manager_connector import TaskManagerConnector
+import os
+import logging
+
+from wenet.service_connector.profile_manager_connector import ProfileManagerConnector, DummyProfileManagerConnector
+from wenet.service_connector.task_manager_connector import TaskManagerConnector, DummyTaskManagerConnector
+
+logger = logging.getLogger("wenet.wenet_service_api.service_connector")
 
 
 class ServiceConnectorCollector:
@@ -12,7 +17,15 @@ class ServiceConnectorCollector:
 
     @staticmethod
     def build() -> ServiceConnectorCollector:
-        return ServiceConnectorCollector(
-            profile_manager_collector=ProfileManagerConnector.build_from_env(),
-            task_manager_connector=TaskManagerConnector.build_from_env()
-        )
+
+        if os.getenv("DEBUG", None):
+            logger.info("Using dummy connectors")
+            return ServiceConnectorCollector(
+                profile_manager_collector=DummyProfileManagerConnector.build_from_env(),
+                task_manager_connector=DummyTaskManagerConnector.build_from_env()
+            )
+        else:
+            return ServiceConnectorCollector(
+                profile_manager_collector=ProfileManagerConnector.build_from_env(),
+                task_manager_connector=TaskManagerConnector.build_from_env()
+            )
