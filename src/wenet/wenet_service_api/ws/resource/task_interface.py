@@ -100,7 +100,6 @@ class TaskResourceInterface(AuthenticatedResource):
 
 class TaskResourcePostInterface(AuthenticatedResource):
 
-
     def __init__(self, service_connector_collector: ServiceConnectorCollector, authorized_apikey: str) -> None:
         super().__init__(authorized_apikey)
         self._service_connector_collector = service_connector_collector
