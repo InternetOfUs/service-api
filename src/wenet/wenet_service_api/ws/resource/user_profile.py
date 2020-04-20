@@ -123,4 +123,6 @@ class WeNetUserProfileInterface(AuthenticatedResource):
             abort(500)
             return
 
+        logger.info(f"Created empty profile [{user_profile}]")
+
         return {}, 200

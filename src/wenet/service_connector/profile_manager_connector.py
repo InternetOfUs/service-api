@@ -93,7 +93,7 @@ class ProfileManagerConnector(ServiceConnector):
 
         response = requests.post(url, data=data, headers=headers)
         if response.status_code == 200:
-            return empty_profile # TODO check
+            return empty_profile  # TODO check
         elif response.status_code == 401 or response.status_code == 403:
             raise NotAuthorized("Not authorized")
         elif response.status_code == 400:
