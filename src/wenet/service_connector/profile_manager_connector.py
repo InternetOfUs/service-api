@@ -7,7 +7,9 @@ from typing import Optional
 import requests
 
 from wenet.common.exception.excpetions import ResourceNotFound, NotAuthorized, BadRequestException
-from wenet.model.user_profile import WeNetUserProfile
+from wenet.model.common import Date, Gender, UserLanguage
+from wenet.model.norm import Norm, NormOperator
+from wenet.model.user_profile import WeNetUserProfile, CoreWeNetUserProfile, UserName
 from wenet.service_connector.service_connector import ServiceConnector
 
 
@@ -76,3 +78,88 @@ class ProfileManagerConnector(ServiceConnector):
             raise BadRequestException(f"Bad request: {response.text}")
         else:
             raise Exception("Unable to edit the profile with id [%s], server respond [%s] [%s]" % (profile.profile_id, response.status_code, response.text))
+
+    def create_empty_profile(self, wenet_user_id: str, headers: Optional[dict] = None) -> WeNetUserProfile:
+        url = "%s/profiles" % self._base_url
+
+        if headers is not None:
+            headers.update(self._base_headers)
+        else:
+            headers = self._base_headers
+
+        empty_profile = WeNetUserProfile.empty(wenet_user_id)
+        data_repr = empty_profile.to_repr()
+        data = json.dumps(data_repr)
+
+        response = requests.post(url, data=data, headers=headers)
+        if response.status_code == 200:
+            return empty_profile  # TODO check
+        elif response.status_code == 401 or response.status_code == 403:
+            raise NotAuthorized("Not authorized")
+        elif response.status_code == 400:
+            raise BadRequestException(f"Bad request: {response.text}")
+        else:
+            raise Exception("Unable to create an empty profile")
+
+
+class DummyProfileManagerConnector(ProfileManagerConnector):
+
+    def __init__(self):
+        super().__init__("", None)
+
+    @staticmethod
+    def build_from_env() -> ProfileManagerConnector:
+        return DummyProfileManagerConnector()
+
+    def get_profile(self, profile_id, headers: Optional[dict] = None) -> WeNetUserProfile:
+        return WeNetUserProfile(
+            name=UserName(
+                first="first",
+                middle="middle",
+                last="last",
+                prefix="prefix",
+                suffix="suffix"
+            ),
+            date_of_birth=Date(
+                year=2020,
+                month=1,
+                day=20
+            ),
+            gender=Gender.MALE,
+            email="email@example.com",
+            phone_number="phone number",
+            locale="it_IT",
+            avatar="avatar",
+            nationality="it",
+            languages=[
+                UserLanguage(
+                    name="ita",
+                    level="C2",
+                    code="it"
+                )
+            ],
+            occupation="occupation",
+            creation_ts=1579536160,
+            last_update_ts=1579536160,
+            profile_id=profile_id,
+            norms=[
+                Norm(
+                    norm_id="norm-id",
+                    attribute="attribute",
+                    operator=NormOperator.EQUALS,
+                    comparison=True,
+                    negation=False
+                )
+            ],
+            planned_activities=[],
+            relevant_locations=[],
+            relationships=[],
+            social_practices=[],
+            personal_behaviours=[]
+        )
+
+    def update_profile(self, profile: WeNetUserProfile, headers: Optional[dict] = None):
+        return profile
+
+    def create_empty_profile(self, wenet_user_id: str, headers: Optional[dict] = None) -> WeNetUserProfile:
+        return WeNetUserProfile.empty(wenet_user_id)
