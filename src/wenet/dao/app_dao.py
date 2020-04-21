@@ -22,16 +22,20 @@ class AppDao:
 
     def get(self, app_id: str) -> App:
         session = self._get_session()
-        result = session.query(App).filter_by(app_id=app_id).first()
+        result: App = session.query(App).filter_by(app_id=app_id).first()
 
         session.close()
 
         if result is None:
             raise ResourceNotFound(f"Unable to find the app with id [{app_id}]")
 
+        result.load_metadata()
+
         return result
 
     def create_or_update(self, app: App):
+        # TODO update metadata
+        # TODO update creation and update
         session = self._get_session()
         session.merge(app)
         session.commit()
