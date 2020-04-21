@@ -3,7 +3,7 @@ from __future__ import absolute_import, annotations
 import logging
 
 from sqlalchemy.engine import Engine
-from sqlalchemy.orm import sessionmaker, Session
+from sqlalchemy.orm import sessionmaker, Session, joinedload
 
 from wenet.common.exception.exceptions import ResourceNotFound
 from wenet.model.app import App
@@ -22,7 +22,7 @@ class AppDao:
 
     def get(self, app_id: str) -> App:
         session = self._get_session()
-        result: App = session.query(App).filter_by(app_id=app_id).first()
+        result: App = session.query(App).options(joinedload(App.platform_telegram)).filter_by(app_id=app_id).first()
 
         session.close()
 

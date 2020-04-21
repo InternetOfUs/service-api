@@ -4,10 +4,11 @@ import json
 from datetime import datetime
 from typing import Optional, List
 
-from sqlalchemy import Column, String, DateTime, Integer, Text
+from sqlalchemy import Column, String, DateTime, Integer, Text, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import relation
 
-from wenet.model.platform import Platform
+from wenet.model.platform_dto import PlatformDTO, TelegramPlatformDTO
 
 Base = declarative_base()
 
@@ -25,6 +26,7 @@ class App(Base):
     metadata_str = Column("metadata", Text, nullable=False)
     creation_ts = Column("created_at", Integer)
     last_update_ts = Column("updated_at", Integer)
+    platform_telegram = relation("PlatformTelegram", back_populates="app", uselist=False)
 
     def __init__(self, app_id: str, status: str, name: str, description: Optional[str], app_token: str, message_callback_url: Optional[str], metadata: Optional[dict], creation_ts: Optional[int], last_update_ts: Optional[int]):
         self.app_id = app_id
@@ -122,9 +124,20 @@ class App(Base):
             self.metadata = {}
 
 
+class PlatformTelegram(Base):
+    __tablename__ = "app_platform_telegram"
+
+    id = Column("id", Integer, primary_key=True)
+    app_id = Column("app_id", String(128), ForeignKey("app.id"))
+    bot_username = Column("bot_username", String(128))
+    last_update_ts = Column("updated_at", Integer)
+    creation_ts = Column("created_at", Integer)
+    app = relation("App", back_populates="platform_telegram", uselist=False)
+
+
 class AppDTO:
 
-    def __init__(self, creation_ts: Optional[datetime], last_update_ts: Optional[datetime], app_id: str, app_token: str, allowed_platforms: List[Platform], message_callback_url: Optional[str], metadata: Optional[dict]):
+    def __init__(self, creation_ts: Optional[datetime], last_update_ts: Optional[datetime], app_id: str, app_token: str, allowed_platforms: List[PlatformDTO], message_callback_url: Optional[str], metadata: Optional[dict]):
         self.creation_ts = creation_ts
         self.last_update_ts = last_update_ts
         self.app_id = app_id
@@ -149,7 +162,7 @@ class AppDTO:
             raise TypeError("AppToken should be a string")
         if isinstance(self.allowed_platforms, list):
             for platforms in self.allowed_platforms:
-                if not isinstance(platforms, Platform):
+                if not isinstance(platforms, PlatformDTO):
                     raise TypeError("AllowedPlatforms should be a list of Platforms")
         else:
             raise TypeError("AllowedPlatforms should be a list of Platforms")
@@ -175,7 +188,7 @@ class AppDTO:
             last_update_ts=datetime.fromtimestamp(raw_data["lastUpdateTs"]) if raw_data.get("lastUpdateTs", None) else None,
             app_id=raw_data["appId"],
             app_token=raw_data["appToken"],
-            allowed_platforms=list(Platform.from_repr(x) for x in raw_data["allowedPlatforms"]),
+            allowed_platforms=list(PlatformDTO.from_repr(x) for x in raw_data["allowedPlatforms"]),
             message_callback_url=raw_data.get("messageCallbackUrl", None),
             metadata=raw_data.get("metadata", None)
         )
@@ -195,12 +208,20 @@ class AppDTO:
 
     @staticmethod
     def from_app(app: App) -> AppDTO:
+
+        if app.platform_telegram:
+            allowed_platforms = [
+                TelegramPlatformDTO.from_platform_telegram(app.platform_telegram)
+            ]
+        else:
+            allowed_platforms = []
+
         return AppDTO(
             creation_ts=app.creation_ts,
             last_update_ts=app.last_update_ts,
             app_id=app.app_id,
             app_token=app.app_token,
-            allowed_platforms=[],
+            allowed_platforms=allowed_platforms,
             message_callback_url=app.message_call_back_url,
             metadata=app.metadata
         )

@@ -8,7 +8,7 @@ class PlatformType(Enum):
     TELEGRAM = "telegram"
 
 
-class Platform:
+class PlatformDTO:
 
     def __init__(self, platform_type: PlatformType):
         self.platform_type = platform_type
@@ -19,16 +19,16 @@ class Platform:
         }
 
     @staticmethod
-    def from_repr(raw_data: dict) -> Platform:
+    def from_repr(raw_data: dict) -> PlatformDTO:
         platform_type = PlatformType(raw_data["type"])
 
         if platform_type == PlatformType.TELEGRAM:
-            return TelegramPlatform.from_repr(raw_data)
+            return TelegramPlatformDTO.from_repr(raw_data)
         else:
             raise ValueError(f"Unable to build a Platform from type {platform_type.value}")
 
     def __eq__(self, o):
-        if not isinstance(o, Platform):
+        if not isinstance(o, PlatformDTO):
             return False
         return self.platform_type == o.platform_type
 
@@ -39,7 +39,7 @@ class Platform:
         return self.__repr__()
 
 
-class TelegramPlatform(Platform):
+class TelegramPlatformDTO(PlatformDTO):
 
     def __init__(self, bot_id: str):
         super().__init__(PlatformType.TELEGRAM)
@@ -53,7 +53,18 @@ class TelegramPlatform(Platform):
         return base_repr
 
     @staticmethod
-    def from_repr(raw_data: dict) -> Platform:
-        return TelegramPlatform(
+    def from_repr(raw_data: dict) -> PlatformDTO:
+        return TelegramPlatformDTO(
             bot_id=raw_data["botId"]
+        )
+
+    @staticmethod
+    def from_platform_telegram(platform_telegram):
+        from wenet.model.app import PlatformTelegram
+
+        if not isinstance(platform_telegram, PlatformTelegram):
+            raise TypeError("platform_telegram should be an instance of PlatformTelegram")
+
+        return TelegramPlatformDTO(
+            bot_id=platform_telegram.app_id
         )

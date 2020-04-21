@@ -4,7 +4,7 @@ from datetime import datetime
 from unittest import TestCase
 
 from wenet.model.app import App, AppDTO
-from wenet.model.platform import TelegramPlatform
+from wenet.model.platform_dto import TelegramPlatformDTO
 
 
 class TestAppDTO(TestCase):
@@ -16,7 +16,7 @@ class TestAppDTO(TestCase):
             creation_ts=datetime.utcfromtimestamp(1231231.0),
             last_update_ts=datetime.utcfromtimestamp(1231231.0),
             allowed_platforms=[
-                TelegramPlatform(
+                TelegramPlatformDTO(
                     bot_id="bot_id"
                 )
             ],
