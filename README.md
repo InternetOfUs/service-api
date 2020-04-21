@@ -31,6 +31,10 @@ A build script is available in the `docker-support` folder, simply type:
     ```bash
     migrate manage manage.py --repository=migrations --url=sqlite:///db/_service_api.db
     ```
+   - if you want to use a mysql db:
+    ```bash
+    migrate manage manage.py --repository=migrations --url=mysql+pymysql://user:pwd@host:port/db
+    ```
    
 2. Initialize the database with the version control system
 

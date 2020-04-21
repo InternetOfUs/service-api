@@ -5,7 +5,7 @@ meta = MetaData()
 
 application = Table(
     "app", meta,
-    Column("app_id", String, primary_key=True),
+    Column("app_id", String(256), primary_key=True),
     Column("app_token", String(256)),
     Column("name", String(256)),
     Column("creation_ts", DateTime),
