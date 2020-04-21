@@ -106,8 +106,8 @@ class CoreWeNetUserProfile:
             "nationality": self.nationality,
             "languages": list(x.to_repr() for x in self.languages),
             "occupation": self.occupation,
-            "_creationTs": int(self.creation_ts) if self.creation_ts is not None else None,
-            "_lastUpdateTs": int(self.last_update_ts) if self.last_update_ts is not None else None,
+            "_creationTs": self.creation_ts,
+            "_lastUpdateTs": self.last_update_ts,
             "id": self.profile_id,
         }
 
@@ -361,8 +361,8 @@ class WeNetUserProfile(CoreWeNetUserProfile):
             nationality=None,
             languages=None,
             occupation=None,
-            creation_ts=datetime.now().timestamp(),
-            last_update_ts=datetime.now().timestamp(),
+            creation_ts=None,
+            last_update_ts=None,
             profile_id=wenet_user_id,
             norms=None,
             planned_activities=None,
