@@ -63,7 +63,7 @@ class ProfileManagerConnector(ServiceConnector):
         else:
             headers = self._base_headers
 
-        data_repr = profile.to_repr()
+        data_repr = self.prepare_profile(profile)
         data = json.dumps(data_repr)
 
         response = requests.put(url, data=data, headers=headers)
@@ -88,7 +88,7 @@ class ProfileManagerConnector(ServiceConnector):
             headers = self._base_headers
 
         empty_profile = WeNetUserProfile.empty(wenet_user_id)
-        data_repr = empty_profile.to_repr()
+        data_repr = self.prepare_profile(empty_profile)
         data = json.dumps(data_repr)
 
         response = requests.post(url, data=data, headers=headers)
@@ -100,6 +100,14 @@ class ProfileManagerConnector(ServiceConnector):
             raise BadRequestException(f"Bad request: {response.text}")
         else:
             raise Exception("Unable to create an empty profile")
+
+    @staticmethod
+    def prepare_profile(profile: WeNetUserProfile) -> dict:
+        profile_repr = profile.to_repr()
+        profile_repr.pop("_creationTs", None)
+        profile_repr.pop("_lastUpdateTs", None)
+
+        return profile_repr
 
 
 class DummyProfileManagerConnector(ProfileManagerConnector):

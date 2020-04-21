@@ -1,6 +1,7 @@
 from __future__ import absolute_import, annotations
 
 import re
+from datetime import datetime
 from numbers import Number
 from typing import List, Optional
 
@@ -84,10 +85,10 @@ class CoreWeNetUserProfile:
 
         if creation_ts:
             if not isinstance(creation_ts, Number):
-                raise TypeError("CreationTs should be a string")
+                raise TypeError("CreationTs should be a Number")
         if last_update_ts:
             if not isinstance(last_update_ts, Number):
-                raise TypeError("LastUpdateTs should be a string")
+                raise TypeError("LastUpdateTs should be a Number")
 
         if profile_id:
             if not isinstance(profile_id, str):
