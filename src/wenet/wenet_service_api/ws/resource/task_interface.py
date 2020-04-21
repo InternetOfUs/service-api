@@ -6,7 +6,7 @@ import uuid
 from flask import request
 from flask_restful import abort
 
-from wenet.common.exception.excpetions import ResourceNotFound, NotAuthorized, BadRequestException
+from wenet.service_common.exception.excpetions import ResourceNotFound, NotAuthorized, BadRequestException
 from wenet.service_connector.collector import ServiceConnectorCollector
 from wenet.model.task import Task
 from wenet.wenet_service_api.ws.resource.common import AuthenticatedResource

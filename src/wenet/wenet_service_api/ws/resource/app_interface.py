@@ -10,7 +10,7 @@ from flask_restful import abort
 
 import logging
 
-from wenet.common.exception.exceptions import ResourceNotFound
+from wenet.service_common.exception.exceptions import ResourceNotFound
 from wenet.dao.dao_collector import DaoCollector
 from wenet.model.app import App
 from wenet.wenet_service_api.ws.resource.common import AuthenticatedResource

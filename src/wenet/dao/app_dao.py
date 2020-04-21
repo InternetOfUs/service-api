@@ -5,7 +5,7 @@ import logging
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import sessionmaker, Session
 
-from wenet.common.exception.exceptions import ResourceNotFound
+from wenet.service_common.exception.exceptions import ResourceNotFound
 from wenet.model.app import App
 
 logger = logging.getLogger("wenet.wenet_service_api.app_dao")

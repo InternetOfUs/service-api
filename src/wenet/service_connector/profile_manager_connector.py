@@ -6,7 +6,7 @@ from typing import Optional
 
 import requests
 
-from wenet.common.exception.excpetions import ResourceNotFound, NotAuthorized, BadRequestException
+from wenet.service_common.exception.excpetions import ResourceNotFound, NotAuthorized, BadRequestException
 from wenet.model.common import Date, Gender, UserLanguage
 from wenet.model.norm import Norm, NormOperator
 from wenet.model.user_profile import WeNetUserProfile, CoreWeNetUserProfile, UserName
