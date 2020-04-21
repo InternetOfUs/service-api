@@ -1,6 +1,7 @@
 from __future__ import absolute_import, annotations
 
 import re
+from datetime import datetime
 from numbers import Number
 from typing import List, Optional
 
@@ -84,10 +85,10 @@ class CoreWeNetUserProfile:
 
         if creation_ts:
             if not isinstance(creation_ts, Number):
-                raise TypeError("CreationTs should be a string")
+                raise TypeError("CreationTs should be a Number")
         if last_update_ts:
             if not isinstance(last_update_ts, Number):
-                raise TypeError("LastUpdateTs should be a string")
+                raise TypeError("LastUpdateTs should be a Number")
 
         if profile_id:
             if not isinstance(profile_id, str):
@@ -105,8 +106,8 @@ class CoreWeNetUserProfile:
             "nationality": self.nationality,
             "languages": list(x.to_repr() for x in self.languages),
             "occupation": self.occupation,
-            "_creationTs": self.creation_ts,
-            "_lastUpdateTs": self.last_update_ts,
+            "_creationTs": int(self.creation_ts) if self.creation_ts is not None else None,
+            "_lastUpdateTs": int(self.last_update_ts) if self.last_update_ts is not None else None,
             "id": self.profile_id,
         }
 
@@ -360,8 +361,8 @@ class WeNetUserProfile(CoreWeNetUserProfile):
             nationality=None,
             languages=None,
             occupation=None,
-            creation_ts=None,
-            last_update_ts=None,
+            creation_ts=datetime.now().timestamp(),
+            last_update_ts=datetime.now().timestamp(),
             profile_id=wenet_user_id,
             norms=None,
             planned_activities=None,
