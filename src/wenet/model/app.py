@@ -135,6 +135,22 @@ class PlatformTelegram(Base):
     app = relation("App", back_populates="platform_telegram", uselist=False)
 
 
+class UserAccountTelegram(Base):
+
+    __tablename__ = "user_account_telegram"
+
+    id = Column("id", Integer, primary_key=True)
+    app_id = Column("app_id", ForeignKey("app.id"))
+    user_id = Column("user_id", Integer)
+    telegram_id = Column("telegram_id", Integer)
+    creation_ts = Column("Created_at", Integer)
+    last_update_ts = Column("updated_at", Integer)
+    metadata_str = Column("metadata", Text)
+    active = Column("active", Integer)
+
+    app = relation("App")
+
+
 class AppDTO:
 
     def __init__(self, creation_ts: Optional[datetime], last_update_ts: Optional[datetime], app_id: str, app_token: str, allowed_platforms: List[PlatformDTO], message_callback_url: Optional[str], metadata: Optional[dict]):
