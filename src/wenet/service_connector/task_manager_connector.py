@@ -8,7 +8,7 @@ import requests
 
 from wenet.common.exception.excpetions import ResourceNotFound, NotAuthorized, BadRequestException
 from wenet.model.norm import Norm, NormOperator
-from wenet.model.task import Task, TaskState
+from wenet.model.task import Task, TaskState, TaskAttribute, TaskGoal
 from wenet.service_connector.service_connector import ServiceConnector
 
 
@@ -114,10 +114,16 @@ class DummyTaskManagerConnector(TaskManagerConnector):
 
     def get_task(self, task_id: str, headers: Optional[dict] = None) -> Task:
         task = Task(
-            task_id=task_id,
+            task_id="task-id",
             creation_ts=1577833200,
-            state=TaskState.ASSIGNED,
-            requester_user_id="req_user_id",
+            last_update_ts=1577833200,
+            task_type_id="task_type_id",
+            requester_id="requester_id",
+            app_id="app_id",
+            goal=TaskGoal(
+                name="goal",
+                description="description"
+            ),
             start_ts=1577833100,
             end_ts=1577833300,
             deadline_ts=1577833350,
@@ -128,6 +134,12 @@ class DummyTaskManagerConnector(TaskManagerConnector):
                     operator=NormOperator.EQUALS,
                     comparison=True,
                     negation=False
+                )
+            ],
+            attributes=[
+                TaskAttribute(
+                    name="name",
+                    value="value"
                 )
             ]
         )
