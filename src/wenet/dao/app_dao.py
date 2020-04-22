@@ -29,12 +29,11 @@ class AppDao:
         if result is None:
             raise ResourceNotFound(f"Unable to find the app with id [{app_id}]")
 
-        result.load_metadata()
+        result.load_metadata_from_metadata_str()
 
         return result
 
     def create_or_update(self, app: App):
-        # TODO update metadata
         # TODO update creation and update
         session = self._get_session()
         session.merge(app)

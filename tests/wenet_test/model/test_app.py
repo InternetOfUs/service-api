@@ -13,8 +13,8 @@ class TestAppDTO(TestCase):
         app = AppDTO(
             app_id="app id",
             app_token="token",
-            creation_ts=datetime.utcfromtimestamp(1231231.0),
-            last_update_ts=datetime.utcfromtimestamp(1231231.0),
+            creation_ts=1231230,
+            last_update_ts=1231230,
             allowed_platforms=[
                 TelegramPlatformDTO(
                     bot_id="bot_id"
