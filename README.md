@@ -18,6 +18,14 @@ A build script is available in the `docker-support` folder, simply type:
 ./docker-support/build.sh
 ```
 
+## Completed endpoints
+
+- /user/profile/<profile_id> (GET, PUT, POST)
+- /task/<task_id> (GET, PUT)
+- /task (POST)
+- /task_transaction (POST)
+- /app/<app-id> (GET)
+
 ## Deploy
 
 A docker-compose file for deploy this service is available in the [wenet-service-api-deployment](https://bitbucket.org/wenet/wenet-service-api-deployment/src/master/) repository.
