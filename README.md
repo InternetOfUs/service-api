@@ -18,32 +18,6 @@ A build script is available in the `docker-support` folder, simply type:
 ./docker-support/build.sh
 ```
 
-## Migration
-
-### Execute the existing migrations
-
-1. Create migration script for your db
-
-    ```bash
-    migrate manage manage.py --repository=migrations --url=<db_connection_url>
-    ```
-    - if you want to use a local sqlite3 db:
-    ```bash
-    migrate manage manage.py --repository=migrations --url=sqlite:///db/_service_api.db
-    ```
-   
-2. Initialize the database with the version control system
-
-    ```bash
-    python manage.py version_control
-    ```
-   
-3. execute all the migration
-
-    ```bash
-    python manage.py upgrade
-    ```
-
 ## Deploy
 
 A docker-compose file for deploy this service is available in the [wenet-service-api-deployment](https://bitbucket.org/wenet/wenet-service-api-deployment/src/master/) repository.
@@ -52,7 +26,7 @@ A docker-compose file for deploy this service is available in the [wenet-service
 
 ### Environmental variables:
 
-- DB_CONNECTION_STRING: connection string for database, for example `sqlite:///db/service_api.db`
+- DB_CONNECTION_STRING: connection string for database, for example `mysql+pymysql://user:pwd@host:port/db`
 - APIKEY: apikey for used fo authenticate the requests
 - PROFILE_MANAGER_CONNECTOR_BASE_URL: base url for the profile manager connection
 - TASK_MANAGER_CONNECTOR_BASE_URL: base url for the task manager endpoints
