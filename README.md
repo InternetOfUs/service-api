@@ -23,7 +23,7 @@ A build script is available in the `docker-support` folder, simply type:
 - /user/profile/<profile_id> (GET, PUT, POST)
 - /task/<task_id> (GET, PUT)
 - /task (POST)
-- /task_transaction (POST)
+- /task/transaction (POST)
 - /app/<app-id> (GET)
 
 ## Deploy
