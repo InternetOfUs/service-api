@@ -84,7 +84,7 @@ class UserAccountTelegram(Base):
 
     app = relation("App")
 
-    def __init__(self, user_account_id: int, app_id: str, user_id: str, telegram_id: str, creation_ts: int, last_update_ts: int, metadata: Optional[Union[str, int]], active: int):
+    def __init__(self, user_account_id: int, app_id: str, user_id: str, telegram_id: int, creation_ts: int, last_update_ts: int, metadata: Optional[Union[str, dict]], active: int):
         self.id = user_account_id
         self.app_id = app_id
         self.user_id = user_id
