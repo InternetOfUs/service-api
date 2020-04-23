@@ -57,13 +57,15 @@ push_dev:
 #   only:
 #      - develop
 
-# deploy_test:
-#   stage: deploy
-#   script:
-#     - ansible-playbook --user gitlab --inventory /secret/inventory ansible/deploy-test.yml
-#   dependencies:
-#     - push_test
-#   environment:
-#     name: testing
+deploy_dev:
+   stage: deploy
+   script:
+     - ansible-playbook --user gitlab --inventory /secret/inventory ansible/deploy-test.yml
+   dependencies:
+     - push_dev
+     - build_dev
+     - test_dev
+   environment:
+     name: testing
 #   only:
 #      - develop
