@@ -1,7 +1,9 @@
 from __future__ import absolute_import, annotations
 
 import logging
+from datetime import datetime
 
+import pytz
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import sessionmaker, Session, joinedload
 
@@ -35,6 +37,8 @@ class AppDao:
 
     def create_or_update(self, app: App):
         # TODO update creation and update
+        app.load_metadata_from_metadata_str()
+        app.last_update_ts = int(datetime.now(pytz.utc).timestamp())
         session = self._get_session()
         session.merge(app)
         session.commit()

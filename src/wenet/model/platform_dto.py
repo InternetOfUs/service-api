@@ -1,11 +1,6 @@
 from __future__ import absolute_import, annotations
 
-from enum import Enum
-
-
-class PlatformType(Enum):
-
-    TELEGRAM = "telegram"
+from wenet.model.common import PlatformType
 
 
 class PlatformDTO:

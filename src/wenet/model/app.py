@@ -57,6 +57,10 @@ class App(Base):
         else:
             self.metadata = {}
 
+    def load_metadata_str_from_metadata(self) -> None:
+        if self.metadata is not None:
+            self.metadata_str = json.dumps(self.metadata)
+
 
 class PlatformTelegram(Base):
     __tablename__ = "app_platform_telegram"
@@ -74,7 +78,7 @@ class UserAccountTelegram(Base):
     __tablename__ = "user_account_telegram"
 
     id = Column("id", Integer, primary_key=True)
-    app_id = Column("app_id", ForeignKey("app.id"))
+    app_id = Column("app_id", String(128), ForeignKey("app.id"))
     user_id = Column("user_id", Integer)
     telegram_id = Column("telegram_id", Integer)
     creation_ts = Column("created_at", Integer)
@@ -83,6 +87,39 @@ class UserAccountTelegram(Base):
     active = Column("active", Integer)
 
     app = relation("App")
+
+    def __init__(self, user_account_id: int, app_id: str, user_id: int, telegram_id: int, creation_ts: int, last_update_ts: int, metadata: Optional[Union[str, dict]], active: int):
+        self.id = user_account_id
+        self.app_id = app_id
+        self.user_id = user_id
+        self.telegram_id = telegram_id
+        self.creation_ts = creation_ts
+        self.last_update_ts = last_update_ts
+        self.active = active
+
+        if metadata:
+            if isinstance(metadata, str):
+                self.metadata = json.loads(metadata)
+                self.metadata_str = metadata
+            elif isinstance(metadata, dict):
+                self.metadata = metadata
+                self.metadata_str = json.dumps(metadata)
+            else:
+                raise TypeError(f"Unable to build metadata from type [{type(metadata)}]")
+        else:
+            self.metadata = {}
+            self.metadata_str = json.dumps(self.metadata)
+
+    def load_metadata_from_metadata_str(self) -> None:
+        if self.metadata_str:
+            self.metadata = json.loads(self.metadata_str)
+        else:
+            self.metadata = {}
+            self.metadata_str = json.dumps(self.metadata)
+
+    def load_metadata_str_from_metadata(self) -> None:
+        if self.metadata is not None:
+            self.metadata_str = json.dumps(self.metadata)
 
 
 class AppDTO:
@@ -146,9 +183,8 @@ class AppDTO:
     def __eq__(self, o):
         if not isinstance(o, AppDTO):
             return False
-        return self.creation_ts == o.creation_ts and self.last_update_ts == o.last_update_ts and self.app_id == o.app_id \
-            and self.app_token == o.app_token and self.allowed_platforms == o.allowed_platforms and self.message_callback_url == o.message_callback_url \
-            and self.metadata == o.metadata
+        return self.app_id == o.app_id and self.app_token == o.app_token and self.allowed_platforms == o.allowed_platforms \
+            and self.message_callback_url == o.message_callback_url and self.metadata == o.metadata
 
     def __repr__(self):
         return str(self.to_repr())

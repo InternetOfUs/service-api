@@ -5,6 +5,7 @@ from sqlalchemy.orm import relation
 
 from wenet.dao.app_dao import AppDao
 from wenet.dao.dao_collector import DaoCollector
+from wenet.dao.user_account_telegram_dao import UserAccountTelegramDao
 
 
 class DataAccessLayer:
@@ -58,5 +59,6 @@ class MockDaoCollector(DaoCollector):
         dal = DataAccessLayer()
         dal.db_init("sqlite:///:memory:")
         return DaoCollector(
-            app_dao=AppDao(dal.engine)
+            app_dao=AppDao(dal.engine),
+            user_account_telegram_dao=UserAccountTelegramDao(dal.engine)
         )

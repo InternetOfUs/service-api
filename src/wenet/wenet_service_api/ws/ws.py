@@ -11,6 +11,7 @@ from wenet.wenet_service_api.ws.resource.app_interface import AppResourceInterfa
 from wenet.wenet_service_api.ws.resource.message_interface import MessageInterfaceBuilder
 from wenet.wenet_service_api.ws.resource.task_interface import TaskResourceInterfaceBuilder
 from wenet.wenet_service_api.ws.resource.task_transaction import TaskTransactionInterfaceBuilder
+from wenet.wenet_service_api.ws.resource.user_interface import UserInterfaceBuilder
 from wenet.wenet_service_api.ws.resource.user_profile import WeNetUserProfileInterfaceBuilder
 
 
@@ -31,7 +32,8 @@ class WsInterface:
             (TaskResourceInterfaceBuilder.routes(service_connector_collector, self._authorized_api_key), "/task"),
             (TaskTransactionInterfaceBuilder.routes(service_connector_collector, self._authorized_api_key), "/task/transaction"),
             (MessageInterfaceBuilder.routes(self._authorized_api_key), "/messages"),
-            (AppResourceInterfaceBuilder.routes(self._dao_collector, self._authorized_api_key), "/app")
+            (AppResourceInterfaceBuilder.routes(self._dao_collector, self._authorized_api_key), "/app"),
+            (UserInterfaceBuilder.routes(self._dao_collector, self._authorized_api_key), "/user")
         ]
 
         for module_routes, prefix in active_routes:
