@@ -9,7 +9,7 @@ BUILD=0
 TEST=0
 DELETE_IF_FAILED=0
 SAVE_IMAGE_TO_TARGZ=0
-PUSH=0
+PUSH_IMAGE=0
 
 args=`getopt btdsp $*`
 # you should not use `getopt abo: "$@"` since that would parse
@@ -85,13 +85,13 @@ if [ $TEST == 1 ]; then
 
 fi
 
-if [ $PUSH == 1]; then
+if [ $PUSH_IMAGE == 1 ]; then
   echo "Pushing image to registry"
   docker push ${IMAGE_NAME}
 fi
 
-if [ $BUILD == 0 ] && [ $TEST == 0 ]; then
-  echo "Need to specify at least one parameter (-b or -t)"
+if [ $BUILD == 0 ] && [ $TEST == 0 ] && [ $PUSH_IMAGE == 0 ]; then
+  echo "Need to specify at least one parameter (-b, -t, -p)"
   exit 1
 fi
 
