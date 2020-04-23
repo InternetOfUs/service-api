@@ -30,7 +30,7 @@ stages:
 build_dev:
   stage: build
   script:
-    - ./docker-support/runner.sh -bs
+    - ./docker-support/runner.sh -bs latest
   artifacts:
     paths:
       - service_api_image.tar.gz
@@ -42,7 +42,7 @@ test_dev:
     stage: test
     script:
         - docker load -i service_api_image.tar.gz
-        - ./docker-support/runner.sh -t
+        - ./docker-support/runner.sh -t latest
     dependencies:
         - build_dev
 
@@ -50,7 +50,7 @@ push_dev:
   stage: push
   script:
     - docker load -i service_api_image.tar.gz
-    - ./docker-support/runner.sh -p
+    - ./docker-support/runner.sh -p latest
   dependencies:
     - build_dev
     - test_dev
