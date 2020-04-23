@@ -2,6 +2,7 @@ from __future__ import absolute_import, annotations
 
 import logging
 from datetime import datetime
+from typing import List
 
 import pytz
 from sqlalchemy.engine import Engine
@@ -38,6 +39,22 @@ class UserAccountTelegramDao:
         result.load_metadata_from_metadata_str()
 
         return result
+
+    def list(self, app_id: str, user_id: str):
+        session = self._get_session()
+
+        results: List[UserAccountTelegram] = session\
+            .query(UserAccountTelegram)\
+            .options(joinedload(UserAccountTelegram.app))\
+            .filter_by(app_id=app_id, user_id=user_id, active=1)\
+            .all()
+
+        session.close()
+
+        for result in results:
+            result.load_metadata_from_metadata_str()
+
+        return results
 
     def create_or_update(self, user_account_telegram: UserAccountTelegram):
         user_account_telegram.load_metadata_str_from_metadata()

@@ -7,7 +7,8 @@ from flask_restful import abort
 
 from wenet.common.exception.exceptions import ResourceNotFound
 from wenet.dao.dao_collector import DaoCollector
-from wenet.model.authentication_account import TelegramAuthenticationAccount, AuthenticationAccount
+from wenet.model.authentication_account import TelegramAuthenticationAccount, AuthenticationAccount, \
+    WeNetUserWithAccounts
 from wenet.wenet_service_api.ws.resource.common import AuthenticatedResource
 
 logger = logging.getLogger("wenet.wenet_service_api.ws.resource.wenet_user")
@@ -18,8 +19,9 @@ class UserInterfaceBuilder:
     @staticmethod
     def routes(dao_collector: DaoCollector, authorized_apikey: str):
         return [
-            (UserAuthenticateInterface, "/authenticate", (dao_collector, authorized_apikey)), #TODO check flag actrive
-            (UserMetadataInterface, "/account/metadata", (dao_collector, authorized_apikey))
+            (UserAuthenticateInterface, "/authenticate", (dao_collector, authorized_apikey)),
+            (UserMetadataInterface, "/account/metadata", (dao_collector, authorized_apikey)),
+            (UserAccountsInterface, "/accounts", (dao_collector, authorized_apikey))
         ]
 
 
@@ -77,12 +79,9 @@ class UserMetadataInterface(AuthenticatedResource):
         super().__init__(authorized_apikey)
         self._dao_collector = dao_collector
 
-    def post(self):
+    def get(self):
 
         self._check_authentication()
-        #
-        # app_id = request.args.get("appId")
-        # user_id = request.args.get("userId")
 
         try:
             posted_data: dict = request.get_json()
@@ -123,3 +122,46 @@ class UserMetadataInterface(AuthenticatedResource):
             return
 
         return {}, 200
+
+
+class UserAccountsInterface(AuthenticatedResource):
+
+    def __init__(self, dao_collector: DaoCollector, authorized_apikey: str) -> None:
+        super().__init__(authorized_apikey)
+        self._dao_collector = dao_collector
+
+    def get(self):
+
+        self._check_authentication()
+
+        app_id = request.args.get("appId")
+        user_id_str = request.args.get("userId")
+
+        if app_id is None:
+            abort(400, message="missing appId parameter")
+            return
+
+        if user_id_str is None:
+            abort(400, message="missing userId parameter")
+            return
+
+        try:
+            user_id = int(user_id_str)
+        except ValueError:
+            abort(400, message="user_id_should be an integer")
+            return
+
+        try:
+            user_accounts = self._dao_collector.user_account_telegram_dao.list(app_id, user_id)
+
+            wenet_user_with_accounts = WeNetUserWithAccounts(user_id)
+
+            for user_account in user_accounts:
+                wenet_user_with_accounts.with_account(TelegramAuthenticationAccount.from_user_account_telegram(user_account))
+
+        except Exception as e:
+            logger.exception("Unable to retrieve the user telegram account", exc_info=e)
+            abort(500, message="unable to retrieve the user telegram account, something went wrong")
+            return
+
+        return wenet_user_with_accounts.to_repr(), 200

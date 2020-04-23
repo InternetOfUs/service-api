@@ -1,8 +1,9 @@
 from __future__ import absolute_import, annotations
 
 import abc
-from typing import Optional
+from typing import Optional, List
 
+from wenet.model.app import UserAccountTelegram
 from wenet.model.common import PlatformType
 
 
@@ -81,3 +82,54 @@ class TelegramAuthenticationAccount(AuthenticationAccount):
         if not isinstance(o, TelegramAuthenticationAccount):
             return False
         return self.app_id == o.app_id and self.metadata == o.metadata and self.telegram_id == o.telegram_id
+
+    @staticmethod
+    def from_user_account_telegram(account: UserAccountTelegram):
+        return TelegramAuthenticationAccount(
+            app_id=account.app_id,
+            metadata=account.metadata,
+            telegram_id=account.telegram_id,
+            user_id=account.user_id
+        )
+
+
+class WeNetUserWithAccounts:
+
+    def __init__(self, user_id: str):
+        self.user_id = user_id
+        self.accounts: List[AuthenticationAccount] = []
+
+    def with_account(self, account: AuthenticationAccount) -> WeNetUserWithAccounts:
+        if account.user_id is not None and account.user_id != self.user_id:
+            raise ValueError(f"Invalid user_id [{account.user_id}] for WeNetUserWithAccounts with id [{self.user_id}]")
+        self.accounts.append(account)
+        return self
+
+    def to_repr(self) -> dict:
+        return {
+            "userId": self.user_id,
+            "accounts": list(x.to_repr() for x in self.accounts)
+        }
+
+    @staticmethod
+    def from_repr(raw_data: dict) -> WeNetUserWithAccounts:
+        user = WeNetUserWithAccounts(
+            user_id=raw_data["userId"],
+        )
+
+        for raw_account in raw_data["accounts"]:
+            account = AuthenticationAccount.from_repr(raw_account)
+            user.with_account(account)
+
+        return user
+
+    def __eq__(self, o) -> bool:
+        if not isinstance(o, WeNetUserWithAccounts):
+            return False
+        return self.user_id == o.user_id and self.accounts == o.accounts
+
+    def __repr__(self) -> str:
+        return str(self.to_repr())
+
+    def __str__(self) -> str:
+        return self.__repr__()
