@@ -36,7 +36,7 @@ cp -R ${PROJECT_DIR}/migrations/* ${SCRIPT_DIR}/migrations
 
 # Building image
 
-IMAGE_NAME=wenet/wenet_service_api:${VERSION}
+IMAGE_NAME=wenet/service-api:${VERSION}
 docker build -t ${IMAGE_NAME} ${SCRIPT_DIR}
 if [ $? == 0 ]; then
 
@@ -57,10 +57,10 @@ if [ $? == 0 ]; then
 
     # Tagging images for registry
 
-    echo "Tagging image for push to registry.u-hopper.com:5000"
-    docker tag ${IMAGE_NAME} registry.u-hopper.com:5000/${IMAGE_NAME}
+    echo "Tagging image for push to registry.u-hopper.com"
+    docker tag ${IMAGE_NAME} registry.u-hopper.com/${IMAGE_NAME}
     echo "Image can be pushed with:"
-    echo "- docker push registry.u-hopper.com:5000/${IMAGE_NAME}"
+    echo "- docker push registry.u-hopper.com/${IMAGE_NAME}"
     # Cleaning
     clean
 
