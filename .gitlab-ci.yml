@@ -25,7 +25,7 @@ stages:
   - build
   - test
   - push
-  - deploy
+#   - deploy
 
 build_dev:
   stage: build
@@ -39,7 +39,7 @@ build_dev:
 #      - develop
 
 test_dev:
-    stage: push
+    stage: test
     script:
         - docker load -i service_api_image.tar.gz
         - ./docker-support/runner.sh -t
