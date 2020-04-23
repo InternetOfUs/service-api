@@ -57,7 +57,7 @@ export IMAGE_NAME=wenet/service-api:${VERSION}
 
 
 if [ $BUILD == 1 ]; then
-  echo "Building chatbot-core image"
+  echo "Building image"
   ${SCRIPT_DIR}/build_image.sh
 
   if [ $? != 0 ]; then
@@ -67,7 +67,7 @@ if [ $BUILD == 1 ]; then
 
   if [ $SAVE_IMAGE_TO_TARGZ == 1 ]; then
     echo "Saving image to service_api_image.tar.gz"
-    docker save ${IMAGE_NAME} | gzip > service_api_image.tar.gz
+    docker save registry.u-hopper.com/${IMAGE_NAME} | gzip > service_api_image.tar.gz
   fi
 fi
 
