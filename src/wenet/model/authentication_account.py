@@ -9,14 +9,14 @@ from wenet.model.common import PlatformType
 
 class AuthenticationAccount(abc.ABC):
 
-    def __init__(self, account_type: PlatformType, user_id: Optional[str]):
+    def __init__(self, account_type: PlatformType, user_id: Optional[int]):
         self.user_id = user_id
         self.account_type = account_type
 
     def to_repr(self) -> dict:
         return {
             "type": self.account_type.value,
-            "userId": self.user_id
+            "userId": str(self.user_id) if self.user_id is not None else None
         }
 
     @staticmethod
@@ -42,7 +42,7 @@ class AuthenticationAccount(abc.ABC):
 
 class TelegramAuthenticationAccount(AuthenticationAccount):
 
-    def __init__(self, app_id: str, metadata: Optional[dict], telegram_id: int, user_id: Optional[str] = None):
+    def __init__(self, app_id: str, metadata: Optional[dict], telegram_id: int, user_id: Optional[int] = None):
         super().__init__(PlatformType.TELEGRAM, user_id)
         self.app_id = app_id
         self.metadata = metadata
@@ -75,7 +75,7 @@ class TelegramAuthenticationAccount(AuthenticationAccount):
             app_id=raw_data["appId"],
             metadata=raw_data.get("metadata", None),
             telegram_id=raw_data["telegramId"],
-            user_id=raw_data.get("userId", None)
+            user_id=int(raw_data["userId"]) if raw_data.get("userId", None) is not None else None
         )
 
     def __eq__(self, o):
@@ -107,14 +107,14 @@ class WeNetUserWithAccounts:
 
     def to_repr(self) -> dict:
         return {
-            "userId": self.user_id,
+            "userId": str(self.user_id),
             "accounts": list(x.to_repr() for x in self.accounts)
         }
 
     @staticmethod
     def from_repr(raw_data: dict) -> WeNetUserWithAccounts:
         user = WeNetUserWithAccounts(
-            user_id=raw_data["userId"],
+            user_id=int(raw_data["userId"]),
         )
 
         for raw_account in raw_data["accounts"]:
