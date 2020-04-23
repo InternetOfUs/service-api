@@ -79,4 +79,28 @@ class TestUserAuthenticateInterface(CommonTestCase):
 
         self.assertEqual(response.status_code, 401)
 
+    def test_get4(self):
+
+        telegram_user_account = TelegramAuthenticationAccount(
+            app_id="c0b7f45b-06c7-449c-9cc0-f778d7800193",
+            metadata={},
+            telegram_id=11
+        )
+
+        response = self.client.post(f"/user/authenticate", json=telegram_user_account.to_repr())
+
+        self.assertEqual(response.status_code, 403)
+
+    def test_get5(self):
+
+        telegram_user_account = TelegramAuthenticationAccount(
+            app_id="c0b7f45b-06c7-449c-9cc0-f778d7800193",
+            metadata={},
+            telegram_id=11
+        )
+
+        response = self.client.post(f"/user/authenticate", headers={"apikey": "asd"}, json=telegram_user_account.to_repr())
+
+        self.assertEqual(response.status_code, 403)
+
 
