@@ -53,7 +53,9 @@ else
 fi
 
 # Exporting image name for the build and test script
+REGISTRY=registry.u-hopper.com
 export IMAGE_NAME=wenet/service-api:${VERSION}
+export REGISTRY=${REGISTRY}
 
 
 if [ $BUILD == 1 ]; then
@@ -67,7 +69,7 @@ if [ $BUILD == 1 ]; then
 
   if [ $SAVE_IMAGE_TO_TARGZ == 1 ]; then
     echo "Saving image to service_api_image.tar.gz"
-    docker save registry.u-hopper.com/${IMAGE_NAME} | gzip > service_api_image.tar.gz
+    docker save ${REGISTRY}/${IMAGE_NAME} | gzip > service_api_image.tar.gz
   fi
 fi
 
@@ -87,7 +89,7 @@ fi
 
 if [ $PUSH_IMAGE == 1 ]; then
   echo "Pushing image to registry"
-  docker push registry.u-hopper.com/${IMAGE_NAME}
+  docker push ${REGISTRY}/${IMAGE_NAME}
 fi
 
 if [ $BUILD == 0 ] && [ $TEST == 0 ] && [ $PUSH_IMAGE == 0 ]; then

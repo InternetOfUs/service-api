@@ -36,7 +36,7 @@ if [ $? == 0 ]; then
     # Tagging images for registry
 
     echo "Tagging image for push to registry.u-hopper.com"
-    docker tag ${IMAGE_NAME} registry.u-hopper.com/${IMAGE_NAME}
+    docker tag ${IMAGE_NAME} ${REGISTRY}/${IMAGE_NAME}
     echo "Image can be pushed with:"
     echo "- docker push registry.u-hopper.com/${IMAGE_NAME}"
     # Cleaning
