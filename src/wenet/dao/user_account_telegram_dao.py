@@ -1,7 +1,9 @@
 from __future__ import absolute_import, annotations
 
 import logging
+from datetime import datetime
 
+import pytz
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import Session, sessionmaker, joinedload
 
@@ -25,7 +27,7 @@ class UserAccountTelegramDao:
         result: UserAccountTelegram = session\
             .query(UserAccountTelegram)\
             .options(joinedload(UserAccountTelegram.app))\
-            .filter_by(telegram_id=telegram_id, app_id=app_id)\
+            .filter_by(telegram_id=telegram_id, app_id=app_id, active=1)\
             .first()
 
         session.close()
@@ -38,6 +40,8 @@ class UserAccountTelegramDao:
         return result
 
     def create_or_update(self, user_account_telegram: UserAccountTelegram):
+        user_account_telegram.load_metadata_str_from_metadata()
+        user_account_telegram.last_update_ts = int(datetime.now(pytz.utc).timestamp())
         session = self._get_session()
         session.merge(user_account_telegram)
         session.commit()

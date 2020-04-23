@@ -57,6 +57,10 @@ class App(Base):
         else:
             self.metadata = {}
 
+    def load_metadata_str_from_metadata(self) -> None:
+        if self.metadata is not None:
+            self.metadata_str = json.dumps(self.metadata)
+
 
 class PlatformTelegram(Base):
     __tablename__ = "app_platform_telegram"
@@ -111,6 +115,10 @@ class UserAccountTelegram(Base):
             self.metadata = json.loads(self.metadata_str)
         else:
             self.metadata = {}
+            self.metadata_str = json.dumps(self.metadata)
+
+    def load_metadata_str_from_metadata(self) -> None:
+        if self.metadata is not None:
             self.metadata_str = json.dumps(self.metadata)
 
 
@@ -175,9 +183,8 @@ class AppDTO:
     def __eq__(self, o):
         if not isinstance(o, AppDTO):
             return False
-        return self.creation_ts == o.creation_ts and self.last_update_ts == o.last_update_ts and self.app_id == o.app_id \
-            and self.app_token == o.app_token and self.allowed_platforms == o.allowed_platforms and self.message_callback_url == o.message_callback_url \
-            and self.metadata == o.metadata
+        return self.app_id == o.app_id and self.app_token == o.app_token and self.allowed_platforms == o.allowed_platforms \
+            and self.message_callback_url == o.message_callback_url and self.metadata == o.metadata
 
     def __repr__(self):
         return str(self.to_repr())

@@ -8,12 +8,14 @@ from wenet.model.common import PlatformType
 
 class AuthenticationAccount(abc.ABC):
 
-    def __init__(self, account_type: PlatformType):
+    def __init__(self, account_type: PlatformType, user_id: Optional[str]):
+        self.user_id = user_id
         self.account_type = account_type
 
     def to_repr(self) -> dict:
         return {
-            "type": self.account_type.value
+            "type": self.account_type.value,
+            "userId": self.user_id
         }
 
     @staticmethod
@@ -39,8 +41,8 @@ class AuthenticationAccount(abc.ABC):
 
 class TelegramAuthenticationAccount(AuthenticationAccount):
 
-    def __init__(self, app_id: str, metadata: Optional[dict], telegram_id: int):
-        super().__init__(PlatformType.TELEGRAM)
+    def __init__(self, app_id: str, metadata: Optional[dict], telegram_id: int, user_id: Optional[str] = None):
+        super().__init__(PlatformType.TELEGRAM, user_id)
         self.app_id = app_id
         self.metadata = metadata
         self.telegram_id = telegram_id
@@ -58,19 +60,21 @@ class TelegramAuthenticationAccount(AuthenticationAccount):
             raise TypeError("telegram_id should be an integer")
 
     def to_repr(self) -> dict:
-        return {
-            "type": self.account_type.value,
+        base_repr = super().to_repr()
+        base_repr.update({
             "appId": self.app_id,
             "metadata": self.metadata,
             "telegramId": self.telegram_id
-        }
+        })
+        return base_repr
 
     @staticmethod
     def from_repr(raw_data: dict) -> TelegramAuthenticationAccount:
         return TelegramAuthenticationAccount(
             app_id=raw_data["appId"],
             metadata=raw_data.get("metadata", None),
-            telegram_id=raw_data["telegramId"]
+            telegram_id=raw_data["telegramId"],
+            user_id=raw_data.get("userId", None)
         )
 
     def __eq__(self, o):
