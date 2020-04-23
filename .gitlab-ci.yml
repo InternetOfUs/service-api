@@ -45,6 +45,8 @@ test_dev:
         - ./docker-support/runner.sh -t latest
     dependencies:
         - build_dev
+    only:
+      - develop
 
 push_dev:
   stage: push
