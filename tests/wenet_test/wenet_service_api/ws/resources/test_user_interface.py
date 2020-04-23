@@ -6,7 +6,7 @@ from mock import Mock
 
 from tests.wenet_test.wenet_service_api.common.common_test_case import CommonTestCase
 from wenet.model.app import App, UserAccountTelegram
-from wenet.model.authentication_account import TelegramAuthenticationAccount
+from wenet.model.authentication_account import TelegramAuthenticationAccount, WeNetUserWithAccounts
 
 
 class TestUserAuthenticateInterface(CommonTestCase):
@@ -26,7 +26,7 @@ class TestUserAuthenticateInterface(CommonTestCase):
     user_account_telegram = UserAccountTelegram(
         user_account_id=1,
         app_id="c0b7f45b-06c7-449c-9cc0-f778d7800193",
-        user_id="user_id",
+        user_id=1,
         telegram_id=11,
         creation_ts=1,
         last_update_ts=1,
@@ -39,20 +39,21 @@ class TestUserAuthenticateInterface(CommonTestCase):
     user_account_telegram_inactive = UserAccountTelegram(
         user_account_id=2,
         app_id="c0b7f45b-06c7-449c-9cc0-f778d7800193",
-        user_id="user_id",
+        user_id=1,
         telegram_id=12,
         creation_ts=1,
         last_update_ts=1,
         metadata={
             "key1": "value1"
         },
-        active=1
+        active=0
     )
 
     def setUp(self) -> None:
         super().setUp()
         self.dao_collector.app_dao.create_or_update(self.app)
         self.dao_collector.user_account_telegram_dao.create_or_update(self.user_account_telegram)
+        self.dao_collector.user_account_telegram_dao.create_or_update(self.user_account_telegram_inactive)
 
     def test_get(self):
 
@@ -147,7 +148,7 @@ class TestUserMetadataInterface(CommonTestCase):
     user_account_telegram = UserAccountTelegram(
         user_account_id=1,
         app_id="c0b7f45b-06c7-449c-9cc0-f778d7800193",
-        user_id="user_id",
+        user_id=1,
         telegram_id=11,
         creation_ts=1,
         last_update_ts=1,
@@ -160,20 +161,21 @@ class TestUserMetadataInterface(CommonTestCase):
     user_account_telegram_inactive = UserAccountTelegram(
         user_account_id=2,
         app_id="c0b7f45b-06c7-449c-9cc0-f778d7800193",
-        user_id="user_id",
+        user_id=1,
         telegram_id=12,
         creation_ts=1,
         last_update_ts=1,
         metadata={
             "key1": "value1"
         },
-        active=1
+        active=0
     )
 
     def setUp(self) -> None:
         super().setUp()
         self.dao_collector.app_dao.create_or_update(self.app)
         self.dao_collector.user_account_telegram_dao.create_or_update(self.user_account_telegram)
+        self.dao_collector.user_account_telegram_dao.create_or_update(self.user_account_telegram_inactive)
 
     def test_post(self):
         telegram_user_account = TelegramAuthenticationAccount(
@@ -244,3 +246,70 @@ class TestUserMetadataInterface(CommonTestCase):
         self.assertEqual(response.status_code, 403)
         mock_update.assert_not_called()
 
+
+class TestUserAccountsInterface(CommonTestCase):
+    app = App(
+        app_id="c0b7f45b-06c7-449c-9cc0-f778d7800193",
+        status="1",
+        name="name",
+        description="description",
+        app_token="dshfgsahjfsdfdsjhfgsd",
+        message_callback_url="url",
+        metadata={},
+        creation_ts=int(datetime(2020, 2, 27).timestamp()),
+        last_update_ts=int(datetime(2020, 2, 27).timestamp())
+    )
+
+    user_account_telegram = UserAccountTelegram(
+        user_account_id=1,
+        app_id="c0b7f45b-06c7-449c-9cc0-f778d7800193",
+        user_id=1,
+        telegram_id=11,
+        creation_ts=1,
+        last_update_ts=1,
+        metadata={
+            "key1": "value1"
+        },
+        active=1
+    )
+
+    user_account_telegram2 = UserAccountTelegram(
+        user_account_id=2,
+        app_id="c0b7f45b-06c7-449c-9cc0-f778d7800193",
+        user_id=2,
+        telegram_id=12,
+        creation_ts=1,
+        last_update_ts=1,
+        metadata={
+            "key1": "value1"
+        },
+        active=1
+    )
+
+    def setUp(self) -> None:
+        super().setUp()
+        self.dao_collector.app_dao.create_or_update(self.app)
+        self.dao_collector.user_account_telegram_dao.create_or_update(self.user_account_telegram)
+        self.dao_collector.user_account_telegram_dao.create_or_update(self.user_account_telegram2)
+
+    def test_get(self):
+        response = self.client.get(f"/user/accounts?appId=c0b7f45b-06c7-449c-9cc0-f778d7800193&userId=1", headers={"apikey": self.AUTHORIZED_APIKEY})
+
+        self.assertEqual(response.status_code, 200)
+
+        json_data = response.json
+        accounts = WeNetUserWithAccounts.from_repr(json_data)
+
+        self.assertIsInstance(accounts, WeNetUserWithAccounts)
+        self.assertEqual(1, len(accounts.accounts))
+        self.assertEqual(1, accounts.accounts[0].user_id)
+
+    def test_get2(self):
+        response = self.client.get(f"/user/accounts?appId=c0b7f45b-06c7-449c-9cc0-f778d7800193&userId=1", headers={"apikey": "asd"})
+
+        self.assertEqual(response.status_code, 403)
+
+    def test_get3(self):
+        response = self.client.get(f"/user/accounts?appId=c0b7f45b-06c7-449c-9cc0-f778d7800193&userId=1")
+
+        self.assertEqual(response.status_code, 403)

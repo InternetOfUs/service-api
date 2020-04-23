@@ -79,7 +79,7 @@ class UserMetadataInterface(AuthenticatedResource):
         super().__init__(authorized_apikey)
         self._dao_collector = dao_collector
 
-    def get(self):
+    def post(self):
 
         self._check_authentication()
 
