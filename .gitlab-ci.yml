@@ -35,8 +35,8 @@ build_dev:
     paths:
       - service_api_image.tar.gz
     expire_in: 1 day
-#   only:
-#      - develop
+  only:
+    - develop
 
 test_dev:
     stage: test
@@ -54,8 +54,8 @@ push_dev:
   dependencies:
     - build_dev
     - test_dev
-#   only:
-#      - develop
+  only:
+    - develop
 
 deploy_dev:
    stage: deploy
@@ -67,5 +67,5 @@ deploy_dev:
      - test_dev
    environment:
      name: testing
-#   only:
-#      - develop
+   only:
+      - develop
