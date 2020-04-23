@@ -87,7 +87,7 @@ fi
 
 if [ $PUSH_IMAGE == 1 ]; then
   echo "Pushing image to registry"
-  docker push ${IMAGE_NAME}
+  docker push registry.u-hopper.com/${IMAGE_NAME}
 fi
 
 if [ $BUILD == 0 ] && [ $TEST == 0 ] && [ $PUSH_IMAGE == 0 ]; then
