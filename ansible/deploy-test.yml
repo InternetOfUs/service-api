@@ -9,9 +9,9 @@
         chdir: "{{ dir }}"
   - name: "git pull"
     git:
-        repo: 'git@lab.u-hopper.com:wenet/wenet-deployment.git'
+        repo: "git@lab.u-hopper.com:wenet/wenet-deployment.git"
         dest: "{{ dir }}"
-        version: "master"
+        version: "develop"
         accept_hostkey: yes
         key_file: /home/gitlab/.ssh/id_rsa
 
@@ -30,11 +30,11 @@
         path: "{{ dir }}/.env"
         line: WENET_HUB_VERSION=latest
         regexp: "^WENET_HUB_VERSION=[a-zA-Z0-9.]*$"
-  - name: insert dev env
+  - name: rewrite dev env
     lineinfile:
         path: "{{ dir }}/.env"
         line: DEV_ENV=_dev
-        insertafter:
+        regexp: "^DEV_ENV=[a-zA-Z0-9.]*$"
     
   - name: "pull"
     shell: docker-compose pull service-api
