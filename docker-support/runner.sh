@@ -72,7 +72,7 @@ if [ $BUILD == 1 ]; then
 fi
 
 if [ $TEST == 1 ]; then
-  echo "Running test on chatbot-core image"
+  echo "Running tests"
   ${SCRIPT_DIR}/test.sh
 
   if [ $? != 0 ]; then

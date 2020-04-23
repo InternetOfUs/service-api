@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cd scripts
+#cd scrip ts
 
 python -m unittest discover tests/wenet_test
 if [ $? != 0 ]; then
