@@ -54,7 +54,7 @@ fi
 
 # Exporting image name for the build and test script
 REGISTRY=registry.u-hopper.com
-export IMAGE_NAME=wenet_service_api/service-api:${VERSION}
+export IMAGE_NAME=api/service-api:${VERSION}
 export REGISTRY=${REGISTRY}
 
 

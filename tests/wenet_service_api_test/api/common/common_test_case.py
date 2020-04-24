@@ -2,9 +2,9 @@ from __future__ import absolute_import, annotations
 
 from unittest import TestCase
 
-from tests.wenet_test.wenet_service_api.common.mocks.mock_dao_collector import MockDaoCollector
-from tests.wenet_test.wenet_service_api.common.mocks.mock_service_connector_collector import MockServiceConnectorCollector
-from wenet_service_api.wenet_service_api.ws.ws import WsInterface
+from tests.wenet_service_api_test.api.common.mocks.mock_dao_collector import MockDaoCollector
+from tests.wenet_service_api_test.api.common.mocks.mock_service_connector_collector import MockServiceConnectorCollector
+from wenet_service_api.api.ws.ws import WsInterface
 
 
 class CommonTestCase(TestCase):

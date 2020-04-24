@@ -3,7 +3,7 @@ from __future__ import absolute_import, annotations
 import json
 from datetime import datetime
 
-from tests.wenet_test.wenet_service_api.common.common_test_case import CommonTestCase
+from tests.wenet_service_api_test.api.common.common_test_case import CommonTestCase
 from wenet_service_api.model.app import App, AppDTO
 
 

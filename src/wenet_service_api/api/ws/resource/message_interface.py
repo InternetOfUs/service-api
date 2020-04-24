@@ -6,9 +6,9 @@ from flask import request
 from flask_restful import abort
 
 from wenet_service_api.model.message import Message
-from wenet_service_api.wenet_service_api.ws.resource.common import AuthenticatedResource
+from wenet_service_api.api.ws.resource.common import AuthenticatedResource
 
-logger = logging.getLogger("wenet_service_api.wenet_service_api.ws.resource.message")
+logger = logging.getLogger("api.api.ws.resource.message")
 
 
 class MessageInterfaceBuilder:

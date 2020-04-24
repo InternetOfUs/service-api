@@ -11,7 +11,7 @@ from sqlalchemy.orm import Session, sessionmaker, joinedload
 from wenet_service_api.model.app import UserAccountTelegram
 from wenet_service_api.service_common.exception.exceptions import ResourceNotFound
 
-logger = logging.getLogger("wenet_service_api.wenet_service_api.user_Account_telegram_dao")
+logger = logging.getLogger("api.api.user_Account_telegram_dao")
 
 
 class UserAccountTelegramDao:

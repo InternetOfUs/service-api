@@ -10,9 +10,9 @@ from wenet_service_api.model.authentication_account import TelegramAuthenticatio
     WeNetUserWithAccounts
 from wenet_service_api.service_common.exception.exceptions import ResourceNotFound
 
-from wenet_service_api.wenet_service_api.ws.resource.common import AuthenticatedResource
+from wenet_service_api.api.ws.resource.common import AuthenticatedResource
 
-logger = logging.getLogger("wenet_service_api.wenet_service_api.ws.resource.wenet_user")
+logger = logging.getLogger("api.api.ws.resource.wenet_user")
 
 
 class UserInterfaceBuilder:

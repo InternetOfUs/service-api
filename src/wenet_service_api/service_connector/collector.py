@@ -6,7 +6,7 @@ import logging
 from wenet_service_api.service_connector.profile_manager_connector import ProfileManagerConnector, DummyProfileManagerConnector
 from wenet_service_api.service_connector.task_manager_connector import TaskManagerConnector, DummyTaskManagerConnector
 
-logger = logging.getLogger("wenet_service_api.wenet_service_api.service_connector")
+logger = logging.getLogger("api.api.service_connector")
 
 
 class ServiceConnectorCollector:

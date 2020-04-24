@@ -5,7 +5,7 @@ import logging
 from flask import request
 from flask_restful import Resource, abort
 
-logger = logging.getLogger("wenet_service_api.wenet_service_api.ws.resource.authenticated_resource")
+logger = logging.getLogger("api.api.ws.resource.authenticated_resource")
 
 
 class AuthenticatedResource(Resource):

@@ -7,18 +7,18 @@ import logging
 
 from wenet_service_api.service_connector.collector import ServiceConnectorCollector
 from wenet_service_api.dao.dao_collector import DaoCollector
-from wenet_service_api.wenet_service_api.ws.resource.app_interface import AppResourceInterfaceBuilder
-from wenet_service_api.wenet_service_api.ws.resource.message_interface import MessageInterfaceBuilder
-from wenet_service_api.wenet_service_api.ws.resource.task_interface import TaskResourceInterfaceBuilder
-from wenet_service_api.wenet_service_api.ws.resource.task_transaction import TaskTransactionInterfaceBuilder
-from wenet_service_api.wenet_service_api.ws.resource.user_interface import UserInterfaceBuilder
-from wenet_service_api.wenet_service_api.ws.resource.user_profile import WeNetUserProfileInterfaceBuilder
+from wenet_service_api.api.ws.resource.app_interface import AppResourceInterfaceBuilder
+from wenet_service_api.api.ws.resource.message_interface import MessageInterfaceBuilder
+from wenet_service_api.api.ws.resource.task_interface import TaskResourceInterfaceBuilder
+from wenet_service_api.api.ws.resource.task_transaction import TaskTransactionInterfaceBuilder
+from wenet_service_api.api.ws.resource.user_interface import UserInterfaceBuilder
+from wenet_service_api.api.ws.resource.user_profile import WeNetUserProfileInterfaceBuilder
 
 
 class WsInterface:
 
     def __init__(self, service_connector_collector: ServiceConnectorCollector, dao_collector: DaoCollector, authorized_apikey: str) -> None:
-        self._app = Flask("wenet_service_api")
+        self._app = Flask("api")
         self._api = Api(app=self._app)
         self._dao_collector = dao_collector
 

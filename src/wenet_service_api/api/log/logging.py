@@ -37,7 +37,7 @@ def get_logging_configuration():
                 "handlers": ["console"],
                 "propagate": 0
             },
-            "wenet_service_api": {
+            "api": {
                 "level": "DEBUG",
                 # "handlers": ["console", "file"],
                 "handlers": ["console"],
