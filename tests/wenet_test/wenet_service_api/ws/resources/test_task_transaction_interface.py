@@ -5,8 +5,8 @@ import json
 from mock import Mock
 
 from tests.wenet_test.wenet_service_api.common.common_test_case import CommonTestCase
-from wenet.model.task import TaskAttribute
-from wenet.model.task_transaction import TaskTransaction
+from wenet_service_api.model.task import TaskAttribute
+from wenet_service_api.model.task_transaction import TaskTransaction
 
 
 class TestTaskTransactionInterface(CommonTestCase):

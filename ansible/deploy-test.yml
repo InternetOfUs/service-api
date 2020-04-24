@@ -9,7 +9,7 @@
         chdir: "{{ dir }}"
   - name: "git pull"
     git:
-        repo: "git@lab.u-hopper.com:wenet/wenet-deployment.git"
+        repo: "git@lab.u-hopper.com:wenet_service_api/wenet_service_api-deployment.git"
         dest: "{{ dir }}"
         version: "develop"
         accept_hostkey: yes

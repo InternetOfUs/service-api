@@ -2,8 +2,8 @@ from __future__ import absolute_import, annotations
 
 from unittest import TestCase
 
-from wenet.model.message import MessageIntent, MessageEntity, Message, MessageType
-from wenet.model.message_content import TextualMessage, ActionRequest
+from wenet_service_api.model.message import MessageIntent, MessageEntity, Message, MessageType
+from wenet_service_api.model.message_content import TextualMessage, ActionRequest
 
 
 class TestMessageIntent(TestCase):

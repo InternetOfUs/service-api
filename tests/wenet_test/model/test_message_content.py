@@ -2,7 +2,7 @@ from __future__ import absolute_import, annotations
 
 from unittest import TestCase
 
-from wenet.model.message_content import TextualMessage, MessageContent, ActionRequest
+from wenet_service_api.model.message_content import TextualMessage, MessageContent, ActionRequest
 
 
 class TestTextualMessage(TestCase):

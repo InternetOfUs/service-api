@@ -3,9 +3,9 @@ from __future__ import absolute_import, annotations
 from sqlalchemy import MetaData, Table, Column, String, create_engine, DateTime, Integer, Text, ForeignKey
 from sqlalchemy.orm import relation
 
-from wenet.dao.app_dao import AppDao
-from wenet.dao.dao_collector import DaoCollector
-from wenet.dao.user_account_telegram_dao import UserAccountTelegramDao
+from wenet_service_api.dao.app_dao import AppDao
+from wenet_service_api.dao.dao_collector import DaoCollector
+from wenet_service_api.dao.user_account_telegram_dao import UserAccountTelegramDao
 
 
 class DataAccessLayer:

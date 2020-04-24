@@ -4,7 +4,7 @@ from unittest import TestCase
 
 from tests.wenet_test.wenet_service_api.common.mocks.mock_dao_collector import MockDaoCollector
 from tests.wenet_test.wenet_service_api.common.mocks.mock_service_connector_collector import MockServiceConnectorCollector
-from wenet.wenet_service_api.ws.ws import WsInterface
+from wenet_service_api.wenet_service_api.ws.ws import WsInterface
 
 
 class CommonTestCase(TestCase):

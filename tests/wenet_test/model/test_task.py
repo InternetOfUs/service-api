@@ -2,8 +2,8 @@ from __future__ import absolute_import, annotations
 
 from unittest import TestCase
 
-from wenet.model.norm import Norm, NormOperator
-from wenet.model.task import Task, TaskGoal, TaskAttribute
+from wenet_service_api.model.norm import Norm, NormOperator
+from wenet_service_api.model.task import Task, TaskGoal, TaskAttribute
 
 
 class TestTask(TestCase):
