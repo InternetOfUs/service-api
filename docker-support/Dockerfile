@@ -15,7 +15,6 @@ COPY run_tests.sh .
 
 ADD src/ /scripts/
 ADD tests/ /scripts/tests/
-ADD migrations/ /scripts/migrations
 
 ENV PYTHONPATH /scripts
 

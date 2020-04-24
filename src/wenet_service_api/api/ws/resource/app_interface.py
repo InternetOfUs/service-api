@@ -88,7 +88,7 @@ class AppResourceInterface(AuthenticatedResource):
 
         logger.info(f"Retrieved app [{app}]")
         logger.info(f"{app.platform_telegram}")
-        return AppDTO.from_app(app).to_repr(), 200
+        return app.to_app_dto().to_repr(), 200
 
     # def put(self, app_id: str):
     #

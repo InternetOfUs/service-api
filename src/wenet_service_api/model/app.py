@@ -7,6 +7,8 @@ from sqlalchemy import Column, String, Integer, Text, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relation
 
+from wenet.service_api.app_dto import AppDTO
+from wenet.service_api.platform_dto import TelegramPlatformDTO
 
 Base = declarative_base()
 
@@ -59,6 +61,24 @@ class App(Base):
         if self.metadata is not None:
             self.metadata_str = json.dumps(self.metadata)
 
+    def to_app_dto(self) -> AppDTO:
+        if self.platform_telegram:
+            allowed_platforms = [
+                self.platform_telegram.to_telegram_platform_dto()
+            ]
+        else:
+            allowed_platforms = []
+
+        return AppDTO(
+            creation_ts=self.creation_ts,
+            last_update_ts=self.last_update_ts,
+            app_id=self.app_id,
+            app_token=self.app_token,
+            allowed_platforms=allowed_platforms,
+            message_callback_url=self.message_call_back_url,
+            metadata=self.metadata
+        )
+
 
 class PlatformTelegram(Base):
     __tablename__ = "app_platform_telegram"
@@ -69,6 +89,11 @@ class PlatformTelegram(Base):
     last_update_ts = Column("updated_at", Integer)
     creation_ts = Column("created_at", Integer)
     app = relation("App", back_populates="platform_telegram", uselist=False)
+
+    def to_telegram_platform_dto(self) -> TelegramPlatformDTO:
+        return TelegramPlatformDTO(
+            bot_id=self.app_id
+        )
 
 
 class UserAccountTelegram(Base):

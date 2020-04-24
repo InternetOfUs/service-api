@@ -19,4 +19,4 @@ if [ -z "${WORKERS}" ]; then
 fi
 
 echo "Running ws"
-exec gunicorn -w "${WORKERS}" -b 0.0.0.0:80 "wenet.wenet_service_api.main:wenet_service_api"
+exec gunicorn -w "${WORKERS}" -b 0.0.0.0:80 "wenet_service_api.api.main:service_api_app"

@@ -28,7 +28,7 @@ def init_ws() -> WsInterface:
 
 
 ws = init_ws()
-wenet_service_api = ws.get_application()
+service_api_app = ws.get_application()
 
 if __name__ == "__main__":
     print(os.getcwd())

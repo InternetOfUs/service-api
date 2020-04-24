@@ -50,7 +50,7 @@ class TestAppResourceInterface(CommonTestCase):
         last_update_ts=int(datetime(2020, 2, 27).timestamp())
     )
 
-    app_dto = AppDTO.from_app(app)
+    app_dto = app.to_app_dto()
 
     def setUp(self) -> None:
         super().setUp()
