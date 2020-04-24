@@ -7,6 +7,11 @@ from typing import Optional
 from iso639 import is_valid639_1
 
 
+class PlatformType(Enum):
+
+    TELEGRAM = "telegram"
+
+
 class Gender(Enum):
 
     MALE = "M"
