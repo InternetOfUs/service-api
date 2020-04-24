@@ -12,7 +12,7 @@ class MessageType(Enum):
 
     REQUEST = "request"
 
-
+# TODO old, remove
 class MessageIntent:
 
     def __init__(self, name: str, confidence: Optional[float]):

@@ -1,7 +1,6 @@
 from __future__ import absolute_import, annotations
 
-from sqlalchemy import MetaData, Table, Column, String, create_engine, DateTime, Integer, Text, ForeignKey
-from sqlalchemy.orm import relation
+from sqlalchemy import MetaData, Table, Column, String, create_engine, Integer, Text, ForeignKey
 
 from wenet_service_api.dao.app_dao import AppDao
 from wenet_service_api.dao.dao_collector import DaoCollector

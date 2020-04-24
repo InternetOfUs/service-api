@@ -2,9 +2,9 @@ from __future__ import absolute_import, annotations
 
 from unittest import TestCase
 
-from wenet_service_api.model.common import Date, Gender, UserLanguage
-from wenet_service_api.model.norm import Norm, NormOperator
-from wenet_service_api.model.user_profile import UserName, WeNetUserProfile
+from wenet.service_api.common import Date, Gender, UserLanguage
+from wenet.service_api.norm import Norm, NormOperator
+from wenet.service_api.user_profile import UserName, WeNetUserProfile
 
 
 class TestUserName(TestCase):

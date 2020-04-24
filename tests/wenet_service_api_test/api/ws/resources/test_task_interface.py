@@ -5,8 +5,8 @@ import json
 from mock import Mock
 
 from tests.wenet_service_api_test.api.common.common_test_case import CommonTestCase
-from wenet_service_api.model.norm import Norm, NormOperator
-from wenet_service_api.model.task import Task, TaskState, TaskGoal, TaskAttribute
+from wenet.service_api.norm import Norm, NormOperator
+from wenet.service_api.task import Task, TaskGoal, TaskAttribute
 
 
 class TestTaskInterface(CommonTestCase):

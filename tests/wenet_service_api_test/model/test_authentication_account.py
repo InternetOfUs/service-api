@@ -2,7 +2,7 @@ from __future__ import absolute_import, annotations
 
 from unittest import TestCase
 
-from wenet_service_api.model.authentication_account import TelegramAuthenticationAccount, AuthenticationAccount, \
+from wenet.service_api.authentication_account import TelegramAuthenticationAccount, AuthenticationAccount, \
     WeNetUserWithAccounts
 
 

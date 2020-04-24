@@ -4,7 +4,7 @@ import json
 from datetime import datetime
 
 from tests.wenet_service_api_test.api.common.common_test_case import CommonTestCase
-from wenet_service_api.model.app import App, AppDTO
+from wenet_service_api.model.app import App
 
 
 # class TestAppPostInterface(CommonTestCase):
@@ -33,6 +33,7 @@ from wenet_service_api.model.app import App, AppDTO
 #         response = self.client.post("/app", json={"name": "app_name"})
 #
 #         self.assertEqual(response.status_code, 403)
+from wenet.service_api.app_dto import AppDTO
 
 
 class TestAppResourceInterface(CommonTestCase):

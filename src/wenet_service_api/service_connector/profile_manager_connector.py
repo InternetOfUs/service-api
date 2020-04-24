@@ -7,9 +7,9 @@ from typing import Optional
 import requests
 
 from wenet_service_api.service_common.exception.exceptions import ResourceNotFound, NotAuthorized, BadRequestException
-from wenet_service_api.model.common import Date, Gender, UserLanguage
-from wenet_service_api.model.norm import Norm, NormOperator
-from wenet_service_api.model.user_profile import WeNetUserProfile, UserName
+from wenet.service_api.common import Date, Gender, UserLanguage
+from wenet.service_api.norm import Norm, NormOperator
+from wenet.service_api.user_profile import WeNetUserProfile, UserName
 from wenet_service_api.service_connector.service_connector import ServiceConnector
 
 

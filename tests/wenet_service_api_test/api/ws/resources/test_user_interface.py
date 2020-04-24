@@ -6,7 +6,7 @@ from mock import Mock
 
 from tests.wenet_service_api_test.api.common.common_test_case import CommonTestCase
 from wenet_service_api.model.app import App, UserAccountTelegram
-from wenet_service_api.model.authentication_account import TelegramAuthenticationAccount, WeNetUserWithAccounts
+from wenet.service_api.authentication_account import TelegramAuthenticationAccount, WeNetUserWithAccounts
 
 
 class TestUserAuthenticateInterface(CommonTestCase):

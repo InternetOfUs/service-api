@@ -2,8 +2,8 @@ from __future__ import absolute_import, annotations
 
 from unittest import TestCase
 
-from wenet_service_api.model.task import TaskAttribute
-from wenet_service_api.model.task_transaction import TaskTransaction
+from wenet.service_api.task import TaskAttribute
+from wenet.service_api.task_transaction import TaskTransaction
 
 
 class TestTaskTransaction(TestCase):

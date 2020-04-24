@@ -1,10 +1,9 @@
 from __future__ import absolute_import, annotations
 
-from datetime import datetime
 from unittest import TestCase
 
-from wenet_service_api.model.app import App, AppDTO
-from wenet_service_api.model.platform_dto import TelegramPlatformDTO
+from wenet.service_api.platform_dto import TelegramPlatformDTO
+from wenet.service_api.app_dto import AppDTO
 
 
 class TestAppDTO(TestCase):
