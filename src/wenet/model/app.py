@@ -1,10 +1,9 @@
 from __future__ import absolute_import, annotations
 
 import json
-from datetime import datetime
 from typing import Optional, List, Union
 
-from sqlalchemy import Column, String, DateTime, Integer, Text, ForeignKey
+from sqlalchemy import Column, String, Integer, Text, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relation
 

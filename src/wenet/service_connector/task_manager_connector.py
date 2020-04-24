@@ -8,7 +8,7 @@ import requests
 
 from wenet.service_common.exception.excpetions import ResourceNotFound, NotAuthorized, BadRequestException
 from wenet.model.norm import Norm, NormOperator
-from wenet.model.task import Task, TaskState, TaskAttribute, TaskGoal
+from wenet.model.task import Task, TaskAttribute, TaskGoal
 from wenet.service_connector.service_connector import ServiceConnector
 
 

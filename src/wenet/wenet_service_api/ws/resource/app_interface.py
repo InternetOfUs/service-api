@@ -1,18 +1,12 @@
 from __future__ import absolute_import, annotations
 
-import secrets
-import uuid
-from datetime import datetime
-
-import pytz
-from flask import request
 from flask_restful import abort
 
 import logging
 
 from wenet.service_common.exception.exceptions import ResourceNotFound
 from wenet.dao.dao_collector import DaoCollector
-from wenet.model.app import App, AppDTO
+from wenet.model.app import AppDTO
 from wenet.wenet_service_api.ws.resource.common import AuthenticatedResource
 
 logger = logging.getLogger("wenet.wenet_service_api.ws.resource.app")

@@ -5,10 +5,10 @@ import logging
 from flask import request
 from flask_restful import abort
 
-from wenet.common.exception.exceptions import ResourceNotFound
 from wenet.dao.dao_collector import DaoCollector
 from wenet.model.authentication_account import TelegramAuthenticationAccount, AuthenticationAccount, \
     WeNetUserWithAccounts
+from wenet.service_common.exception.exceptions import ResourceNotFound
 from wenet.wenet_service_api.ws.resource.common import AuthenticatedResource
 
 logger = logging.getLogger("wenet.wenet_service_api.ws.resource.wenet_user")

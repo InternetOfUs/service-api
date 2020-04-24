@@ -9,7 +9,7 @@ import requests
 from wenet.service_common.exception.excpetions import ResourceNotFound, NotAuthorized, BadRequestException
 from wenet.model.common import Date, Gender, UserLanguage
 from wenet.model.norm import Norm, NormOperator
-from wenet.model.user_profile import WeNetUserProfile, CoreWeNetUserProfile, UserName
+from wenet.model.user_profile import WeNetUserProfile, UserName
 from wenet.service_connector.service_connector import ServiceConnector
 
 

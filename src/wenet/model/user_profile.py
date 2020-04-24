@@ -1,7 +1,6 @@
 from __future__ import absolute_import, annotations
 
 import re
-from datetime import datetime
 from numbers import Number
 from typing import List, Optional
 
