@@ -1,9 +1,8 @@
 #!/bin/bash
 
-#cd scrip ts
-
-python -m unittest discover tests/wenet_test
+python -m unittest discover tests
 if [ $? != 0 ]; then
-    echo "ERR: Tests for model module failed"
+    echo "ERR: Tests failed"
     exit 1
 fi
+
