@@ -158,7 +158,7 @@ class UserAccountsInterface(AuthenticatedResource):
             wenet_user_with_accounts = WeNetUserWithAccounts(user_id)
 
             for user_account in user_accounts:
-                wenet_user_with_accounts.with_account(TelegramAuthenticationAccount.from_user_account_telegram(user_account))
+                wenet_user_with_accounts.with_account(user_account.to_telegram_authentication_account())
 
         except Exception as e:
             logger.exception("Unable to retrieve the user telegram account", exc_info=e)

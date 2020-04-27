@@ -8,6 +8,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relation
 
 from wenet.service_api.app_dto import AppDTO
+from wenet.service_api.authentication_account import TelegramAuthenticationAccount
 from wenet.service_api.platform_dto import TelegramPlatformDTO
 
 Base = declarative_base()
@@ -143,3 +144,11 @@ class UserAccountTelegram(Base):
     def load_metadata_str_from_metadata(self) -> None:
         if self.metadata is not None:
             self.metadata_str = json.dumps(self.metadata)
+
+    def to_telegram_authentication_account(self) -> TelegramAuthenticationAccount:
+        return TelegramAuthenticationAccount(
+            app_id=self.app_id,
+            metadata=self.metadata,
+            telegram_id=self.telegram_id,
+            user_id=self.user_id
+        )
