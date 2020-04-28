@@ -40,21 +40,13 @@ A docker-compose file for deploy this service is available in the [wenet-service
 - TASK_MANAGER_CONNECTOR_BASE_URL: base url for the task manager endpoints
 - DEBUG: if set put the ws in "DEBUG" mode, the debug mode consist in:
     - use dummy endpoint for profile and task manager instead of the production one
-
-## Versions
-
-### 0.0.3
-
-- Added DB an Dao for Apps
-- Integrated Profile Manager and Task Manager services
-- Updated WeNetUserProfile model
-
-### 0.0.2
-
-- Model and endpoints for App
-- Model and endpoints for Message
-
-### 0.0.1
-
-- Model WeNetUserProfile and Task models
-- Example endpoint for WeNetUserProfile and Task
+    
+    
+## Gitlab CI/CD
+This project includes the support for Gitlab CI pipelines.
+In order to take advantage of the CI integration, the following CI/CD variables should be setup in the repository configuration.
+* DEPLOYMENT_SERVER_IP - the ip of the server hosting the deployment instances
+* DEPLOYMENT_TEST_DIR - the directly with the docker configuration of the test instance
+* GITLAB_SSH_KEY - the ssh key allowing the connection to the server
+* REGISTRY_USERNAME - the username used for authorizing with the registry
+* REGISTRY_PASSWORD - the password used for authorizing with the registry
