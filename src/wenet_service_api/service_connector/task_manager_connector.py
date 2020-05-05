@@ -60,7 +60,7 @@ class TaskManagerConnector(ServiceConnector):
         else:
             headers = self._base_headers
 
-        task_repr = task.to_repr()
+        task_repr = task.prepare_task()
         task_repr.pop("taskId", None)
         # task_repr.pop("requesterUserId", None)
         json_data = json.dumps(task_repr)
@@ -85,7 +85,7 @@ class TaskManagerConnector(ServiceConnector):
         else:
             headers = self._base_headers
 
-        task_repr = task.to_repr()
+        task_repr = task.prepare_task()
 
         json_data = json.dumps(task_repr)
 

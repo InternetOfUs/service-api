@@ -5,12 +5,15 @@ import os
 from typing import Optional
 
 import requests
+import logging
 
 from wenet_service_api.service_common.exception.exceptions import ResourceNotFound, NotAuthorized, BadRequestException
 from wenet.service_api.common import Date, Gender, UserLanguage
 from wenet.service_api.norm import Norm, NormOperator
 from wenet.service_api.user_profile import WeNetUserProfile, UserName
 from wenet_service_api.service_connector.service_connector import ServiceConnector
+
+logger = logging.getLogger("api.service_connector.profile_manager")
 
 
 class ProfileManagerConnector(ServiceConnector):
@@ -99,7 +102,7 @@ class ProfileManagerConnector(ServiceConnector):
         elif response.status_code == 400:
             raise BadRequestException(f"Bad request: {response.text}")
         else:
-            raise Exception("Unable to create an empty profile")
+            raise Exception("Unable to create an empty profile, [%s] [%s]" % (response.status_code, response.text))
 
     @staticmethod
     def prepare_profile(profile: WeNetUserProfile) -> dict:
