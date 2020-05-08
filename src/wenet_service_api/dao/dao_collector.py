@@ -21,7 +21,7 @@ class DaoCollector:
         if db_connection_string is None:
             raise RuntimeError("Missing enviromental variable [DB_CONNECTION_STRING]")
 
-        engine = db.create_engine(db_connection_string)
+        engine = db.create_engine(db_connection_string, pool_size=5, pool_recycle=3600, pool_pre_ping=True)
         return DaoCollector(
             app_dao=AppDao(engine),
             user_account_telegram_dao=UserAccountTelegramDao(engine)
