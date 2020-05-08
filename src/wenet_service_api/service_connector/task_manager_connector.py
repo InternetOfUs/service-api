@@ -6,9 +6,9 @@ from typing import Optional
 
 import requests
 
+from wenet.common.model.norm.norm import Norm, NormOperator
+from wenet.common.model.task.task import Task, TaskGoal, TaskAttribute
 from wenet_service_api.service_common.exception.exceptions import ResourceNotFound, NotAuthorized, BadRequestException
-from wenet.service_api.norm import Norm, NormOperator
-from wenet.service_api.task import Task, TaskAttribute, TaskGoal
 from wenet_service_api.service_connector.service_connector import ServiceConnector
 
 

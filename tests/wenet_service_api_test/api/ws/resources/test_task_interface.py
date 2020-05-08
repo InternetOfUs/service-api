@@ -5,8 +5,8 @@ import json
 from mock import Mock
 
 from tests.wenet_service_api_test.api.common.common_test_case import CommonTestCase
-from wenet.service_api.norm import Norm, NormOperator
-from wenet.service_api.task import Task, TaskGoal, TaskAttribute
+from wenet.common.model.norm.norm import Norm, NormOperator
+from wenet.common.model.task.task import Task, TaskGoal, TaskAttribute
 
 
 class TestTaskInterface(CommonTestCase):
@@ -310,4 +310,3 @@ class TestTaskPostInterface(CommonTestCase):
         response = self.client.post("/task", json=data, headers={"apikey": self.AUTHORIZED_APIKEY})
         self.assertEqual(response.status_code, 400)
         mock_post.assert_not_called()
-

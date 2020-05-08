@@ -6,9 +6,9 @@ import uuid
 from flask import request
 from flask_restful import abort
 
+from wenet.common.model.task.task import Task
 from wenet_service_api.service_common.exception.exceptions import ResourceNotFound, NotAuthorized, BadRequestException
 from wenet_service_api.service_connector.collector import ServiceConnectorCollector
-from wenet.service_api.task import Task
 from wenet_service_api.api.ws.resource.common import AuthenticatedResource
 
 logger = logging.getLogger("api.api.ws.resource.task")

@@ -7,9 +7,9 @@ from sqlalchemy import Column, String, Integer, Text, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relation
 
-from wenet.service_api.app_dto import AppDTO
-from wenet.service_api.authentication_account import TelegramAuthenticationAccount
-from wenet.service_api.platform_dto import TelegramPlatformDTO
+from wenet.common.model.app.app_dto import AppDTO
+from wenet.common.model.app.platform_dto import TelegramPlatformDTO
+from wenet.common.model.user.authentication_account import TelegramAuthenticationAccount
 
 Base = declarative_base()
 

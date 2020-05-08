@@ -7,10 +7,10 @@ from typing import Optional
 import requests
 import logging
 
+from wenet.common.model.norm.norm import Norm, NormOperator
+from wenet.common.model.user.common import Date, Gender, UserLanguage
+from wenet.common.model.user.user_profile import WeNetUserProfile, UserName
 from wenet_service_api.service_common.exception.exceptions import ResourceNotFound, NotAuthorized, BadRequestException
-from wenet.service_api.common import Date, Gender, UserLanguage
-from wenet.service_api.norm import Norm, NormOperator
-from wenet.service_api.user_profile import WeNetUserProfile, UserName
 from wenet_service_api.service_connector.service_connector import ServiceConnector
 
 logger = logging.getLogger("api.service_connector.profile_manager")

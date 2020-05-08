@@ -6,7 +6,7 @@ import logging
 
 from flask_restful import abort
 
-from wenet.service_api.task_transaction import TaskTransaction
+from wenet.common.model.task.transaction import TaskTransaction
 from wenet_service_api.service_connector.collector import ServiceConnectorCollector
 from wenet_service_api.api.ws.resource.common import AuthenticatedResource
 

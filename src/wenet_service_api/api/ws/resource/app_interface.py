@@ -4,7 +4,6 @@ from flask_restful import abort
 
 import logging
 
-from wenet.service_api.app_dto import AppDTO
 from wenet_service_api.service_common.exception.exceptions import ResourceNotFound
 from wenet_service_api.dao.dao_collector import DaoCollector
 from wenet_service_api.api.ws.resource.common import AuthenticatedResource

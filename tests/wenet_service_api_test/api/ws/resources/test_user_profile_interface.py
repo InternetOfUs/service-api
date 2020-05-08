@@ -5,9 +5,9 @@ import json
 from mock import Mock
 
 from tests.wenet_service_api_test.api.common.common_test_case import CommonTestCase
-from wenet.service_api.common import Date, Gender, UserLanguage
-from wenet.service_api.norm import Norm, NormOperator
-from wenet.service_api.user_profile import WeNetUserProfile, UserName
+from wenet.common.model.norm.norm import Norm, NormOperator
+from wenet.common.model.user.common import Date, Gender, UserLanguage
+from wenet.common.model.user.user_profile import WeNetUserProfile, UserName
 
 
 class TestUser(CommonTestCase):

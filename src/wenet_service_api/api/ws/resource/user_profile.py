@@ -5,9 +5,9 @@ from flask_restful import abort
 
 import logging
 
+from wenet.common.model.user.user_profile import CoreWeNetUserProfile
 from wenet_service_api.service_common.exception.exceptions import ResourceNotFound, NotAuthorized, BadRequestException
 from wenet_service_api.service_connector.collector import ServiceConnectorCollector
-from wenet.service_api.user_profile import CoreWeNetUserProfile
 from wenet_service_api.api.ws.resource.common import AuthenticatedResource
 
 logger = logging.getLogger("api.api.ws.resource.wenet_user_profile")
