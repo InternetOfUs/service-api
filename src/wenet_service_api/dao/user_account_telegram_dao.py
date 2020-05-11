@@ -2,7 +2,7 @@ from __future__ import absolute_import, annotations
 
 import logging
 from datetime import datetime
-from typing import List
+from typing import List, Optional
 
 import pytz
 from sqlalchemy.engine import Engine
@@ -40,14 +40,25 @@ class UserAccountTelegramDao:
 
         return result
 
-    def list(self, app_id: str, user_id: str):
+    def list(self, app_id: str, user_id: Optional[str] = None):
+        """
+        List of the use
+        @param app_id:
+        @param user_id:
+        @return:
+        """
         session = self._get_session()
 
-        results: List[UserAccountTelegram] = session\
+        query = session\
             .query(UserAccountTelegram)\
             .options(joinedload(UserAccountTelegram.app))\
-            .filter_by(app_id=app_id, user_id=user_id, active=1)\
-            .all()
+
+        if user_id is not None:
+            query = query.filter_by(app_id=app_id, user_id=user_id, active=1)
+        else:
+            query = query.filter_by(app_id=app_id, active=1)
+
+        results: List[UserAccountTelegram] = query.all()
 
         session.close()
 
