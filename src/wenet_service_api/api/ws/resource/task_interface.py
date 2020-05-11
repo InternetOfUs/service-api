@@ -115,7 +115,7 @@ class TaskResourcePostInterface(AuthenticatedResource):
             return
 
         try:
-            task = Task.from_repr(posted_data, str(uuid.uuid4()))
+            task = Task.from_repr(posted_data)
         except (ValueError, TypeError) as v:
             logger.exception("Unable to build a Task from [%s]" % posted_data, exc_info=v)
             abort(400, message="Some fields contains invalid parameters")
