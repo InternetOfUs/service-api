@@ -5,7 +5,7 @@ from flask_restful import Api
 
 import logging
 
-from wenet_service_api.service_connector.collector import ServiceConnectorCollector
+from wenet_service_api.connector.collector import ServiceConnectorCollector
 from wenet_service_api.dao.dao_collector import DaoCollector
 from wenet_service_api.api.ws.resource.app_interface import AppResourceInterfaceBuilder
 from wenet_service_api.api.ws.resource.message_interface import MessageInterfaceBuilder

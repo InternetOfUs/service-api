@@ -9,7 +9,7 @@ from sqlalchemy.orm import sessionmaker, Session, joinedload
 
 
 from wenet_service_api.model.app import App
-from wenet_service_api.service_common.exception.exceptions import ResourceNotFound
+from wenet_service_api.common.exception.exceptions import ResourceNotFound
 
 logger = logging.getLogger("api.api.app_dao")
 

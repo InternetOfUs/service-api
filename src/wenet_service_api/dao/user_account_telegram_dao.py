@@ -9,7 +9,7 @@ from sqlalchemy.engine import Engine
 from sqlalchemy.orm import Session, sessionmaker, joinedload
 
 from wenet_service_api.model.app import UserAccountTelegram
-from wenet_service_api.service_common.exception.exceptions import ResourceNotFound
+from wenet_service_api.common.exception.exceptions import ResourceNotFound
 
 logger = logging.getLogger("api.api.user_Account_telegram_dao")
 

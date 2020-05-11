@@ -10,10 +10,10 @@ import logging
 from wenet.common.model.norm.norm import Norm, NormOperator
 from wenet.common.model.user.common import Date, Gender, UserLanguage
 from wenet.common.model.user.user_profile import WeNetUserProfile, UserName
-from wenet_service_api.service_common.exception.exceptions import ResourceNotFound, NotAuthorized, BadRequestException
-from wenet_service_api.service_connector.service_connector import ServiceConnector
+from wenet_service_api.common.exception.exceptions import ResourceNotFound, NotAuthorized, BadRequestException
+from wenet_service_api.connector.service_connector import ServiceConnector
 
-logger = logging.getLogger("api.service_connector.profile_manager")
+logger = logging.getLogger("api.connector.profile_manager")
 
 
 class ProfileManagerConnector(ServiceConnector):

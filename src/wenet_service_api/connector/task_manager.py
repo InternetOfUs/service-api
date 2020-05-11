@@ -8,8 +8,8 @@ import requests
 
 from wenet.common.model.norm.norm import Norm, NormOperator
 from wenet.common.model.task.task import Task, TaskGoal
-from wenet_service_api.service_common.exception.exceptions import ResourceNotFound, NotAuthorized, BadRequestException
-from wenet_service_api.service_connector.service_connector import ServiceConnector
+from wenet_service_api.common.exception.exceptions import ResourceNotFound, NotAuthorized, BadRequestException
+from wenet_service_api.connector.service_connector import ServiceConnector
 
 
 class TaskManagerConnector(ServiceConnector):

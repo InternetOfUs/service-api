@@ -3,10 +3,10 @@ from __future__ import absolute_import, annotations
 import os
 import logging
 
-from wenet_service_api.service_connector.profile_manager_connector import ProfileManagerConnector, DummyProfileManagerConnector
-from wenet_service_api.service_connector.task_manager_connector import TaskManagerConnector, DummyTaskManagerConnector
+from wenet_service_api.connector.profile_manager import ProfileManagerConnector, DummyProfileManagerConnector
+from wenet_service_api.connector.task_manager import TaskManagerConnector, DummyTaskManagerConnector
 
-logger = logging.getLogger("api.api.service_connector")
+logger = logging.getLogger("api.api.connector")
 
 
 class ServiceConnectorCollector:

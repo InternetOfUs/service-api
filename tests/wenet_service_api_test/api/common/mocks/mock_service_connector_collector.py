@@ -1,8 +1,8 @@
 from __future__ import absolute_import, annotations
 
-from wenet_service_api.service_connector.collector import ServiceConnectorCollector
-from wenet_service_api.service_connector.profile_manager_connector import ProfileManagerConnector
-from wenet_service_api.service_connector.task_manager_connector import TaskManagerConnector
+from wenet_service_api.connector.collector import ServiceConnectorCollector
+from wenet_service_api.connector.profile_manager import ProfileManagerConnector
+from wenet_service_api.connector.task_manager import TaskManagerConnector
 
 
 class MockServiceConnectorCollector(ServiceConnectorCollector):

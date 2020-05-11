@@ -3,7 +3,7 @@ from __future__ import absolute_import, annotations
 import logging.config
 import os
 
-from wenet_service_api.service_connector.collector import ServiceConnectorCollector
+from wenet_service_api.connector.collector import ServiceConnectorCollector
 from wenet_service_api.dao.dao_collector import DaoCollector
 from wenet_service_api.api.log.logging import get_logging_configuration
 from wenet_service_api.api.ws.ws import WsInterface
