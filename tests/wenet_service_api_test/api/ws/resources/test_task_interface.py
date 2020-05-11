@@ -6,7 +6,7 @@ from mock import Mock
 
 from tests.wenet_service_api_test.api.common.common_test_case import CommonTestCase
 from wenet.common.model.norm.norm import Norm, NormOperator
-from wenet.common.model.task.task import Task, TaskGoal, TaskAttribute
+from wenet.common.model.task.task import Task, TaskGoal
 
 
 class TestTaskInterface(CommonTestCase):
@@ -36,12 +36,9 @@ class TestTaskInterface(CommonTestCase):
                     negation=False
                 )
             ],
-            attributes=[
-                TaskAttribute(
-                    name="name",
-                    value="value"
-                )
-            ]
+            attributes={
+                "key": "value"
+            }
         )
 
         mock_get = Mock(return_value=task)
@@ -85,12 +82,9 @@ class TestTaskInterface(CommonTestCase):
                     negation=False
                 )
             ],
-            attributes=[
-                TaskAttribute(
-                    name="name",
-                    value="value"
-                )
-            ]
+            attributes={
+                "key": "value"
+            }
         )
 
         mock_put = Mock(return_value=task)
@@ -131,12 +125,9 @@ class TestTaskInterface(CommonTestCase):
                     negation=False
                 )
             ],
-            attributes=[
-                TaskAttribute(
-                    name="name",
-                    value="value"
-                )
-            ]
+            attributes={
+                "key": "value"
+            }
         )
 
         response = self.client.put("/task/%s" % task_id, json=task.to_repr())
@@ -167,12 +158,9 @@ class TestTaskInterface(CommonTestCase):
                     negation=False
                 )
             ],
-            attributes=[
-                TaskAttribute(
-                    name="name",
-                    value="value"
-                )
-            ]
+            attributes={
+                "key": "value"
+            }
         )
 
         data = task.to_repr()
@@ -213,12 +201,9 @@ class TestTaskPostInterface(CommonTestCase):
                     negation=False
                 )
             ],
-            attributes=[
-                TaskAttribute(
-                    name="name",
-                    value="value"
-                )
-            ]
+            attributes={
+                "key": "value"
+            }
         )
 
         mock_post = Mock(return_value=task)
@@ -259,12 +244,9 @@ class TestTaskPostInterface(CommonTestCase):
                     negation=False
                 )
             ],
-            attributes=[
-                TaskAttribute(
-                    name="name",
-                    value="value"
-                )
-            ]
+            attributes={
+                "key": "value"
+            }
         )
 
         response = self.client.post("/task", json=task.to_repr())
@@ -294,12 +276,9 @@ class TestTaskPostInterface(CommonTestCase):
                     negation=False
                 )
             ],
-            attributes=[
-                TaskAttribute(
-                    name="name",
-                    value="value"
-                )
-            ]
+            attributes={
+                "key": "value"
+            }
         )
 
         mock_post = Mock()
