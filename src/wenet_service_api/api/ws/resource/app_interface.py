@@ -85,9 +85,9 @@ class AppResourceInterface(AuthenticatedResource):
             abort(500, message=f"Unable to retrieve the resource with id [{app_id}]")
             return
 
-        logger.info(f"Retrieved app [{app}]")
-        logger.info(f"{app.platform_telegram}")
-        return app.to_app_dto().to_repr(), 200
+        app_dto = app.to_app_dto()
+        logger.info(f"Retrieved app [{app_dto}]")
+        return app_dto.to_repr(), 200
 
     # def put(self, app_id: str):
     #
