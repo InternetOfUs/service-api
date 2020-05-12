@@ -61,7 +61,7 @@ class TaskManagerConnector(ServiceConnector):
             headers = self._base_headers
 
         task_repr = task.prepare_task()
-        task_repr.pop("taskId", None)
+        task_repr.pop("id", None)
         # task_repr.pop("requesterUserId", None)
         json_data = json.dumps(task_repr)
         response = requests.post(url, headers=headers, data=json_data)
