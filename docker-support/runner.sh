@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DEFAULT_VERSION="1.3.0"
+DEFAULT_VERSION="latest"
 
 
 SCRIPT_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
