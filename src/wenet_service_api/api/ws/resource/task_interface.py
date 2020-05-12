@@ -140,5 +140,5 @@ class TaskResourcePostInterface(AuthenticatedResource):
             abort(500, message="Unable to create the task")
             return
 
-        logger.info(f"Created task [{task}]")
+        logger.info(f"Created task [{created_task}]")
         return created_task.to_repr(), 201
