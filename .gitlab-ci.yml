@@ -3,6 +3,9 @@ image: docker:19.03.1
 services:
   - docker:19.03.1-dind
 
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+
 before_script:
   - apk add --update bash wget ca-certificates openssl git tar openssh-client
   - apk add ansible ansible-lint
@@ -30,7 +33,7 @@ stages:
 build_dev:
   stage: build
   script:
-    - ./docker-support/runner.sh -bs latest
+    - ./docker-support/runner.sh -bsi latest
   artifacts:
     paths:
       - service_api_image.tar.gz

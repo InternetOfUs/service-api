@@ -27,7 +27,7 @@ cp -R ${PROJECT_DIR}/wenet-common-models/test/* ${SCRIPT_DIR}/tests
 
 # Building image
 
-docker build -t ${IMAGE_NAME} ${SCRIPT_DIR}
+docker build --cache-from ${REGISTRY}/${IMAGE_NAME} -t ${IMAGE_NAME} ${SCRIPT_DIR}
 if [ $? == 0 ]; then
 
     echo "Build successful: ${IMAGE_NAME}"

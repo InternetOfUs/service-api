@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DEFAULT_VERSION="1.3.0"
+DEFAULT_VERSION="latest"
 
 
 SCRIPT_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
@@ -10,8 +10,9 @@ TEST=0
 DELETE_IF_FAILED=0
 SAVE_IMAGE_TO_TARGZ=0
 PUSH_IMAGE=0
+PULL_IMAGE=0
 
-args=`getopt btdsp $*`
+args=`getopt btdspi $*`
 # you should not use `getopt abo: "$@"` since that would parse
 # the arguments differently from what the set command below does.
 if [ $? != 0 ]
@@ -40,6 +41,9 @@ for i do
      -p)
        PUSH_IMAGE=1
        shift;;
+     -i)
+       PULL_IMAGE=1
+       shift;;
   esac
 done
 
@@ -56,6 +60,11 @@ fi
 REGISTRY=registry.u-hopper.com
 export IMAGE_NAME=wenet/service-api:${VERSION}
 export REGISTRY=${REGISTRY}
+
+
+if [ $PULL_IMAGE == 1 ]; then
+  docker pull ${REGISTRY}/${IMAGE_NAME} || true
+fi
 
 
 if [ $BUILD == 1 ]; then
@@ -92,8 +101,8 @@ if [ $PUSH_IMAGE == 1 ]; then
   docker push ${REGISTRY}/${IMAGE_NAME}
 fi
 
-if [ $BUILD == 0 ] && [ $TEST == 0 ] && [ $PUSH_IMAGE == 0 ]; then
-  echo "Need to specify at least one parameter (-b, -t, -p)"
+if [ $BUILD == 0 ] && [ $TEST == 0 ] && [ $PUSH_IMAGE == 0 ] && [ $PULL_IMAGE == 0 ]; then
+  echo "Need to specify at least one parameter (-b, -t, -p, -i)"
   exit 1
 fi
 
