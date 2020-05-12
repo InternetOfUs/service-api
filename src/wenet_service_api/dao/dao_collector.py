@@ -16,10 +16,25 @@ class DaoCollector:
 
     @staticmethod
     def build_from_env() -> DaoCollector:
-        db_connection_string = os.getenv("DB_CONNECTION_STRING")
 
-        if db_connection_string is None:
-            raise RuntimeError("Missing enviromental variable [DB_CONNECTION_STRING]")
+        mysql_db = os.getenv("MYSQL_DATABASE")
+        mysql_user = os.getenv("MYSQL_USER")
+        mysql_pass = os.getenv("MYSQL_PASSWORD")
+        mysql_host = os.getenv("MYSQL_HOST")
+        mysql_port = os.getenv("MYSQL_PORT")
+
+        if mysql_db is None:
+            raise RuntimeError("Missing enviromental variable [MYSQL_DATABASE]")
+        if mysql_user is None:
+            raise RuntimeError("Missing enviromental variable [MYSQL_USER]")
+        if mysql_pass is None:
+            raise RuntimeError("Missing enviromental variable [MYSQL_PASSWORD]")
+        if mysql_host is None:
+            raise RuntimeError("Missing enviromental variable [MYSQL_HOST]")
+        if mysql_port is None:
+            raise RuntimeError("Missing enviromental variable [MYSQL_PORT]")
+
+        db_connection_string = f"mysql+mysqlconnector://{mysql_user}:{mysql_pass}@{mysql_host}:{mysql_port}/{mysql_db}"
 
         engine = db.create_engine(db_connection_string, pool_size=5, pool_recycle=3600, pool_pre_ping=True)
         return DaoCollector(
