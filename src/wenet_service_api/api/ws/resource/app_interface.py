@@ -24,8 +24,7 @@ class AppResourceInterfaceBuilder:
 class AppResourceInterface(AuthenticatedResource):
 
     def __init__(self, dao_collector: DaoCollector, authorized_apikey: str) -> None:
-        super().__init__(authorized_apikey)
-        self._dao_collector = dao_collector
+        super().__init__(authorized_apikey, dao_collector)
 
     def get(self, app_id: str):
 
@@ -50,8 +49,7 @@ class AppResourceInterface(AuthenticatedResource):
 class ListAppUserInterface(AuthenticatedResource):
 
     def __init__(self, dao_collector: DaoCollector, authorized_apikey: str) -> None:
-        super().__init__(authorized_apikey)
-        self._dao_collector = dao_collector
+        super().__init__(authorized_apikey, dao_collector)
 
     def get(self, app_id: str):
 

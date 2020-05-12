@@ -9,6 +9,7 @@ from flask_restful import abort
 from wenet.common.model.task.transaction import TaskTransaction
 from wenet_service_api.connector.collector import ServiceConnectorCollector
 from wenet_service_api.api.ws.resource.common import AuthenticatedResource
+from wenet_service_api.dao.dao_collector import DaoCollector
 
 logger = logging.getLogger("api.api.ws.resource.task_transaction")
 
@@ -16,16 +17,16 @@ logger = logging.getLogger("api.api.ws.resource.task_transaction")
 class TaskTransactionInterfaceBuilder:
 
     @staticmethod
-    def routes(service_connector_collector: ServiceConnectorCollector, authorized_apikey: str):
+    def routes(service_connector_collector: ServiceConnectorCollector, authorized_apikey: str, dao_collector: DaoCollector):
         return [
-            (TaskTransactionInterface, "", (service_connector_collector, authorized_apikey))
+            (TaskTransactionInterface, "", (service_connector_collector, authorized_apikey, dao_collector))
         ]
 
 
 class TaskTransactionInterface(AuthenticatedResource):
 
-    def __init__(self, service_connector_collector: ServiceConnectorCollector, authorized_apikey: str) -> None:
-        super().__init__(authorized_apikey)
+    def __init__(self, service_connector_collector: ServiceConnectorCollector, authorized_apikey: str, dao_collector: DaoCollector) -> None:
+        super().__init__(authorized_apikey, dao_collector)
         self.service_connector_collector = service_connector_collector
 
     def post(self):
