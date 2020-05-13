@@ -5,6 +5,7 @@ from datetime import datetime
 
 from tests.wenet_service_api_test.api.common.common_test_case import CommonTestCase
 from wenet.common.model.app.app_dto import AppDTO
+from wenet_service_api.api.ws.resource.common import WenetSources
 from wenet_service_api.model.app import App, UserAccountTelegram
 
 
@@ -32,7 +33,7 @@ class TestAppResourceInterface(CommonTestCase):
 
         app_id = self.app.app_id
 
-        response = self.client.get(f"/app/{app_id}", headers={"apikey": self.AUTHORIZED_APIKEY})
+        response = self.client.get(f"/app/{app_id}", headers={"apikey": self.AUTHORIZED_APIKEY, "x-wenet-source": WenetSources.COMPONENT.value})
 
         self.assertEqual(response.status_code, 200)
 
@@ -49,13 +50,13 @@ class TestAppResourceInterface(CommonTestCase):
 
         response = self.client.get(f"/app/{app_id}")
 
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 401)
 
     def test_get2(self):
 
         app_id = "5354f062-ace2-4da9-bee8-b2d286814636"
 
-        response = self.client.get(f"/app/{app_id}", headers={"apikey": self.AUTHORIZED_APIKEY})
+        response = self.client.get(f"/app/{app_id}", headers={"apikey": self.AUTHORIZED_APIKEY, "x-wenet-source": WenetSources.COMPONENT.value})
 
         self.assertEqual(response.status_code, 404)
 
@@ -131,7 +132,7 @@ class TestListAppUserInterface(CommonTestCase):
 
         app_id = self.app.app_id
 
-        response = self.client.get(f"/app/{app_id}/users", headers={"apikey": self.AUTHORIZED_APIKEY})
+        response = self.client.get(f"/app/{app_id}/users", headers={"apikey": self.AUTHORIZED_APIKEY, "x-wenet-source": WenetSources.COMPONENT.value})
 
         self.assertEqual(response.status_code, 200)
 
@@ -149,12 +150,12 @@ class TestListAppUserInterface(CommonTestCase):
 
         response = self.client.get(f"/app/{app_id}/users")
 
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 401)
 
     def test_get2(self):
 
         app_id = "5354f062-ace2-4da9-bee8-b2d286814636"
 
-        response = self.client.get(f"/app/{app_id}/users", headers={"apikey": self.AUTHORIZED_APIKEY})
+        response = self.client.get(f"/app/{app_id}/users", headers={"apikey": self.AUTHORIZED_APIKEY, "x-wenet-source": WenetSources.COMPONENT.value})
 
         self.assertEqual(response.status_code, 404)

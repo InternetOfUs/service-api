@@ -6,6 +6,7 @@ from mock import Mock
 
 from tests.wenet_service_api_test.api.common.common_test_case import CommonTestCase
 from wenet.common.model.user.authentication_account import TelegramAuthenticationAccount, WeNetUserWithAccounts
+from wenet_service_api.api.ws.resource.common import WenetSources
 from wenet_service_api.model.app import App, UserAccountTelegram
 
 
@@ -63,7 +64,7 @@ class TestUserAuthenticateInterface(CommonTestCase):
             telegram_id=11
         )
 
-        response = self.client.post(f"/user/authenticate", headers={"apikey": self.AUTHORIZED_APIKEY}, json=telegram_user_account.to_repr())
+        response = self.client.post(f"/user/authenticate", headers={"apikey": self.AUTHORIZED_APIKEY, "x-wenet-source": WenetSources.COMPONENT.value}, json=telegram_user_account.to_repr())
 
         self.assertEqual(response.status_code, 200)
 
@@ -79,7 +80,7 @@ class TestUserAuthenticateInterface(CommonTestCase):
             telegram_id=11
         )
 
-        response = self.client.post(f"/user/authenticate", headers={"apikey": self.AUTHORIZED_APIKEY}, json=telegram_user_account.to_repr())
+        response = self.client.post(f"/user/authenticate", headers={"apikey": self.AUTHORIZED_APIKEY, "x-wenet-source": WenetSources.COMPONENT.value}, json=telegram_user_account.to_repr())
 
         self.assertEqual(response.status_code, 401)
 
@@ -91,7 +92,7 @@ class TestUserAuthenticateInterface(CommonTestCase):
             telegram_id=12
         )
 
-        response = self.client.post(f"/user/authenticate", headers={"apikey": self.AUTHORIZED_APIKEY}, json=telegram_user_account.to_repr())
+        response = self.client.post(f"/user/authenticate", headers={"apikey": self.AUTHORIZED_APIKEY, "x-wenet-source": WenetSources.COMPONENT.value}, json=telegram_user_account.to_repr())
 
         self.assertEqual(response.status_code, 401)
 
@@ -105,7 +106,7 @@ class TestUserAuthenticateInterface(CommonTestCase):
 
         response = self.client.post(f"/user/authenticate", json=telegram_user_account.to_repr())
 
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 401)
 
     def test_get5(self):
 
@@ -117,7 +118,7 @@ class TestUserAuthenticateInterface(CommonTestCase):
 
         response = self.client.post(f"/user/authenticate", headers={"apikey": "asd"}, json=telegram_user_account.to_repr())
 
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 401)
 
     def test_get_inactive(self):
 
@@ -186,7 +187,7 @@ class TestUserMetadataInterface(CommonTestCase):
             telegram_id=11
         )
 
-        response = self.client.post(f"/user/account/metadata", headers={"apikey": self.AUTHORIZED_APIKEY},
+        response = self.client.post(f"/user/account/metadata", headers={"apikey": self.AUTHORIZED_APIKEY, "x-wenet-source": WenetSources.COMPONENT.value},
                                     json=telegram_user_account.to_repr())
 
         self.assertEqual(response.status_code, 200)
@@ -206,7 +207,7 @@ class TestUserMetadataInterface(CommonTestCase):
 
         self.dao_collector.user_account_telegram_dao.create_or_update = mock_update
 
-        response = self.client.post(f"/user/account/metadata", headers={"apikey": self.AUTHORIZED_APIKEY},
+        response = self.client.post(f"/user/account/metadata", headers={"apikey": self.AUTHORIZED_APIKEY, "x-wenet-source": WenetSources.COMPONENT.value},
                                     json=telegram_user_account.to_repr())
 
         self.assertEqual(response.status_code, 401)
@@ -226,7 +227,7 @@ class TestUserMetadataInterface(CommonTestCase):
 
         response = self.client.post(f"/user/account/metadata", headers={"apikey": "asd"}, json=telegram_user_account.to_repr())
 
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 401)
         mock_update.assert_not_called()
 
     def test_post_invalid3(self):
@@ -243,7 +244,7 @@ class TestUserMetadataInterface(CommonTestCase):
 
         response = self.client.post(f"/user/account/metadata", json=telegram_user_account.to_repr())
 
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 401)
         mock_update.assert_not_called()
 
 
@@ -293,7 +294,7 @@ class TestUserAccountsInterface(CommonTestCase):
         self.dao_collector.user_account_telegram_dao.create_or_update(self.user_account_telegram2)
 
     def test_get(self):
-        response = self.client.get(f"/user/accounts?appId=c0b7f45b-06c7-449c-9cc0-f778d7800193&userId=1", headers={"apikey": self.AUTHORIZED_APIKEY})
+        response = self.client.get(f"/user/accounts?appId=c0b7f45b-06c7-449c-9cc0-f778d7800193&userId=1", headers={"apikey": self.AUTHORIZED_APIKEY, "x-wenet-source": WenetSources.COMPONENT.value})
 
         self.assertEqual(response.status_code, 200)
 
@@ -307,9 +308,9 @@ class TestUserAccountsInterface(CommonTestCase):
     def test_get2(self):
         response = self.client.get(f"/user/accounts?appId=c0b7f45b-06c7-449c-9cc0-f778d7800193&userId=1", headers={"apikey": "asd"})
 
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 401)
 
     def test_get3(self):
         response = self.client.get(f"/user/accounts?appId=c0b7f45b-06c7-449c-9cc0-f778d7800193&userId=1")
 
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 401)

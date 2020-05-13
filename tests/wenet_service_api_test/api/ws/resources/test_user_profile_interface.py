@@ -8,6 +8,7 @@ from tests.wenet_service_api_test.api.common.common_test_case import CommonTestC
 from wenet.common.model.norm.norm import Norm, NormOperator
 from wenet.common.model.user.common import Date, Gender, UserLanguage
 from wenet.common.model.user.user_profile import WeNetUserProfile, UserName
+from wenet_service_api.api.ws.resource.common import WenetSources
 
 
 class TestUser(CommonTestCase):
@@ -63,7 +64,7 @@ class TestUser(CommonTestCase):
         mock_get = Mock(return_value=profile)
         self.service_collector_connector.profile_manager_collector.get_profile = mock_get
 
-        response = self.client.get("/user/profile/%s" % profile_id,  headers={"apikey": self.AUTHORIZED_APIKEY})
+        response = self.client.get("/user/profile/%s" % profile_id,  headers={"apikey": self.AUTHORIZED_APIKEY, "x-wenet-source": WenetSources.COMPONENT.value})
         self.assertEqual(response.status_code, 200)
 
         json_data = json.loads(response.data)
@@ -79,7 +80,7 @@ class TestUser(CommonTestCase):
 
         profile_id = "profile-id"
         response = self.client.get("/user/profile/%s" % profile_id)
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 401)
 
     def test_put(self):
         profile_id = "profile_id"
@@ -135,7 +136,7 @@ class TestUser(CommonTestCase):
         mock_get = Mock(return_value=user_profile)
         self.service_collector_connector.profile_manager_collector.get_profile = mock_get
 
-        response = self.client.put("/user/profile/%s" % profile_id, json=user_profile.to_repr(), headers={"apikey": self.AUTHORIZED_APIKEY})
+        response = self.client.put("/user/profile/%s" % profile_id, json=user_profile.to_repr(), headers={"apikey": self.AUTHORIZED_APIKEY, "x-wenet-source": WenetSources.COMPONENT.value})
         self.assertEqual(200, response.status_code)
         # json_response = json.loads(response.data)
         # user_profile = WeNetUserProfile.from_repr(json_response)
@@ -192,7 +193,7 @@ class TestUser(CommonTestCase):
         )
 
         response = self.client.put("/user/profile/%s" % profile_id, json=user_profile.to_repr())
-        self.assertEqual(403, response.status_code)
+        self.assertEqual(401, response.status_code)
 
     def test_put2(self):
         mock_put = Mock(return_value=None)
@@ -203,7 +204,7 @@ class TestUser(CommonTestCase):
         mock_get = Mock(return_value=WeNetUserProfile.from_repr(user_profile))
         self.service_collector_connector.profile_manager_collector.get_profile = mock_get
 
-        response = self.client.put("/user/profile/profile_id", json=user_profile, headers={"apikey": self.AUTHORIZED_APIKEY})
+        response = self.client.put("/user/profile/profile_id", json=user_profile, headers={"apikey": self.AUTHORIZED_APIKEY, "x-wenet-source": WenetSources.COMPONENT.value})
         self.assertEqual(200, response.status_code)
 
         mock_put.assert_called_once()

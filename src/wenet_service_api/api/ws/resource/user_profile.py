@@ -9,6 +9,7 @@ from wenet.common.model.user.user_profile import CoreWeNetUserProfile
 from wenet_service_api.common.exception.exceptions import ResourceNotFound, NotAuthorized, BadRequestException
 from wenet_service_api.connector.collector import ServiceConnectorCollector
 from wenet_service_api.api.ws.resource.common import AuthenticatedResource
+from wenet_service_api.dao.dao_collector import DaoCollector
 
 logger = logging.getLogger("api.api.ws.resource.wenet_user_profile")
 
@@ -16,16 +17,16 @@ logger = logging.getLogger("api.api.ws.resource.wenet_user_profile")
 class WeNetUserProfileInterfaceBuilder:
 
     @staticmethod
-    def routes(service_connector_collector: ServiceConnectorCollector, authorized_apikey: str):
+    def routes(service_connector_collector: ServiceConnectorCollector, authorized_apikey: str, dao_collector: DaoCollector):
         return [
-            (WeNetUserProfileInterface, "/profile/<string:profile_id>", (service_connector_collector, authorized_apikey))
+            (WeNetUserProfileInterface, "/profile/<string:profile_id>", (service_connector_collector, authorized_apikey, dao_collector))
         ]
 
 
 class WeNetUserProfileInterface(AuthenticatedResource):
 
-    def __init__(self, service_connector_collector: ServiceConnectorCollector, authorized_apikey: str) -> None:
-        super().__init__(authorized_apikey)
+    def __init__(self, service_connector_collector: ServiceConnectorCollector, authorized_apikey: str, dao_collector: DaoCollector) -> None:
+        super().__init__(authorized_apikey, dao_collector)
         self._service_connector_collector = service_connector_collector
 
     def get(self, profile_id: str):
