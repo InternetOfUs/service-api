@@ -7,15 +7,7 @@ cache:
   key: ${CI_COMMIT_REF_SLUG}
 
 before_script:
-  - apk add --update bash wget ca-certificates openssl git tar openssh-client
-  - apk add ansible ansible-lint
-  - mkdir /secret
-  - echo "$GITLAB_SSH_KEY" > /secret/ansible.key
-  - echo "[deploy_target]" > /secret/inventory
-  - echo "${DEPLOYMENT_SERVER_IP} ansible_ssh_private_key_file=/secret/ansible.key ansible_user=gitlab" >> /secret/inventory
-  - chmod 400 /secret/ansible.key
-  - export ANSIBLE_HOST_KEY_CHECKING=False
-
+  - apk add --update bash wget ca-certificates openssl git tar openssh-client curl
   - docker login registry.u-hopper.com -u $REGISTRY_USERNAME -p $REGISTRY_PASSWORD
 
 variables:
@@ -28,7 +20,7 @@ stages:
   - build
   - test
   - push
-  - deploy
+  - trigger-deploy
 
 build_dev:
   stage: build
@@ -38,8 +30,8 @@ build_dev:
     paths:
       - service_api_image.tar.gz
     expire_in: 1 day
-  only:
-    - develop
+#  only:
+#    - develop
 
 test_dev:
     stage: test
@@ -48,8 +40,8 @@ test_dev:
         - ./docker-support/runner.sh -t latest
     dependencies:
         - build_dev
-    only:
-      - develop
+#    only:
+#      - develop
 
 push_dev:
   stage: push
@@ -59,18 +51,18 @@ push_dev:
   dependencies:
     - build_dev
     - test_dev
-  only:
-    - develop
+#  only:
+#    - develop
 
-deploy_dev:
-   stage: deploy
+trigger-deploy_dev:
+   stage: trigger-deploy
    script:
-     - ansible-playbook --user gitlab --inventory /secret/inventory ansible/deploy-test.yml
+     - curl --request POST --form "token=${CI_DEPLOY_TOKEN}" --form ref=master https://lab.u-hopper.com/api/v4/projects/29/trigger/pipeline
    dependencies:
-     - push_dev
      - build_dev
+     - push_dev
      - test_dev
    environment:
      name: testing
-   only:
-      - develop
+#   only:
+#      - develop
