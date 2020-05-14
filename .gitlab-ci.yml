@@ -1,0 +1,105 @@
+image: docker:19.03.1
+
+services:
+  - docker:19.03.1-dind
+
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+
+before_script:
+  - apk add --update bash wget ca-certificates openssl git tar openssh-client curl
+  - docker login registry.u-hopper.com -u $REGISTRY_USERNAME -p $REGISTRY_PASSWORD
+
+variables:
+  DOCKER_TLS_CERTDIR: ""
+  DOCKER_HOST: "tcp://docker:2375"
+  GIT_SUBMODULE_STRATEGY: recursive
+
+
+stages:
+  - build
+  - test
+  - push
+  - trigger-deploy
+
+build_dev:
+  stage: build
+  script:
+    - ./docker-support/runner.sh -bsi latest
+  artifacts:
+    paths:
+      - service_api_image.tar.gz
+    expire_in: 1 day
+  only:
+    - develop
+
+build_prod:
+  stage: build
+  script:
+    - ./docker-support/runner.sh -bsi $CI_COMMIT_TAG
+  artifacts:
+    paths:
+      - service_api_image.tar.gz
+    expire_in: 1 day
+  only:
+    - triggers
+    - ${RELEASE_TAG}
+
+test_dev:
+    stage: test
+    script:
+        - docker load -i service_api_image.tar.gz
+        - ./docker-support/runner.sh -t latest
+    dependencies:
+        - build_dev
+    only:
+      - develop
+
+test_prod:
+    stage: test
+    script:
+        - docker load -i service_api_image.tar.gz
+        - ./docker-support/runner.sh -t $CI_COMMIT_TAG
+    dependencies:
+        - build_dev
+    only:
+      - triggers
+      - ${RELEASE_TAG}
+
+push_dev:
+  stage: push
+  script:
+    - docker load -i service_api_image.tar.gz
+    - ./docker-support/runner.sh -p latest
+  dependencies:
+    - build_dev
+    - test_dev
+  only:
+    - develop
+
+trigger-deploy_dev:
+   stage: trigger-deploy
+   script:
+     - curl --request POST --form "token=${CI_DEPLOY_TOKEN}" --form ref=master --form "variables[DEPLOY_DEV]=1" https://lab.u-hopper.com/api/v4/projects/29/trigger/pipeline
+   dependencies:
+     - build_dev
+     - push_dev
+     - test_dev
+   environment:
+     name: testing
+   only:
+      - develop
+
+trigger-deploy_prod:
+   stage: trigger-deploy
+   script:
+     - curl --request POST --form "token=${CI_DEPLOY_TOKEN}" --form ref=${RELEASE_TAG} --form "variables[DEPLOY_PROD]=1" https://lab.u-hopper.com/api/v4/projects/29/trigger/pipeline
+   dependencies:
+     - build_dev
+     - push_dev
+     - test_dev
+   environment:
+     name: testing
+   only:
+      - triggers
+      - ${RELEASE_TAG}

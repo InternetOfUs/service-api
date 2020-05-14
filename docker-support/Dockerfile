@@ -1,6 +1,8 @@
-FROM python:3.8
+FROM python:3.8-alpine
 
 MAINTAINER Stefano Tavonatti <stefano.tavonatti@u-hopper.com>
+
+RUN apk add --update bash
 
 COPY requirements.txt .
 
@@ -15,7 +17,6 @@ COPY run_tests.sh .
 
 ADD src/ /scripts/
 ADD tests/ /scripts/tests/
-ADD migrations/ /scripts/migrations
 
 ENV PYTHONPATH /scripts
 
