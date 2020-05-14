@@ -57,7 +57,7 @@ push_dev:
 trigger-deploy_dev:
    stage: trigger-deploy
    script:
-     - curl --request POST --form "token=${CI_DEPLOY_TOKEN}" --form ref=master https://lab.u-hopper.com/api/v4/projects/29/trigger/pipeline
+     - curl --request POST --form "token=${CI_DEPLOY_TOKEN}" --form ref=feature/prod_ci https://lab.u-hopper.com/api/v4/projects/29/trigger/pipeline
    dependencies:
      - build_dev
      - push_dev
