@@ -103,14 +103,3 @@ push_prod:
     - triggers
     - ${RELEASE_TAG}
 
-trigger-deploy_prod:
-   stage: trigger-deploy
-   script:
-     - curl --request POST --form "token=${CI_DEPLOY_TOKEN}" --form ref=${RELEASE_TAG} --form "variables[DEPLOY_PROD]=1" https://lab.u-hopper.com/api/v4/projects/29/trigger/pipeline
-   dependencies:
-     - build_prod
-     - test_prod
-     - push_prod
-   only:
-      - triggers
-      - ${RELEASE_TAG}
