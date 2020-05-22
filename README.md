@@ -6,10 +6,15 @@ The Service APIs component is the one responsible for allowing WeNet application
 
 It exposes dedicated endpoints allowing to manage:
 
-* applications
-* users
-* user profiles
-* tasks (and associated transactions)
+* applications;
+* users;
+* user profiles;
+* tasks (and associated transactions).
+
+The APIs defined in this component are meant to be used by:
+
+* other components of the WeNet platform;
+* WeNet applications.
 
 
 ## Setup and configuration
