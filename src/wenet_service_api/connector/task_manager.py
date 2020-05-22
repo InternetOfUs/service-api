@@ -8,6 +8,7 @@ import requests
 
 from wenet.common.model.norm.norm import Norm, NormOperator
 from wenet.common.model.task.task import Task, TaskGoal, TaskPage
+from wenet.common.model.task.transaction import TaskTransaction
 from wenet_service_api.common.exception.exceptions import ResourceNotFound, NotAuthorized, BadRequestException
 from wenet_service_api.connector.service_connector import ServiceConnector
 
@@ -156,6 +157,27 @@ class TaskManagerConnector(ServiceConnector):
         else:
             raise Exception(f"Unable to edit the task [{task.task_id}], server respond with [{response.status_code}] [{response.text}]")
 
+    def post_task_transaction(self, task_transaction: TaskTransaction, headers: Optional[dict] = None):
+        url = f"{self._base_url}/tasks/transactions"
+
+        if headers is not None:
+            headers.update(self._base_headers)
+        else:
+            headers = self._base_headers
+
+        json_data = json.dumps(task_transaction.to_repr())
+
+        response = requests.post(url, headers=headers, data=json_data)
+
+        if response.status_code == 200:
+            return
+        elif response.status_code == 401 or response.status_code == 403:
+            raise NotAuthorized(f"Not authorized {response.text}")
+        elif response.status_code == 400:
+            raise BadRequestException(f"Bad request {response.text}")
+        else:
+            raise Exception(f"Unable to post the task transaction [{task_transaction}], server respond with [{response.status_code}] [{response.text}]")
+
 
 class DummyTaskManagerConnector(TaskManagerConnector):
 
@@ -268,3 +290,6 @@ class DummyTaskManagerConnector(TaskManagerConnector):
 
     def updated_task(self, task: Task, headers: Optional[dict] = None) -> Task:
         return task
+
+    def post_task_transaction(self, task_transaction: TaskTransaction, headers: Optional[dict] = None):
+        return
