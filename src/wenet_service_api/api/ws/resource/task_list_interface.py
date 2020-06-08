@@ -44,6 +44,7 @@ class TaskListResourceInterface(AuthenticatedResource):
         deadline_to = request.args.get('deadlineTo', None)
         offset = request.args.get('offset', None)
         limit = request.args.get('limit', None)
+        has_close_ts = request.args.get('hasCloseTs', None)
 
         try:
             task_page = self._service_connector_collector.task_manager_connector.get_tasks(
@@ -59,7 +60,8 @@ class TaskListResourceInterface(AuthenticatedResource):
                 deadline_from=deadline_from,
                 deadline_to=deadline_to,
                 offset=offset,
-                limit=limit
+                limit=limit,
+                has_close_ts=has_close_ts
             )
         except NotAuthorized as e:
             logger.exception(f"Unauthorized to retrieve the task list", exc_info=e)

@@ -67,7 +67,8 @@ class TaskManagerConnector(ServiceConnector):
                   deadline_to: Optional[int] = None,
                   offset: Optional[int] = None,
                   limit: Optional[int] = None,
-                  headers: Optional[dict] = None
+                  headers: Optional[dict] = None,
+                  has_close_ts: Optional[dict] = None
                   ) -> TaskPage:
         url = f"{self._base_url}/tasks"
 
@@ -89,7 +90,8 @@ class TaskManagerConnector(ServiceConnector):
             "deadlineFrom": deadline_from,
             "deadlineTo": deadline_to,
             "offset": offset,
-            "limit": limit
+            "limit": limit,
+            "hasCloseTs": has_close_ts
         }
 
         query_params = {}
