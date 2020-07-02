@@ -171,7 +171,7 @@ class TaskManagerConnector(ServiceConnector):
 
         response = requests.post(url, headers=headers, data=json_data)
 
-        if response.status_code == 200:
+        if response.status_code == 200 or response.status_code == 201 or response.status_code == 202:
             return
         elif response.status_code == 401 or response.status_code == 403:
             raise NotAuthorized(f"Not authorized {response.text}")
