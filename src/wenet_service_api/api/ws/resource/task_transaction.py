@@ -9,7 +9,7 @@ from flask_restful import abort
 from wenet.common.model.task.transaction import TaskTransaction
 from wenet_service_api.common.exception.exceptions import NotAuthorized, BadRequestException
 from wenet_service_api.connector.collector import ServiceConnectorCollector
-from wenet_service_api.api.ws.resource.common import AuthenticatedResource
+from wenet_service_api.api.ws.resource.common import AuthenticatedResource, WenetSource
 from wenet_service_api.dao.dao_collector import DaoCollector
 
 logger = logging.getLogger("api.api.ws.resource.task_transaction")
@@ -32,7 +32,8 @@ class TaskTransactionInterface(AuthenticatedResource):
 
     def post(self):
 
-        self._check_authentication()
+        # TODO check source
+        self._check_authentication([WenetSource.COMPONENT, WenetSource.APP, WenetSource.OAUTH2_AUTHORIZATION_CODE])
 
         try:
             posted_data: dict = request.get_json()

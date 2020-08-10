@@ -1,7 +1,7 @@
 from __future__ import absolute_import, annotations
 
 from tests.wenet_service_api_test.api.common.common_test_case import CommonTestCase
-from wenet_service_api.api.ws.resource.common import WenetSources
+from wenet_service_api.api.ws.resource.common import WenetSource
 
 
 class TestMessageInterface(CommonTestCase):
@@ -32,7 +32,7 @@ class TestMessageInterface(CommonTestCase):
             "metadata": {}
         }
 
-        response = self.client.post("/messages", json=message, headers={"apikey": self.AUTHORIZED_APIKEY, "x-wenet-source": WenetSources.COMPONENT.value})
+        response = self.client.post("/messages", json=message, headers={"apikey": self.AUTHORIZED_APIKEY, "x-wenet-source": WenetSource.COMPONENT.value})
         self.assertEqual(response.status_code, 201)
 
     def test_post_not_authorized(self):
@@ -89,5 +89,5 @@ class TestMessageInterface(CommonTestCase):
             "metadata": {}
         }
 
-        response = self.client.post("/messages", json=message, headers={"apikey": self.AUTHORIZED_APIKEY, "x-wenet-source": WenetSources.COMPONENT.value})
+        response = self.client.post("/messages", json=message, headers={"apikey": self.AUTHORIZED_APIKEY, "x-wenet-source": WenetSource.COMPONENT.value})
         self.assertEqual(response.status_code, 400)

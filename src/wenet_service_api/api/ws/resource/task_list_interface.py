@@ -5,7 +5,7 @@ import logging
 from flask import request
 from flask_restful import abort
 
-from wenet_service_api.api.ws.resource.common import AuthenticatedResource
+from wenet_service_api.api.ws.resource.common import AuthenticatedResource, WenetSource
 from wenet_service_api.common.exception.exceptions import NotAuthorized
 from wenet_service_api.connector.collector import ServiceConnectorCollector
 from wenet_service_api.dao.dao_collector import DaoCollector
@@ -29,7 +29,8 @@ class TaskListResourceInterface(AuthenticatedResource):
         self._service_connector_collector = service_connector_collector
 
     def get(self):
-        self._check_authentication()
+        # TODO check source
+        self._check_authentication([WenetSource.COMPONENT, WenetSource.APP, WenetSource.OAUTH2_AUTHORIZATION_CODE])
 
         app_id = request.args.get('appId', None)
         requester_id = request.args.get('requesterId', None)
