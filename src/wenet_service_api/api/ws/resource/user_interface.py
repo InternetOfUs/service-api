@@ -33,7 +33,7 @@ class UserAuthenticateInterface(AuthenticatedResource):
 
     def post(self):
         # TODO check oauth2
-        self._check_authentication([WenetSource.COMPONENT, WenetSource.APP, WenetSource.OAUTH2_AUTHORIZATION_CODE])
+        self._check_authentication([WenetSource.COMPONENT, WenetSource.OAUTH2_AUTHORIZATION_CODE])
 
         try:
             posted_data: dict = request.get_json()
@@ -80,7 +80,7 @@ class UserMetadataInterface(AuthenticatedResource):
 
     def post(self):
         # tODO check oauth
-        self._check_authentication([WenetSource.COMPONENT, WenetSource.APP, WenetSource.OAUTH2_AUTHORIZATION_CODE])
+        self._check_authentication([WenetSource.COMPONENT, WenetSource.OAUTH2_AUTHORIZATION_CODE])
 
         try:
             posted_data: dict = request.get_json()
@@ -131,7 +131,7 @@ class UserAccountsInterface(AuthenticatedResource):
     def get(self):
 
         # TODO check source
-        self._check_authentication([WenetSource.COMPONENT, WenetSource.APP, WenetSource.OAUTH2_AUTHORIZATION_CODE])
+        self._check_authentication([WenetSource.COMPONENT, WenetSource.OAUTH2_AUTHORIZATION_CODE])
 
         app_id = request.args.get("appId")
         user_id_str = request.args.get("userId")

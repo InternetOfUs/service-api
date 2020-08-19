@@ -64,27 +64,28 @@ class TestAuthentication(CommonTestCase):
 
         self.assertEqual(response.status_code, 401)
 
-    def test_app_authentication(self):
-        app_id = self.app.app_id
-
-        response = self.client.get(
-            f"/app/{app_id}",
-            headers={
-                "apikey": self.AUTHORIZED_APIKEY,
-                "x-wenet-source": WenetSource.APP.value,
-                "appId": self.app.app_id,
-                "appToken": self.app.app_token
-            }
-        )
-
-        self.assertEqual(response.status_code, 200)
-
-        json_data = json.loads(response.data)
-        result_app = AppDTO.from_repr(json_data)
-
-        self.assertIsInstance(result_app, AppDTO)
-        self.assertEqual(app_id, result_app.app_id)
-        self.assertEqual(self.app_dto, result_app)
+    # TODO remove
+    # def test_app_authentication(self):
+    #     app_id = self.app.app_id
+    #
+    #     response = self.client.get(
+    #         f"/app/{app_id}",
+    #         headers={
+    #             "apikey": self.AUTHORIZED_APIKEY,
+    #             "x-wenet-source": WenetSource.APP.value,
+    #             "appId": self.app.app_id,
+    #             "appToken": self.app.app_token
+    #         }
+    #     )
+    #
+    #     self.assertEqual(response.status_code, 200)
+    #
+    #     json_data = json.loads(response.data)
+    #     result_app = AppDTO.from_repr(json_data)
+    #
+    #     self.assertIsInstance(result_app, AppDTO)
+    #     self.assertEqual(app_id, result_app.app_id)
+    #     self.assertEqual(self.app_dto, result_app)
 
     def test_app_authentication2(self):
         app_id = self.app.app_id

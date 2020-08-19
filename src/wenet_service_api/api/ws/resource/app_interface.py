@@ -28,7 +28,7 @@ class AppResourceInterface(AuthenticatedResource):
 
     def get(self, app_id: str):
 
-        self._check_authentication([WenetSource.COMPONENT, WenetSource.APP])
+        self._check_authentication([WenetSource.COMPONENT])
 
         try:
             app = self._dao_collector.app_dao.get(app_id)
@@ -53,7 +53,7 @@ class ListAppUserInterface(AuthenticatedResource):
 
     def get(self, app_id: str):
 
-        self._check_authentication([WenetSource.COMPONENT, WenetSource.APP])
+        self._check_authentication([WenetSource.COMPONENT])
 
         try:
             app = self._dao_collector.app_dao.get(app_id)

@@ -32,7 +32,7 @@ class TaskResourceInterface(AuthenticatedResource):
 
     def get(self, task_id: str):
 
-        self._check_authentication([WenetSource.COMPONENT, WenetSource.APP, WenetSource.OAUTH2_AUTHORIZATION_CODE])
+        self._check_authentication([WenetSource.COMPONENT, WenetSource.OAUTH2_AUTHORIZATION_CODE])
 
         try:
             task = self.service_connector_collector.task_manager_connector.get_task(task_id)
@@ -53,7 +53,7 @@ class TaskResourceInterface(AuthenticatedResource):
         return task.to_repr(), 200
 
     def put(self, task_id: str):
-        self._check_authentication([WenetSource.COMPONENT, WenetSource.APP, WenetSource.OAUTH2_AUTHORIZATION_CODE])
+        self._check_authentication([WenetSource.COMPONENT, WenetSource.OAUTH2_AUTHORIZATION_CODE])
 
         try:
             posted_data: dict = request.get_json()
@@ -105,7 +105,7 @@ class TaskResourcePostInterface(AuthenticatedResource):
         self._service_connector_collector = service_connector_collector
 
     def post(self):
-        self._check_authentication([WenetSource.COMPONENT, WenetSource.APP, WenetSource.OAUTH2_AUTHORIZATION_CODE])
+        self._check_authentication([WenetSource.COMPONENT, WenetSource.OAUTH2_AUTHORIZATION_CODE])
 
         try:
             posted_data: dict = request.get_json()

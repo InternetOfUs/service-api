@@ -33,7 +33,7 @@ class TaskTransactionInterface(AuthenticatedResource):
     def post(self):
 
         # TODO check source
-        self._check_authentication([WenetSource.COMPONENT, WenetSource.APP, WenetSource.OAUTH2_AUTHORIZATION_CODE])
+        self._check_authentication([WenetSource.COMPONENT, WenetSource.OAUTH2_AUTHORIZATION_CODE])
 
         try:
             posted_data: dict = request.get_json()

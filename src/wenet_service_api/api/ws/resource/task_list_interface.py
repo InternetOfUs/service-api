@@ -30,7 +30,7 @@ class TaskListResourceInterface(AuthenticatedResource):
 
     def get(self):
         # TODO check source
-        self._check_authentication([WenetSource.COMPONENT, WenetSource.APP, WenetSource.OAUTH2_AUTHORIZATION_CODE])
+        self._check_authentication([WenetSource.COMPONENT, WenetSource.OAUTH2_AUTHORIZATION_CODE])
 
         app_id = request.args.get('appId', None)
         requester_id = request.args.get('requesterId', None)

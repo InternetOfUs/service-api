@@ -46,7 +46,7 @@ class WeNetUserProfileInterface(AuthenticatedResource):
 
     def get(self):
 
-        authentication_result = self._check_authentication([WenetSource.COMPONENT, WenetSource.APP, WenetSource.OAUTH2_AUTHORIZATION_CODE])
+        authentication_result = self._check_authentication([WenetSource.COMPONENT, WenetSource.OAUTH2_AUTHORIZATION_CODE])
 
         profile_id = self._get_user_id(authentication_result)
 
@@ -70,7 +70,7 @@ class WeNetUserProfileInterface(AuthenticatedResource):
 
     def put(self):
 
-        authentication_result = self._check_authentication([WenetSource.COMPONENT, WenetSource.APP, WenetSource.OAUTH2_AUTHORIZATION_CODE])
+        authentication_result = self._check_authentication([WenetSource.COMPONENT, WenetSource.OAUTH2_AUTHORIZATION_CODE])
 
         profile_id = self._get_user_id(authentication_result)
 
@@ -131,7 +131,7 @@ class WeNetUserProfileInterface(AuthenticatedResource):
         return {}, 200
 
     def post(self):
-        authentication_result = self._check_authentication([WenetSource.COMPONENT, WenetSource.APP, WenetSource.OAUTH2_AUTHORIZATION_CODE])
+        authentication_result = self._check_authentication([WenetSource.COMPONENT, WenetSource.OAUTH2_AUTHORIZATION_CODE])
 
         profile_id = self._get_user_id(authentication_result)
 
@@ -254,7 +254,7 @@ class LegacyWeNetUserProfileInterface(AuthenticatedResource):
 
     def get(self, profile_id: str):
 
-        authentication_result = self._check_authentication([WenetSource.COMPONENT, WenetSource.APP, WenetSource.OAUTH2_AUTHORIZATION_CODE])
+        authentication_result = self._check_authentication([WenetSource.COMPONENT, WenetSource.OAUTH2_AUTHORIZATION_CODE])
 
         if isinstance(authentication_result, Oauth2Result) and profile_id != authentication_result.wenet_user_id:
             abort(401)
@@ -280,7 +280,7 @@ class LegacyWeNetUserProfileInterface(AuthenticatedResource):
 
     def put(self, profile_id: str):
 
-        authentication_result = self._check_authentication([WenetSource.COMPONENT, WenetSource.APP, WenetSource.OAUTH2_AUTHORIZATION_CODE])
+        authentication_result = self._check_authentication([WenetSource.COMPONENT, WenetSource.OAUTH2_AUTHORIZATION_CODE])
 
         if isinstance(authentication_result, Oauth2Result) and profile_id != authentication_result.wenet_user_id:
             abort(401)
@@ -343,7 +343,7 @@ class LegacyWeNetUserProfileInterface(AuthenticatedResource):
         return {}, 200
 
     def post(self, profile_id):
-        authentication_result = self._check_authentication([WenetSource.COMPONENT, WenetSource.APP, WenetSource.OAUTH2_AUTHORIZATION_CODE])
+        authentication_result = self._check_authentication([WenetSource.COMPONENT, WenetSource.OAUTH2_AUTHORIZATION_CODE])
 
         if isinstance(authentication_result, Oauth2Result) and profile_id != authentication_result.wenet_user_id:
             abort(401)
