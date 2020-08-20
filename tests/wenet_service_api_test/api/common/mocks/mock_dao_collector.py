@@ -3,6 +3,7 @@ from __future__ import absolute_import, annotations
 from sqlalchemy import MetaData, Table, Column, String, create_engine, Integer, Text, ForeignKey
 
 from wenet_service_api.dao.app_dao import AppDao
+from wenet_service_api.dao.app_developer_dao import AppDeveloperDao
 from wenet_service_api.dao.dao_collector import DaoCollector
 from wenet_service_api.dao.user_account_telegram_dao import UserAccountTelegramDao
 
@@ -44,6 +45,12 @@ class DataAccessLayer:
         Column("active", Integer)
 
     )
+    app_developer = Table(
+        "app_developer", meta,
+        Column("app_id", String(128), ForeignKey("app.id"), primary_key=True),
+        Column("user_id", Integer, primary_key=True),
+        Column("created_at", Integer)
+    )
 
     def db_init(self, conn_string):
         self.engine = create_engine(conn_string or self.conn_string)
@@ -59,5 +66,6 @@ class MockDaoCollector(DaoCollector):
         dal.db_init("sqlite:///:memory:")
         return DaoCollector(
             app_dao=AppDao(dal.engine),
-            user_account_telegram_dao=UserAccountTelegramDao(dal.engine)
+            user_account_telegram_dao=UserAccountTelegramDao(dal.engine),
+            app_developer_dao=AppDeveloperDao(dal.engine)
         )

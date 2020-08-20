@@ -2,6 +2,7 @@ from __future__ import absolute_import, annotations
 
 import json
 from copy import deepcopy
+from datetime import datetime
 
 from mock import Mock
 
@@ -10,9 +11,45 @@ from wenet.common.model.norm.norm import Norm, NormOperator
 from wenet.common.model.user.common import Date, Gender, UserLanguage
 from wenet.common.model.user.user_profile import WeNetUserProfile, UserName
 from wenet_service_api.api.ws.resource.common import WenetSource, Scope
+from wenet_service_api.model.app import App, AppDeveloper
 
 
 class TestUser(CommonTestCase):
+    app = App(
+        app_id="1",
+        status="1",
+        name="name",
+        description="description",
+        app_token="dshfgsahjfsdfdsjhfgsd",
+        message_callback_url="url",
+        metadata={},
+        creation_ts=int(datetime(2020, 2, 27).timestamp()),
+        last_update_ts=int(datetime(2020, 2, 27).timestamp())
+    )
+
+    app1 = App(
+        app_id="2",
+        status="0",
+        name="name",
+        description="description",
+        app_token="dshfgsahjfsdfdsjhfgsd",
+        message_callback_url="url",
+        metadata={},
+        creation_ts=int(datetime(2020, 2, 27).timestamp()),
+        last_update_ts=int(datetime(2020, 2, 27).timestamp())
+    )
+
+    app_developer = AppDeveloper(
+        app_id="2",
+        user_id=1,
+        created_at=int(datetime(2020, 2, 27).timestamp())
+    )
+
+    def setUp(self) -> None:
+        super().setUp()
+        self.dao_collector.app_dao.create_or_update(self.app)
+        self.dao_collector.app_dao.create_or_update(self.app1)
+        self.dao_collector.app_developer_dao.create_or_update(self.app_developer)
 
     def test_get(self):
         profile_id = "profile-id"
@@ -78,7 +115,7 @@ class TestUser(CommonTestCase):
         mock_get.assert_called_once()
 
     def test_get_oauth(self):
-        profile_id = "profile-id"
+        profile_id = "1"
         profile = WeNetUserProfile(
             name=UserName(
                 first="first",
@@ -132,7 +169,8 @@ class TestUser(CommonTestCase):
             "apikey": self.AUTHORIZED_APIKEY,
             "x-wenet-source": WenetSource.OAUTH2_AUTHORIZATION_CODE.value,
             "X-Authenticated-Scope": f"{Scope.ID.value} {Scope.FIRST_NAME.value}",
-            "X-Authenticated-Userid": profile_id
+            "X-Authenticated-Userid": profile_id,
+            "X-Consumer-Username": "app_1"
         })
         self.assertEqual(200, response.status_code)
 
@@ -157,6 +195,149 @@ class TestUser(CommonTestCase):
         self.assertIsNone(user_profile.nationality)
         self.assertIsNone(user_profile.date_of_birth)
         mock_get.assert_called_once()
+
+    def test_get_oauth3(self):
+        profile_id = "1"
+        profile = WeNetUserProfile(
+            name=UserName(
+                first="first",
+                middle="middle",
+                last="last",
+                prefix="prefix",
+                suffix="suffix"
+            ),
+            date_of_birth=Date(
+                year=2020,
+                month=1,
+                day=20
+            ),
+            gender=Gender.MALE,
+            email="email@example.com",
+            phone_number="phone number",
+            locale="it_IT",
+            avatar="avatar",
+            nationality="it",
+            languages=[
+                UserLanguage(
+                    name="ita",
+                    level="C2",
+                    code="it"
+                )
+            ],
+            occupation="occupation",
+            creation_ts=1579536160,
+            last_update_ts=1579536160,
+            profile_id=profile_id,
+            norms=[
+                Norm(
+                    norm_id="norm-id",
+                    attribute="attribute",
+                    operator=NormOperator.EQUALS,
+                    comparison=True,
+                    negation=False
+                )
+            ],
+            planned_activities=[],
+            relevant_locations=[],
+            relationships=[],
+            social_practices=[],
+            personal_behaviours=[]
+        )
+
+        mock_get = Mock(return_value=deepcopy(profile))
+        self.service_collector_connector.profile_manager_collector.get_profile = mock_get
+
+        response = self.client.get("/user/profile", headers={
+            "apikey": self.AUTHORIZED_APIKEY,
+            "x-wenet-source": WenetSource.OAUTH2_AUTHORIZATION_CODE.value,
+            "X-Authenticated-Scope": f"{Scope.ID.value} {Scope.FIRST_NAME.value}",
+            "X-Authenticated-Userid": profile_id,
+            "X-Consumer-Username": "app_2"
+        })
+        self.assertEqual(200, response.status_code)
+
+        json_data = json.loads(response.data)
+
+        user_profile = WeNetUserProfile.from_repr(json_data)
+
+        self.assertIsInstance(user_profile, WeNetUserProfile)
+        self.assertEqual(user_profile.profile_id, profile_id)
+        self.assertNotEqual(profile, user_profile)
+
+        self.assertIsNotNone(user_profile.profile_id)
+        self.assertIsNotNone(user_profile.name.first)
+        self.assertIsNone(user_profile.name.last)
+        self.assertIsNone(user_profile.name.middle)
+        self.assertIsNone(user_profile.name.prefix)
+        self.assertIsNone(user_profile.name.suffix)
+        self.assertIsNone(user_profile.gender)
+        self.assertIsNone(user_profile.email)
+        self.assertIsNone(user_profile.phone_number)
+        self.assertIsNone(user_profile.locale)
+        self.assertIsNone(user_profile.nationality)
+        self.assertIsNone(user_profile.date_of_birth)
+        mock_get.assert_called_once()
+
+    def test_get_oauth4(self):
+        profile_id = "2"
+        profile = WeNetUserProfile(
+            name=UserName(
+                first="first",
+                middle="middle",
+                last="last",
+                prefix="prefix",
+                suffix="suffix"
+            ),
+            date_of_birth=Date(
+                year=2020,
+                month=1,
+                day=20
+            ),
+            gender=Gender.MALE,
+            email="email@example.com",
+            phone_number="phone number",
+            locale="it_IT",
+            avatar="avatar",
+            nationality="it",
+            languages=[
+                UserLanguage(
+                    name="ita",
+                    level="C2",
+                    code="it"
+                )
+            ],
+            occupation="occupation",
+            creation_ts=1579536160,
+            last_update_ts=1579536160,
+            profile_id=profile_id,
+            norms=[
+                Norm(
+                    norm_id="norm-id",
+                    attribute="attribute",
+                    operator=NormOperator.EQUALS,
+                    comparison=True,
+                    negation=False
+                )
+            ],
+            planned_activities=[],
+            relevant_locations=[],
+            relationships=[],
+            social_practices=[],
+            personal_behaviours=[]
+        )
+
+        mock_get = Mock(return_value=deepcopy(profile))
+        self.service_collector_connector.profile_manager_collector.get_profile = mock_get
+
+        response = self.client.get("/user/profile", headers={
+            "apikey": self.AUTHORIZED_APIKEY,
+            "x-wenet-source": WenetSource.OAUTH2_AUTHORIZATION_CODE.value,
+            "X-Authenticated-Scope": f"{Scope.ID.value} {Scope.FIRST_NAME.value}",
+            "X-Authenticated-Userid": profile_id,
+            "X-Consumer-Username": "app_2"
+        })
+        self.assertEqual(403, response.status_code)
+
 
     def test_get_not_authorized(self):
 
@@ -283,7 +464,8 @@ class TestUser(CommonTestCase):
             "apikey": self.AUTHORIZED_APIKEY,
             "x-wenet-source": WenetSource.OAUTH2_AUTHORIZATION_CODE.value,
             "X-Authenticated-Scope": f"{Scope.ID.value} {Scope.FIRST_NAME.value}",
-            "X-Authenticated-Userid": profile_id
+            "X-Authenticated-Userid": profile_id,
+            "X-Consumer-Username": "app_1"
         })
         self.assertEqual(200, response.status_code)
 

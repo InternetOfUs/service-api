@@ -165,8 +165,9 @@ class AuthenticatedResource(Resource):
 
             authenticated_user_id = request.headers.get("X-Authenticated-Userid")
             scopes = request.headers.get("X-Authenticated-Scope")
+            consumer_id = request.headers.get("X-Consumer-Username")
 
-            return self._check_oauth2_code_authentication(authenticated_user_id, scopes)
+            return self._check_oauth2_code_authentication(authenticated_user_id, scopes, consumer_id)
 
         else:
             logger.error(f"Unable to authenticate with header [{wenet_source.value}]")
@@ -207,8 +208,7 @@ class AuthenticatedResource(Resource):
             logger.warning(f"Invalid token form app [{app_id}] in request from [{request.remote_addr}], user agent: [{request.user_agent}]")
             abort(401, message="Not authorized")
 
-    @staticmethod
-    def _check_oauth2_code_authentication(authenticated_user_id: Optional[str], scopes_str: Optional[str]) -> Oauth2Result:
+    def _check_oauth2_code_authentication(self, authenticated_user_id: Optional[str], scopes_str: Optional[str], consumer_id: Optional[str]) -> Oauth2Result:
         if authenticated_user_id is None or authenticated_user_id == "":
             abort(401, message="Missing userid or scopes")
             return
@@ -217,10 +217,42 @@ class AuthenticatedResource(Resource):
             abort(401, message="Missing userid or scopes")
             return
 
+        if consumer_id is None or consumer_id == "":
+            abort(401, message="Missing consumer id")
+            return
+
         try:
             scopes = list(Scope(x) for x in scopes_str.split(" "))
         except ValueError:
             abort(403, message="Invalid scopes")
+            return
 
-        return Oauth2Result(authenticated_user_id, scopes)
+        app_id = consumer_id.replace("app_", "")
+
+        try:
+            app = self._dao_collector.app_dao.get(app_id)
+        except ResourceNotFound:
+            logger.info(f"Invalid app [{app_id}]")
+            abort(403, message="Invalid app")
+            return
+        except Exception as e:
+            logger.exception(f"Unable to find the app with id [{app_id}]", exc_info=e)
+            abort(403, message="Invalid app")
+            return
+
+        if app.status == 1:
+            return Oauth2Result(authenticated_user_id, scopes)
+        else:
+            logger.debug(f"{len(app.app_developers)} for app")
+            for dev in app.app_developers:
+                logger.debug(f"dev: {dev.user_id}")
+                if str(dev.user_id) == authenticated_user_id:
+                    logger.debug(f"User [{authenticated_user_id}] is a developer of the app [{app_id}]")
+                    return Oauth2Result(authenticated_user_id, scopes)
+
+            abort(403, message="The application is in development mode, only the developer can access it")
+            return
+
+
+
 
