@@ -4,3 +4,5 @@ venv3
 carborem_ws.log
 /manage.py
 /db
+
+ansible/password_file
