@@ -10,7 +10,7 @@ from wenet.common.model.user.authentication_account import AuthenticationAccount
 from wenet_service_api.dao.dao_collector import DaoCollector
 from wenet_service_api.common.exception.exceptions import ResourceNotFound
 
-from wenet_service_api.api.ws.resource.common import AuthenticatedResource
+from wenet_service_api.api.ws.resource.common import AuthenticatedResource, WenetSource
 
 logger = logging.getLogger("api.api.ws.resource.wenet_user")
 
@@ -32,8 +32,8 @@ class UserAuthenticateInterface(AuthenticatedResource):
         super().__init__(authorized_apikey, dao_collector)
 
     def post(self):
-
-        self._check_authentication()
+        # TODO check oauth2
+        self._check_authentication([WenetSource.COMPONENT, WenetSource.OAUTH2_AUTHORIZATION_CODE])
 
         try:
             posted_data: dict = request.get_json()
@@ -79,8 +79,8 @@ class UserMetadataInterface(AuthenticatedResource):
         super().__init__(authorized_apikey, dao_collector)
 
     def post(self):
-
-        self._check_authentication()
+        # tODO check oauth
+        self._check_authentication([WenetSource.COMPONENT, WenetSource.OAUTH2_AUTHORIZATION_CODE])
 
         try:
             posted_data: dict = request.get_json()
@@ -130,7 +130,8 @@ class UserAccountsInterface(AuthenticatedResource):
 
     def get(self):
 
-        self._check_authentication()
+        # TODO check source
+        self._check_authentication([WenetSource.COMPONENT, WenetSource.OAUTH2_AUTHORIZATION_CODE])
 
         app_id = request.args.get("appId")
         user_id_str = request.args.get("userId")

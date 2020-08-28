@@ -5,14 +5,16 @@ import sqlalchemy as db
 import os
 
 from wenet_service_api.dao.app_dao import AppDao
+from wenet_service_api.dao.app_developer_dao import AppDeveloperDao
 from wenet_service_api.dao.user_account_telegram_dao import UserAccountTelegramDao
 
 
 class DaoCollector:
 
-    def __init__(self, app_dao: AppDao, user_account_telegram_dao: UserAccountTelegramDao):
+    def __init__(self, app_dao: AppDao, user_account_telegram_dao: UserAccountTelegramDao, app_developer_dao: AppDeveloperDao):
         self.app_dao = app_dao
         self.user_account_telegram_dao = user_account_telegram_dao
+        self.app_developer_dao = app_developer_dao
 
     @staticmethod
     def build_from_env() -> DaoCollector:
@@ -39,5 +41,6 @@ class DaoCollector:
         engine = db.create_engine(db_connection_string, pool_size=5, pool_recycle=3600, pool_pre_ping=True)
         return DaoCollector(
             app_dao=AppDao(engine),
-            user_account_telegram_dao=UserAccountTelegramDao(engine)
+            user_account_telegram_dao=UserAccountTelegramDao(engine),
+            app_developer_dao=AppDeveloperDao(engine)
         )

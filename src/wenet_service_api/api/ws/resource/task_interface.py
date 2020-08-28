@@ -8,7 +8,7 @@ from flask_restful import abort
 from wenet.common.model.task.task import Task
 from wenet_service_api.common.exception.exceptions import ResourceNotFound, NotAuthorized, BadRequestException
 from wenet_service_api.connector.collector import ServiceConnectorCollector
-from wenet_service_api.api.ws.resource.common import AuthenticatedResource
+from wenet_service_api.api.ws.resource.common import AuthenticatedResource, WenetSource
 from wenet_service_api.dao.dao_collector import DaoCollector
 
 logger = logging.getLogger("api.api.ws.resource.task")
@@ -32,7 +32,7 @@ class TaskResourceInterface(AuthenticatedResource):
 
     def get(self, task_id: str):
 
-        self._check_authentication()
+        self._check_authentication([WenetSource.COMPONENT, WenetSource.OAUTH2_AUTHORIZATION_CODE])
 
         try:
             task = self.service_connector_collector.task_manager_connector.get_task(task_id)
@@ -53,7 +53,7 @@ class TaskResourceInterface(AuthenticatedResource):
         return task.to_repr(), 200
 
     def put(self, task_id: str):
-        self._check_authentication()
+        self._check_authentication([WenetSource.COMPONENT, WenetSource.OAUTH2_AUTHORIZATION_CODE])
 
         try:
             posted_data: dict = request.get_json()
@@ -105,7 +105,7 @@ class TaskResourcePostInterface(AuthenticatedResource):
         self._service_connector_collector = service_connector_collector
 
     def post(self):
-        self._check_authentication()
+        self._check_authentication([WenetSource.COMPONENT, WenetSource.OAUTH2_AUTHORIZATION_CODE])
 
         try:
             posted_data: dict = request.get_json()

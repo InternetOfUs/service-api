@@ -7,7 +7,7 @@ from mock import Mock
 from tests.wenet_service_api_test.api.common.common_test_case import CommonTestCase
 from wenet.common.model.norm.norm import Norm, NormOperator
 from wenet.common.model.task.task import TaskPage, Task, TaskGoal
-from wenet_service_api.api.ws.resource.common import WenetSources
+from wenet_service_api.api.ws.resource.common import WenetSource
 
 
 class TestTaskListInterface(CommonTestCase):
@@ -77,7 +77,7 @@ class TestTaskListInterface(CommonTestCase):
 
         mock_get = Mock(return_value=task_page)
         self.service_collector_connector.task_manager_connector.get_task = mock_get
-        response = self.client.get("/task/%s" % task_id, headers={"apikey": self.AUTHORIZED_APIKEY, "x-wenet-source": WenetSources.COMPONENT.value})
+        response = self.client.get("/task/%s" % task_id, headers={"apikey": self.AUTHORIZED_APIKEY, "x-wenet-source": WenetSource.COMPONENT.value})
 
         self.assertEqual(response.status_code, 200)
         mock_get.assert_called_once()

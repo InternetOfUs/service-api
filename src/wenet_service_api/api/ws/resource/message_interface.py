@@ -7,7 +7,7 @@ from flask_restful import abort
 
 from wenet_service_api.dao.dao_collector import DaoCollector
 from wenet_service_api.model.message import Message
-from wenet_service_api.api.ws.resource.common import AuthenticatedResource
+from wenet_service_api.api.ws.resource.common import AuthenticatedResource, WenetSource
 
 logger = logging.getLogger("api.api.ws.resource.message")
 
@@ -28,7 +28,7 @@ class MessageInterface(AuthenticatedResource):
 
     def post(self):
 
-        self._check_authentication()
+        self._check_authentication([WenetSource.COMPONENT, WenetSource.OAUTH2_AUTHORIZATION_CODE])
 
         try:
             posted_data: dict = request.get_json()

@@ -6,7 +6,7 @@ import logging
 
 from wenet_service_api.common.exception.exceptions import ResourceNotFound
 from wenet_service_api.dao.dao_collector import DaoCollector
-from wenet_service_api.api.ws.resource.common import AuthenticatedResource
+from wenet_service_api.api.ws.resource.common import AuthenticatedResource, WenetSource
 
 logger = logging.getLogger("api.api.ws.resource.app")
 
@@ -28,7 +28,7 @@ class AppResourceInterface(AuthenticatedResource):
 
     def get(self, app_id: str):
 
-        self._check_authentication()
+        self._check_authentication([WenetSource.COMPONENT])
 
         try:
             app = self._dao_collector.app_dao.get(app_id)
@@ -53,7 +53,7 @@ class ListAppUserInterface(AuthenticatedResource):
 
     def get(self, app_id: str):
 
-        self._check_authentication()
+        self._check_authentication([WenetSource.COMPONENT])
 
         try:
             app = self._dao_collector.app_dao.get(app_id)

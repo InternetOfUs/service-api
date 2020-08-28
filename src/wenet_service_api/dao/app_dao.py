@@ -25,7 +25,11 @@ class AppDao:
 
     def get(self, app_id: str) -> App:
         session = self._get_session()
-        result: App = session.query(App).options(joinedload(App.platform_telegram)).filter_by(app_id=app_id).first()
+        result: App = session.query(App)\
+            .options(joinedload(App.platform_telegram))\
+            .options(joinedload(App.app_developers))\
+            .filter_by(app_id=app_id)\
+            .first()
 
         session.close()
 

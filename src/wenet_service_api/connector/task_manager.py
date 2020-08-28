@@ -5,12 +5,15 @@ import os
 from typing import Optional
 
 import requests
+import logging
 
 from wenet.common.model.norm.norm import Norm, NormOperator
 from wenet.common.model.task.task import Task, TaskGoal, TaskPage
 from wenet.common.model.task.transaction import TaskTransaction
 from wenet_service_api.common.exception.exceptions import ResourceNotFound, NotAuthorized, BadRequestException
 from wenet_service_api.connector.service_connector import ServiceConnector
+
+logger = logging.getLogger("api.connector.task_manager")
 
 
 class TaskManagerConnector(ServiceConnector):
@@ -103,7 +106,9 @@ class TaskManagerConnector(ServiceConnector):
         response = requests.get(url, params=query_params)
 
         if response.status_code == 200:
-            return TaskPage.from_repr(response.json())
+            task_page = TaskPage.from_repr(response.json())
+            logger.debug(f"Retrieved task page: {task_page}")
+            return task_page
         elif response.status_code == 401 or response.status_code == 403:
             raise NotAuthorized("Not authorized")
         else:
@@ -172,6 +177,7 @@ class TaskManagerConnector(ServiceConnector):
         response = requests.post(url, headers=headers, data=json_data)
 
         if response.status_code == 200 or response.status_code == 201 or response.status_code == 202:
+            logger.info(f"task manager respond with [{response.status_code}] with transaction [{task_transaction}]")
             return
         elif response.status_code == 401 or response.status_code == 403:
             raise NotAuthorized(f"Not authorized {response.text}")

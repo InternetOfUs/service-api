@@ -32,7 +32,7 @@ class WsInterface:
             (WeNetUserProfileInterfaceBuilder.routes(service_connector_collector, self._authorized_api_key, self._dao_collector), "/user"),
             (TaskResourceInterfaceBuilder.routes(service_connector_collector, self._authorized_api_key, self._dao_collector), "/task"),
             (TaskTransactionInterfaceBuilder.routes(service_connector_collector, self._authorized_api_key, self._dao_collector), "/task/transaction"),
-            (MessageInterfaceBuilder.routes(self._authorized_api_key, self._dao_collector), "/messages"),
+            #(MessageInterfaceBuilder.routes(self._authorized_api_key, self._dao_collector), "/messages"),
             (AppResourceInterfaceBuilder.routes(self._dao_collector, self._authorized_api_key), "/app"),
             (UserInterfaceBuilder.routes(self._dao_collector, self._authorized_api_key), "/user"),
             (TaskListResourceInterfaceBuilder.routes(service_connector_collector, self._authorized_api_key, self._dao_collector), "/tasks")

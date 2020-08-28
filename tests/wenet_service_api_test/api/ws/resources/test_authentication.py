@@ -5,7 +5,7 @@ from datetime import datetime
 
 from tests.wenet_service_api_test.api.common.common_test_case import CommonTestCase
 from wenet.common.model.app.app_dto import AppDTO
-from wenet_service_api.api.ws.resource.common import WenetSources
+from wenet_service_api.api.ws.resource.common import WenetSource
 from wenet_service_api.model.app import App
 
 
@@ -32,7 +32,7 @@ class TestAuthentication(CommonTestCase):
     def test_component_authentication(self):
         app_id = self.app.app_id
 
-        response = self.client.get(f"/app/{app_id}", headers={"apikey": self.AUTHORIZED_APIKEY,  "x-wenet-source": WenetSources.COMPONENT.value})
+        response = self.client.get(f"/app/{app_id}", headers={"apikey": self.AUTHORIZED_APIKEY,  "x-wenet-source": WenetSource.COMPONENT.value})
 
         self.assertEqual(response.status_code, 200)
 
@@ -46,7 +46,7 @@ class TestAuthentication(CommonTestCase):
     def test_component_authentication2(self):
         app_id = self.app.app_id
 
-        response = self.client.get(f"/app/{app_id}", headers={"apikey": "asd",  "x-wenet-source": WenetSources.COMPONENT.value})
+        response = self.client.get(f"/app/{app_id}", headers={"apikey": "asd",  "x-wenet-source": WenetSource.COMPONENT.value})
 
         self.assertEqual(response.status_code, 401)
 
@@ -64,27 +64,28 @@ class TestAuthentication(CommonTestCase):
 
         self.assertEqual(response.status_code, 401)
 
-    def test_app_authentication(self):
-        app_id = self.app.app_id
-
-        response = self.client.get(
-            f"/app/{app_id}",
-            headers={
-                "apikey": self.AUTHORIZED_APIKEY,
-                "x-wenet-source": WenetSources.APP.value,
-                "appId": self.app.app_id,
-                "appToken": self.app.app_token
-            }
-        )
-
-        self.assertEqual(response.status_code, 200)
-
-        json_data = json.loads(response.data)
-        result_app = AppDTO.from_repr(json_data)
-
-        self.assertIsInstance(result_app, AppDTO)
-        self.assertEqual(app_id, result_app.app_id)
-        self.assertEqual(self.app_dto, result_app)
+    # TODO remove
+    # def test_app_authentication(self):
+    #     app_id = self.app.app_id
+    #
+    #     response = self.client.get(
+    #         f"/app/{app_id}",
+    #         headers={
+    #             "apikey": self.AUTHORIZED_APIKEY,
+    #             "x-wenet-source": WenetSource.APP.value,
+    #             "appId": self.app.app_id,
+    #             "appToken": self.app.app_token
+    #         }
+    #     )
+    #
+    #     self.assertEqual(response.status_code, 200)
+    #
+    #     json_data = json.loads(response.data)
+    #     result_app = AppDTO.from_repr(json_data)
+    #
+    #     self.assertIsInstance(result_app, AppDTO)
+    #     self.assertEqual(app_id, result_app.app_id)
+    #     self.assertEqual(self.app_dto, result_app)
 
     def test_app_authentication2(self):
         app_id = self.app.app_id
@@ -93,7 +94,7 @@ class TestAuthentication(CommonTestCase):
             f"/app/{app_id}",
             headers={
                 "apikey": self.AUTHORIZED_APIKEY,
-                "x-wenet-source": WenetSources.APP.value,
+                "x-wenet-source": WenetSource.APP.value,
                 "appId": "asd",
                 "appToken": self.app.app_token
             }
@@ -108,7 +109,7 @@ class TestAuthentication(CommonTestCase):
             f"/app/{app_id}",
             headers={
                 "apikey": self.AUTHORIZED_APIKEY,
-                "x-wenet-source": WenetSources.APP.value,
+                "x-wenet-source": WenetSource.APP.value,
                 "appId": self.app.app_id,
                 "appToken": "asd"
             }
