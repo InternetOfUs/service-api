@@ -93,6 +93,7 @@ push_prod:
     - docker load -i service_api_image.tar.gz
     - ./docker-support/runner.sh -p $CI_COMMIT_TAG
   dependencies:
+    - build_prod
     - test_prod
   only:
     - tags
