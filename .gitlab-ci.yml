@@ -52,6 +52,7 @@ push_dev:
     - docker load -i service_api_image.tar.gz
     - ./docker-support/runner.sh -p latest
   dependencies:
+    - build_dev
     - test_dev
   only:
     - develop
