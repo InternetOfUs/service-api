@@ -2,6 +2,10 @@
 
 ## Version 1.*
 
+### next
+
+* Added Oauth2 support
+
 ### 1.0.0
 
 * new endpoints for allowing 
