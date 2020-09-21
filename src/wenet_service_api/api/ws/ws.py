@@ -6,6 +6,7 @@ from flask_restful import Api
 import logging
 
 from wenet_service_api.api.ws.resource.task_list_interface import TaskListResourceInterfaceBuilder
+from wenet_service_api.api.ws.resource.token_deatils_interface import TokenDetailsInterfaceBuilder
 from wenet_service_api.connector.collector import ServiceConnectorCollector
 from wenet_service_api.dao.dao_collector import DaoCollector
 from wenet_service_api.api.ws.resource.app_interface import AppResourceInterfaceBuilder
@@ -35,7 +36,8 @@ class WsInterface:
             #(MessageInterfaceBuilder.routes(self._authorized_api_key, self._dao_collector), "/messages"),
             (AppResourceInterfaceBuilder.routes(self._dao_collector, self._authorized_api_key), "/app"),
             (UserInterfaceBuilder.routes(self._dao_collector, self._authorized_api_key), "/user"),
-            (TaskListResourceInterfaceBuilder.routes(service_connector_collector, self._authorized_api_key, self._dao_collector), "/tasks")
+            (TaskListResourceInterfaceBuilder.routes(service_connector_collector, self._authorized_api_key, self._dao_collector), "/tasks"),
+            (TokenDetailsInterfaceBuilder.routes(service_connector_collector, self._authorized_api_key, self._dao_collector), "/token")
         ]
 
         for module_routes, prefix in active_routes:

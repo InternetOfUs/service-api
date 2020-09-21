@@ -9,6 +9,7 @@ from flask_restful import Resource, abort
 
 from wenet_service_api.common.exception.exceptions import ResourceNotFound
 from wenet_service_api.dao.dao_collector import DaoCollector
+from wenet_service_api.model.app import App
 
 logger = logging.getLogger("api.api.ws.resource.authenticated_resource")
 
@@ -86,23 +87,25 @@ class AppAuthentication(AuthenticationResult):
 
 class Oauth2Result(AuthenticationResult):
 
-    def __init__(self, wenet_user_id: Optional[str], scopes: Optional[List[Scope]]):
+    def __init__(self, wenet_user_id: Optional[str], scopes: Optional[List[Scope]], app: Optional[App]):
         super().__init__(WenetSource.OAUTH2_AUTHORIZATION_CODE)
         self.wenet_user_id = wenet_user_id
         self.scopes = scopes
+        self.app = app
 
     def to_repr(self) -> dict:
         base_repr = super().to_repr()
         base_repr.update({
             "wenetUserId": self.wenet_user_id,
-            "scopes": list(x.value for x in self.scopes) if self.scopes is not None else None
+            "scopes": list(x.value for x in self.scopes) if self.scopes is not None else None,
+            "app": self.app.to_app_dto() if self.app is not None else None
         })
         return base_repr
 
     def __eq__(self, o) -> bool:
         if not isinstance(o, Oauth2Result):
             return False
-        return super().__eq__(o) and o.wenet_user_id == self.wenet_user_id and o.scopes == self.scopes
+        return super().__eq__(o) and o.wenet_user_id == self.wenet_user_id and o.scopes == self.scopes and o.app == self.app
 
     def has_scope(self, scope: Scope) -> bool:
         return scope in self.scopes
@@ -114,6 +117,19 @@ class AuthenticatedResource(Resource):
         super().__init__()
         self._authorized_api_key = authorized_api_key
         self._dao_collector = dao_collector
+
+    @staticmethod
+    def _get_user_id(authentication_result: AuthenticationResult) -> str:
+
+        if isinstance(authentication_result, Oauth2Result):
+            return authentication_result.wenet_user_id
+        else:
+            profile_id = request.headers.get("X-Wenet-Userid")
+            if profile_id is None or profile_id == "":
+                abort(400, message="missing X-Wenet-Userid header")
+                return
+            else:
+                return profile_id
 
     def _check_authentication(self, supported_sources: List[WenetSource]) -> AuthenticationResult:
         """
@@ -241,14 +257,14 @@ class AuthenticatedResource(Resource):
             return
 
         if app.status == 1:
-            return Oauth2Result(authenticated_user_id, scopes)
+            return Oauth2Result(authenticated_user_id, scopes, app)
         else:
             logger.debug(f"{len(app.app_developers)} for app")
             for dev in app.app_developers:
                 logger.debug(f"dev: {dev.user_id}")
                 if str(dev.user_id) == authenticated_user_id:
                     logger.debug(f"User [{authenticated_user_id}] is a developer of the app [{app_id}]")
-                    return Oauth2Result(authenticated_user_id, scopes)
+                    return Oauth2Result(authenticated_user_id, scopes, app)
 
             abort(403, message="The application is in development mode, only the developer can access it")
             return

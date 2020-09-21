@@ -6,6 +6,7 @@ from flask_restful import abort
 import logging
 
 from wenet.common.model.user.user_profile import CoreWeNetUserProfile, WeNetUserProfile
+from wenet_service_api.api.ws.resource.utils.user_profile import filter_user_profile
 from wenet_service_api.common.exception.exceptions import ResourceNotFound, NotAuthorized, BadRequestException
 from wenet_service_api.connector.collector import ServiceConnectorCollector
 from wenet_service_api.api.ws.resource.common import AuthenticatedResource, WenetSource, AuthenticationResult, \
@@ -31,19 +32,6 @@ class WeNetUserProfileInterface(AuthenticatedResource):
         super().__init__(authorized_apikey, dao_collector)
         self._service_connector_collector = service_connector_collector
 
-    @staticmethod
-    def _get_user_id(authentication_result: AuthenticationResult) -> str:
-
-        if isinstance(authentication_result, Oauth2Result):
-            return authentication_result.wenet_user_id
-        else:
-            profile_id = request.headers.get("X-Wenet-Userid")
-            if profile_id is None or profile_id == "":
-                abort(400, message="missing X-Wenet-Userid header")
-                return
-            else:
-                return profile_id
-
     def get(self):
 
         authentication_result = self._check_authentication([WenetSource.COMPONENT, WenetSource.OAUTH2_AUTHORIZATION_CODE])
@@ -52,7 +40,7 @@ class WeNetUserProfileInterface(AuthenticatedResource):
 
         try:
             temp = self._service_connector_collector.profile_manager_collector.get_profile(profile_id)
-            profile = self._filter_user_profile(temp, authentication_result)
+            profile = filter_user_profile(temp, authentication_result)
             logger.info(f"Retrieved profile [{profile_id}] from profile manager connector")
         except ResourceNotFound as e:
             logger.exception("Unable to retrieve the profile", exc_info=e)
@@ -151,41 +139,6 @@ class WeNetUserProfileInterface(AuthenticatedResource):
         return {}, 200
 
     @staticmethod
-    def _filter_user_profile(user_profile: CoreWeNetUserProfile, authentication_result: AuthenticationResult) -> CoreWeNetUserProfile:
-
-        if not isinstance(authentication_result, Oauth2Result):
-            return user_profile
-        else:
-            if not authentication_result.has_scope(Scope.ID):
-                user_profile.profile_id = None
-
-            if user_profile.name is not None:
-                if not authentication_result.has_scope(Scope.FIRST_NAME):
-                    user_profile.name.first = None
-                if not authentication_result.has_scope(Scope.MIDDLE_NAME):
-                    user_profile.name.middle = None
-                if not authentication_result.has_scope(Scope.LAST_NAME):
-                    user_profile.name.last = None
-                if not authentication_result.has_scope(Scope.PREFIX_NAME):
-                    user_profile.name.prefix = None
-                if not authentication_result.has_scope(Scope.SUFFIX_NAME):
-                    user_profile.name.suffix = None
-            if not authentication_result.has_scope(Scope.BIRTHDATE):
-                user_profile.date_of_birth = None
-            if not authentication_result.has_scope(Scope.GENDER):
-                user_profile.gender = None
-            if not authentication_result.has_scope(Scope.EMAIL):
-                user_profile.email = None
-            if not authentication_result.has_scope(Scope.PHONE_NUMBER):
-                user_profile.phone_number = None
-            if not authentication_result.has_scope(Scope.LOCALE):
-                user_profile.locale = None
-            if not authentication_result.has_scope(Scope.NATIONALITY):
-                user_profile.nationality = None
-
-            return user_profile
-
-    @staticmethod
     def _update_user_profile(user_profile: CoreWeNetUserProfile, stored_user_profile: WeNetUserProfile, authentication_result: AuthenticationResult) -> WeNetUserProfile:
         if not isinstance(authentication_result, Oauth2Result):
             stored_user_profile.update(user_profile)
@@ -262,7 +215,7 @@ class LegacyWeNetUserProfileInterface(AuthenticatedResource):
 
         try:
             temp = self._service_connector_collector.profile_manager_collector.get_profile(profile_id)
-            profile = self._filter_user_profile(temp, authentication_result)
+            profile = filter_user_profile(temp, authentication_result)
             logger.info(f"Retrieved profile [{profile_id}] from profile manager connector")
         except ResourceNotFound as e:
             logger.exception("Unable to retrieve the profile", exc_info=e)
@@ -363,41 +316,6 @@ class LegacyWeNetUserProfileInterface(AuthenticatedResource):
         logger.info(f"Created empty profile [{user_profile}]")
 
         return {}, 200
-
-    @staticmethod
-    def _filter_user_profile(user_profile: CoreWeNetUserProfile, authentication_result: AuthenticationResult) -> CoreWeNetUserProfile:
-
-        if not isinstance(authentication_result, Oauth2Result):
-            return user_profile
-        else:
-            if not authentication_result.has_scope(Scope.ID):
-                user_profile.profile_id = None
-
-            if user_profile.name is not None:
-                if not authentication_result.has_scope(Scope.FIRST_NAME):
-                    user_profile.name.first = None
-                if not authentication_result.has_scope(Scope.MIDDLE_NAME):
-                    user_profile.name.middle = None
-                if not authentication_result.has_scope(Scope.LAST_NAME):
-                    user_profile.name.last = None
-                if not authentication_result.has_scope(Scope.PREFIX_NAME):
-                    user_profile.name.prefix = None
-                if not authentication_result.has_scope(Scope.SUFFIX_NAME):
-                    user_profile.name.suffix = None
-            if not authentication_result.has_scope(Scope.BIRTHDATE):
-                user_profile.date_of_birth = None
-            if not authentication_result.has_scope(Scope.GENDER):
-                user_profile.gender = None
-            if not authentication_result.has_scope(Scope.EMAIL):
-                user_profile.email = None
-            if not authentication_result.has_scope(Scope.PHONE_NUMBER):
-                user_profile.phone_number = None
-            if not authentication_result.has_scope(Scope.LOCALE):
-                user_profile.locale = None
-            if not authentication_result.has_scope(Scope.NATIONALITY):
-                user_profile.nationality = None
-
-            return user_profile
 
     @staticmethod
     def _update_user_profile(user_profile: CoreWeNetUserProfile, stored_user_profile: WeNetUserProfile, authentication_result: AuthenticationResult) -> WeNetUserProfile:
