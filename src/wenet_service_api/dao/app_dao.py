@@ -26,7 +26,6 @@ class AppDao:
     def get(self, app_id: str) -> App:
         session = self._get_session()
         result: App = session.query(App)\
-            .options(joinedload(App.platform_telegram))\
             .options(joinedload(App.app_developers))\
             .filter_by(app_id=app_id)\
             .first()
@@ -41,7 +40,6 @@ class AppDao:
         return result
 
     def create_or_update(self, app: App):
-        # TODO update creation and update
         app.load_metadata_from_metadata_str()
         app.last_update_ts = int(datetime.now(pytz.utc).timestamp())
         session = self._get_session()

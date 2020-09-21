@@ -27,7 +27,6 @@ class App(Base):
     metadata_str = Column("metadata", Text, nullable=False)
     creation_ts = Column("created_at", Integer)
     last_update_ts = Column("updated_at", Integer)
-    platform_telegram = relation("PlatformTelegram", back_populates="app", uselist=False)
     app_developers = relation("AppDeveloper", back_populates="app", uselist=True)
 
     def __init__(self, app_id: str, status: str, name: str, description: Optional[str], app_token: str, message_callback_url: Optional[str], metadata: Optional[Union[str, dict]], creation_ts: Optional[int], last_update_ts: Optional[int]):
@@ -64,39 +63,32 @@ class App(Base):
             self.metadata_str = json.dumps(self.metadata)
 
     def to_app_dto(self) -> AppDTO:
-        if self.platform_telegram:
-            allowed_platforms = [
-                self.platform_telegram.to_telegram_platform_dto()
-            ]
-        else:
-            allowed_platforms = []
 
         return AppDTO(
             creation_ts=self.creation_ts,
             last_update_ts=self.last_update_ts,
             app_id=self.app_id,
             app_token=self.app_token,
-            allowed_platforms=allowed_platforms,
             message_callback_url=self.message_call_back_url,
             metadata=self.metadata
         )
 
 
-class PlatformTelegram(Base):
-    __tablename__ = "app_platform_telegram"
-
-    id = Column("id", Integer, primary_key=True)
-    app_id = Column("app_id", String(128), ForeignKey("app.id"))
-    bot_username = Column("bot_username", String(128))
-    last_update_ts = Column("updated_at", Integer)
-    creation_ts = Column("created_at", Integer)
-    app = relation("App", back_populates="platform_telegram", uselist=False)
-
-    def to_telegram_platform_dto(self) -> TelegramPlatformDTO:
-        return TelegramPlatformDTO(
-            bot_id=self.app_id
-        )
-
+# class PlatformTelegram(Base):
+#     __tablename__ = "app_platform_telegram"
+#
+#     id = Column("id", Integer, primary_key=True)
+#     app_id = Column("app_id", String(128), ForeignKey("app.id"))
+#     bot_username = Column("bot_username", String(128))
+#     last_update_ts = Column("updated_at", Integer)
+#     creation_ts = Column("created_at", Integer)
+#     app = relation("App", back_populates="platform_telegram", uselist=False)
+#
+#     def to_telegram_platform_dto(self) -> TelegramPlatformDTO:
+#         return TelegramPlatformDTO(
+#             bot_id=self.app_id
+#         )
+#
 
 class AppDeveloper(Base):
 

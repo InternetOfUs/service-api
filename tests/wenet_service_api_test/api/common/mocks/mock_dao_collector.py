@@ -25,14 +25,6 @@ class DataAccessLayer:
         Column("created_at", Integer),
         Column("updated_at", Integer),
     )
-    platform_telegram = Table(
-        "app_platform_telegram", meta,
-        Column("id", Integer, primary_key=True),
-        Column("app_id", String(128), ForeignKey("app.id")),
-        Column("bot_username", String(128)),
-        Column("updated_at", Integer),
-        Column("created_at", Integer)
-    )
     user_account_telegram = Table(
         "user_account_telegram", meta,
         Column("id", Integer, primary_key=True),
