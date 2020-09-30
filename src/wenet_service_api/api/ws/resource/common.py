@@ -8,7 +8,7 @@ from flask import request
 from flask_restful import Resource, abort
 
 from wenet_service_api.common.exception.exceptions import ResourceNotFound
-from wenet_service_api.dao.dao_collector import DaoCollector
+from wenet_service_api.connector.collector import ServiceConnectorCollector
 from wenet_service_api.model.app import App
 
 logger = logging.getLogger("api.api.ws.resource.authenticated_resource")
@@ -68,7 +68,7 @@ class ComponentAuthentication(AuthenticationResult):
 
 class AppAuthentication(AuthenticationResult):
 
-    def __init__(self, app_id: str ):
+    def __init__(self, app_id: str):
         super().__init__(WenetSource.APP)
         self.app_id = app_id
 
@@ -113,10 +113,10 @@ class Oauth2Result(AuthenticationResult):
 
 class AuthenticatedResource(Resource):
 
-    def __init__(self, authorized_api_key: str, dao_collector: DaoCollector) -> None:
+    def __init__(self, authorized_api_key: str, connector_collector: ServiceConnectorCollector) -> None:
         super().__init__()
         self._authorized_api_key = authorized_api_key
-        self._dao_collector = dao_collector
+        self._service_connector_collector = connector_collector
 
     @staticmethod
     def _get_user_id(authentication_result: AuthenticationResult) -> str:
@@ -210,7 +210,7 @@ class AuthenticatedResource(Resource):
             abort(401, message="Missing appToken header")
 
         try:
-            app = self._dao_collector.app_dao.get(app_id)
+            app = self._service_connector_collector.hub_connector.get_app(app_id)
         except ResourceNotFound:
             logger.warning(f"Unable to find an app with id [{app_id}] in request from [{request.remote_addr}], user agent: [{request.user_agent}]")
             abort(401, message="Not authorized")
@@ -246,7 +246,7 @@ class AuthenticatedResource(Resource):
         app_id = consumer_id.replace("app_", "")
 
         try:
-            app = self._dao_collector.app_dao.get(app_id)
+            app = self._service_connector_collector.hub_connector.get_app(app_id)
         except ResourceNotFound:
             logger.info(f"Invalid app [{app_id}]")
             abort(403, message="Invalid app")
@@ -259,8 +259,10 @@ class AuthenticatedResource(Resource):
         if app.status == 1:
             return Oauth2Result(authenticated_user_id, scopes, app)
         else:
-            logger.debug(f"{len(app.app_developers)} for app")
-            for dev in app.app_developers:
+
+            developers = self._service_connector_collector.hub_connector.get_app(app_id)
+            logger.debug(f"{len(developers)} for app")
+            for dev in developers:
                 logger.debug(f"dev: {dev.user_id}")
                 if str(dev.user_id) == authenticated_user_id:
                     logger.debug(f"User [{authenticated_user_id}] is a developer of the app [{app_id}]")

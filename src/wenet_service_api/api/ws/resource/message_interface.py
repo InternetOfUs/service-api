@@ -11,7 +11,7 @@ from wenet_service_api.api.ws.resource.common import AuthenticatedResource, Wene
 
 logger = logging.getLogger("api.api.ws.resource.message")
 
-
+# TODO remoce
 class MessageInterfaceBuilder:
 
     @staticmethod

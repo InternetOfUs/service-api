@@ -8,7 +8,6 @@ from flask_restful import abort
 from wenet_service_api.api.ws.resource.common import AuthenticatedResource, WenetSource
 from wenet_service_api.common.exception.exceptions import NotAuthorized
 from wenet_service_api.connector.collector import ServiceConnectorCollector
-from wenet_service_api.dao.dao_collector import DaoCollector
 
 logger = logging.getLogger("api.api.ws.resource.task_list")
 
@@ -16,17 +15,16 @@ logger = logging.getLogger("api.api.ws.resource.task_list")
 class TaskListResourceInterfaceBuilder:
 
     @staticmethod
-    def routes(service_connector_collector: ServiceConnectorCollector, authorized_apikey: str, dao_collector: DaoCollector):
+    def routes(service_connector_collector: ServiceConnectorCollector, authorized_apikey: str):
         return [
-            (TaskListResourceInterface, "", (service_connector_collector, authorized_apikey, dao_collector))
+            (TaskListResourceInterface, "", (service_connector_collector, authorized_apikey))
         ]
 
 
 class TaskListResourceInterface(AuthenticatedResource):
 
-    def __init__(self, service_connector_collector: ServiceConnectorCollector, authorized_apikey: str, dao_collector: DaoCollector) -> None:
-        super().__init__(authorized_apikey, dao_collector)
-        self._service_connector_collector = service_connector_collector
+    def __init__(self, service_connector_collector: ServiceConnectorCollector, authorized_apikey: str) -> None:
+        super().__init__(authorized_apikey, service_connector_collector)
 
     def get(self):
         # TODO check source

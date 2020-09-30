@@ -17,25 +17,24 @@ logger = logging.getLogger("api.api.ws.resource.task")
 class TaskResourceInterfaceBuilder:
 
     @staticmethod
-    def routes(service_connector_collector: ServiceConnectorCollector, authorized_apikey: str, dao_collector: DaoCollector):
+    def routes(service_connector_collector: ServiceConnectorCollector, authorized_apikey: str):
         return [
-            (TaskResourceInterface, "/<string:task_id>", (service_connector_collector, authorized_apikey, dao_collector)),
-            (TaskResourcePostInterface, "", (service_connector_collector, authorized_apikey, dao_collector))
+            (TaskResourceInterface, "/<string:task_id>", (service_connector_collector, authorized_apikey)),
+            (TaskResourcePostInterface, "", (service_connector_collector, authorized_apikey))
         ]
 
 
 class TaskResourceInterface(AuthenticatedResource):
 
     def __init__(self, service_connector_collector: ServiceConnectorCollector, authorized_apikey: str, dao_collector: DaoCollector) -> None:
-        super().__init__(authorized_apikey, dao_collector)
-        self.service_connector_collector = service_connector_collector
+        super().__init__(authorized_apikey, service_connector_collector)
 
     def get(self, task_id: str):
 
         self._check_authentication([WenetSource.COMPONENT, WenetSource.OAUTH2_AUTHORIZATION_CODE])
 
         try:
-            task = self.service_connector_collector.task_manager_connector.get_task(task_id)
+            task = self._service_connector_collector.task_manager_connector.get_task(task_id)
             logger.info(f"Retrieved task [{task_id}] from task manager connector")
         except ResourceNotFound as e:
             logger.exception("Unable to retrieve the task", exc_info=e)
@@ -101,8 +100,7 @@ class TaskResourceInterface(AuthenticatedResource):
 class TaskResourcePostInterface(AuthenticatedResource):
 
     def __init__(self, service_connector_collector: ServiceConnectorCollector, authorized_apikey: str, dao_collector: DaoCollector) -> None:
-        super().__init__(authorized_apikey, dao_collector)
-        self._service_connector_collector = service_connector_collector
+        super().__init__(authorized_apikey, service_connector_collector)
 
     def post(self):
         self._check_authentication([WenetSource.COMPONENT, WenetSource.OAUTH2_AUTHORIZATION_CODE])

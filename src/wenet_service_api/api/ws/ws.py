@@ -19,10 +19,9 @@ from wenet_service_api.api.ws.resource.user_profile import WeNetUserProfileInter
 
 class WsInterface:
 
-    def __init__(self, service_connector_collector: ServiceConnectorCollector, dao_collector: DaoCollector, authorized_apikey: str) -> None:
+    def __init__(self, service_connector_collector: ServiceConnectorCollector, authorized_apikey: str) -> None:
         self._app = Flask("api")
         self._api = Api(app=self._app)
-        self._dao_collector = dao_collector
 
         self._authorized_api_key = authorized_apikey
 
@@ -30,14 +29,14 @@ class WsInterface:
 
     def _init_modules(self, service_connector_collector: ServiceConnectorCollector) -> None:
         active_routes = [
-            (WeNetUserProfileInterfaceBuilder.routes(service_connector_collector, self._authorized_api_key, self._dao_collector), "/user"),
-            (TaskResourceInterfaceBuilder.routes(service_connector_collector, self._authorized_api_key, self._dao_collector), "/task"),
-            (TaskTransactionInterfaceBuilder.routes(service_connector_collector, self._authorized_api_key, self._dao_collector), "/task/transaction"),
+            (WeNetUserProfileInterfaceBuilder.routes(service_connector_collector, self._authorized_api_key), "/user"),
+            (TaskResourceInterfaceBuilder.routes(service_connector_collector, self._authorized_api_key), "/task"),
+            (TaskTransactionInterfaceBuilder.routes(service_connector_collector, self._authorized_api_key), "/task/transaction"),
             #(MessageInterfaceBuilder.routes(self._authorized_api_key, self._dao_collector), "/messages"),
-            (AppResourceInterfaceBuilder.routes(self._dao_collector, self._authorized_api_key), "/app"),
-            (UserInterfaceBuilder.routes(self._dao_collector, self._authorized_api_key), "/user"),
-            (TaskListResourceInterfaceBuilder.routes(service_connector_collector, self._authorized_api_key, self._dao_collector), "/tasks"),
-            (TokenDetailsInterfaceBuilder.routes(service_connector_collector, self._authorized_api_key, self._dao_collector), "/token")
+            #(AppResourceInterfaceBuilder.routes(self._dao_collector, self._authorized_api_key), "/app"),
+            #(UserInterfaceBuilder.routes(self._dao_collector, self._authorized_api_key), "/user"),
+            (TaskListResourceInterfaceBuilder.routes(service_connector_collector, self._authorized_api_key), "/tasks"),
+            (TokenDetailsInterfaceBuilder.routes(service_connector_collector, self._authorized_api_key), "/token")
         ]
 
         for module_routes, prefix in active_routes:
