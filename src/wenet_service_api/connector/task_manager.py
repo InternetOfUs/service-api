@@ -128,7 +128,7 @@ class TaskManagerConnector(ServiceConnector):
         json_data = json.dumps(task_repr)
         response = requests.post(url, headers=headers, data=json_data)
 
-        if response.status_code == 200:
+        if response.status_code in [200, 201, 202]:
             task = Task.from_repr(response.json())
         elif response.status_code == 401 or response.status_code == 403:
             raise NotAuthorized("Not authorized")
@@ -153,7 +153,7 @@ class TaskManagerConnector(ServiceConnector):
 
         response = requests.put(url, headers=headers, data=json_data)
 
-        if response.status_code == 200:
+        if response.status_code in [200, 201, 202]:
             return Task.from_repr(response.json())
         elif response.status_code == 401 or response.status_code == 403:
             raise NotAuthorized(f"Not authorized {response.text}")
