@@ -7,7 +7,7 @@ from typing import List, Optional
 
 import requests
 
-from wenet.common.model.app.app_dto import AppDTO, AppDeveloper, AppStatus
+from wenet.common.model.app.app_dto import AppDTO, AppDeveloper, AppStatus, App
 from wenet_service_api.common.exception.exceptions import ResourceNotFound
 from wenet_service_api.connector.service_connector import ServiceConnector
 
@@ -33,31 +33,48 @@ class HubConnector(ServiceConnector):
             }
         )
 
-    def get_app(self, app_id: str, headers: Optional[dict] = None) -> AppDTO:
+    def get_app(self, app_id: str, headers: Optional[dict] = None) -> App:
         if headers is not None:
             headers.update(self._base_headers)
         else:
             headers = self._base_headers
 
-        response = requests.get(f"{self._base_url}/app/{app_id}", headers)
+        url = f"{self._base_url}/data/app/{app_id}"
+
+        response = requests.get(url, headers)
 
         if response.status_code == 200:
-            return AppDTO.from_repr(response.json())
+            return App.from_repr(response.json())
         elif response.status_code == 404:
             raise ResourceNotFound()
         else:
             raise Exception(f"Unable to retrieve the application, server responds with {response.status_code}")
 
-    def get_app_developers(self, app_id: str, headers: Optional[dict] = None) -> List[AppDeveloper]:
+    def get_app_developers(self, app_id: str, headers: Optional[dict] = None) -> List[str]:
         if headers is not None:
             headers.update(self._base_headers)
         else:
             headers = self._base_headers
 
-        response = requests.get(f"{self._base_url}/app/{app_id}/developers", headers)
+        response = requests.get(f"{self._base_url}/data/app/{app_id}/developer", headers)
 
         if response.status_code == 200:
-            return [AppDeveloper.from_repr(x) for x in response.json()]
+            return response.json()
+        elif response.status_code == 404:
+            raise ResourceNotFound()
+        else:
+            raise Exception(f"Unable to retrieve the application, server responds with {response.status_code}")
+
+    def get_app_users(self, app_id: str, headers: Optional[dict] = None) -> List[str]:
+        if headers is not None:
+            headers.update(self._base_headers)
+        else:
+            headers = self._base_headers
+
+        response = requests.get(f"{self._base_url}/data/app/{app_id}/user", headers)
+
+        if response.status_code == 200:
+            return response.json()
         elif response.status_code == 404:
             raise ResourceNotFound()
         else:
@@ -73,12 +90,11 @@ class DummyHubConnector(HubConnector):
     def build_from_env() -> HubConnector:
         return DummyHubConnector()
 
-    def get_app(self, app_id: str, headers: Optional[dict] = None) -> AppDTO:
-        return AppDTO(
+    def get_app(self, app_id: str, headers: Optional[dict] = None) -> App:
+        return App(
             creation_ts=datetime.now().timestamp(),
             last_update_ts=datetime.now().timestamp(),
             app_id="1",
-            app_token=None,
             status=AppStatus.ACTIVE,
             message_callback_url=None,
             metadata=None

@@ -33,7 +33,7 @@ class WsInterface:
             (TaskResourceInterfaceBuilder.routes(service_connector_collector, self._authorized_api_key), "/task"),
             (TaskTransactionInterfaceBuilder.routes(service_connector_collector, self._authorized_api_key), "/task/transaction"),
             #(MessageInterfaceBuilder.routes(self._authorized_api_key, self._dao_collector), "/messages"),
-            #(AppResourceInterfaceBuilder.routes(self._dao_collector, self._authorized_api_key), "/app"),
+            (AppResourceInterfaceBuilder.routes(service_connector_collector, self._authorized_api_key), "/app"),
             #(UserInterfaceBuilder.routes(self._dao_collector, self._authorized_api_key), "/user"),
             (TaskListResourceInterfaceBuilder.routes(service_connector_collector, self._authorized_api_key), "/tasks"),
             (TokenDetailsInterfaceBuilder.routes(service_connector_collector, self._authorized_api_key), "/token")

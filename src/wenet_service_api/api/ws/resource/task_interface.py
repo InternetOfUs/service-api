@@ -9,7 +9,6 @@ from wenet.common.model.task.task import Task
 from wenet_service_api.common.exception.exceptions import ResourceNotFound, NotAuthorized, BadRequestException
 from wenet_service_api.connector.collector import ServiceConnectorCollector
 from wenet_service_api.api.ws.resource.common import AuthenticatedResource, WenetSource
-from wenet_service_api.dao.dao_collector import DaoCollector
 
 logger = logging.getLogger("api.api.ws.resource.task")
 
@@ -26,7 +25,7 @@ class TaskResourceInterfaceBuilder:
 
 class TaskResourceInterface(AuthenticatedResource):
 
-    def __init__(self, service_connector_collector: ServiceConnectorCollector, authorized_apikey: str, dao_collector: DaoCollector) -> None:
+    def __init__(self, service_connector_collector: ServiceConnectorCollector, authorized_apikey: str) -> None:
         super().__init__(authorized_apikey, service_connector_collector)
 
     def get(self, task_id: str):
@@ -99,7 +98,7 @@ class TaskResourceInterface(AuthenticatedResource):
 
 class TaskResourcePostInterface(AuthenticatedResource):
 
-    def __init__(self, service_connector_collector: ServiceConnectorCollector, authorized_apikey: str, dao_collector: DaoCollector) -> None:
+    def __init__(self, service_connector_collector: ServiceConnectorCollector, authorized_apikey: str) -> None:
         super().__init__(authorized_apikey, service_connector_collector)
 
     def post(self):
