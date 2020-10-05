@@ -2,11 +2,9 @@
 
 echo "Verifying env variables presence"
 declare -a REQUIRED_ENV_VARS=(
-                                  "${MYSQL_DATABASE}"
-                                  "${MYSQL_USER}"
-                                  "${MYSQL_PASSWORD}"
-                                  "${MYSQL_HOST}"
-                                  "${MYSQL_PORT}"
+                                  "${PROFILE_MANAGER_CONNECTOR_BASE_URL}"
+                                  "${TASK_MANAGER_CONNECTOR_BASE_URL}"
+                                  "${HUB_CONNECTOR_BASE_URL}"
                               )
 
 for e in "${REQUIRED_ENV_VARS[@]}"
