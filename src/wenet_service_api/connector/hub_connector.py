@@ -7,7 +7,7 @@ from typing import List, Optional
 
 import requests
 
-from wenet.common.model.app.app_dto import AppDTO, AppDeveloper, AppStatus, App
+from wenet.common.model.app.app_dto import AppDeveloper, AppStatus, App
 from wenet_service_api.common.exception.exceptions import ResourceNotFound
 from wenet_service_api.connector.service_connector import ServiceConnector
 

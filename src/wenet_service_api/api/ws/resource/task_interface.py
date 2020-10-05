@@ -74,7 +74,7 @@ class TaskResourceInterface(AuthenticatedResource):
             return
 
         try:
-            updated_task = self.service_connector_collector.task_manager_connector.updated_task(task)
+            updated_task = self._service_connector_collector.task_manager_connector.updated_task(task)
         except NotAuthorized as e:
             logger.exception(f"Unauthorized to update the task [{task_id}]", exc_info=e)
             abort(403)

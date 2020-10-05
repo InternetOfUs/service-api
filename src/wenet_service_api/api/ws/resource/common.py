@@ -7,10 +7,9 @@ from typing import List, Optional
 from flask import request
 from flask_restful import Resource, abort
 
-from wenet.common.model.app.app_dto import AppStatus
+from wenet.common.model.app.app_dto import AppStatus, App
 from wenet_service_api.common.exception.exceptions import ResourceNotFound
 from wenet_service_api.connector.collector import ServiceConnectorCollector
-from wenet_service_api.model.app import App
 
 logger = logging.getLogger("api.api.ws.resource.authenticated_resource")
 
@@ -98,7 +97,7 @@ class Oauth2Result(AuthenticationResult):
         base_repr.update({
             "wenetUserId": self.wenet_user_id,
             "scopes": list(x.value for x in self.scopes) if self.scopes is not None else None,
-            "app": self.app.to_app_dto() if self.app is not None else None
+            "app": self.app.to_repr() if self.app is not None else None
         })
         return base_repr
 
@@ -194,21 +193,17 @@ class AuthenticatedResource(Resource):
     def _check_oauth2_code_authentication(self, authenticated_user_id: Optional[str], scopes_str: Optional[str], consumer_id: Optional[str]) -> Oauth2Result:
         if authenticated_user_id is None or authenticated_user_id == "":
             abort(401, message="Missing userid or scopes")
-            return
 
         if scopes_str is None or scopes_str == "":
             abort(401, message="Missing userid or scopes")
-            return
 
         if consumer_id is None or consumer_id == "":
             abort(401, message="Missing consumer id")
-            return
 
         try:
             scopes = list(Scope(x) for x in scopes_str.split(" "))
         except ValueError:
             abort(403, message="Invalid scopes")
-            return
 
         app_id = consumer_id.replace("app_", "")
 

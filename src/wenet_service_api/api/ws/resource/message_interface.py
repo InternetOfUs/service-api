@@ -5,26 +5,26 @@ import logging
 from flask import request
 from flask_restful import abort
 
-from wenet_service_api.dao.dao_collector import DaoCollector
+from wenet_service_api.connector.collector import ServiceConnectorCollector
 from wenet_service_api.model.message import Message
 from wenet_service_api.api.ws.resource.common import AuthenticatedResource, WenetSource
 
 logger = logging.getLogger("api.api.ws.resource.message")
 
-# TODO remoce
+# TODO remove
 class MessageInterfaceBuilder:
 
     @staticmethod
-    def routes(authorized_apikey: str, dao_collector: DaoCollector):
+    def routes(service_connector_collector: ServiceConnectorCollector, authorized_apikey: str):
         return [
-            (MessageInterface, "", (authorized_apikey, dao_collector))
+            (MessageInterface, "", (authorized_apikey, service_connector_collector))
         ]
 
 
 class MessageInterface(AuthenticatedResource):
 
-    def __init__(self, authorized_apikey: str, dao_collector: DaoCollector):
-        super().__init__(authorized_apikey, dao_collector)
+    def __init__(self, authorized_apikey: str, service_connector_collector: ServiceConnectorCollector):
+        super().__init__(authorized_apikey, service_connector_collector)
 
     def post(self):
 
