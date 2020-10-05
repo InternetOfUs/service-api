@@ -69,14 +69,10 @@ pyhton3 -m wenet_service_api.api.main
 
 The following environmental variables are required for the component to run properly.
 
-- MYSQL_HOST
-- MYSQL_PORT
-- MYSQL_DATABASE
-- MYSQL_USER
-- MYSQL_PASSWORD
 - APIKEY: apikey required for authenticating the incoming requests
 - PROFILE_MANAGER_CONNECTOR_BASE_URL: base url for the profile manager connection
 - TASK_MANAGER_CONNECTOR_BASE_URL: base url for the task manager endpoints
+- PROFILE_MANAGER_CONNECTOR_BASE_URL> base url for wenet hub (ex. https://wenet.u-hopper.com/dev/hub/frontend)
 - DEBUG: if set put the ws in "DEBUG" mode, the debug mode consist in:
     - use dummy endpoint for profile and task manager instead of the production one
 

@@ -4,7 +4,6 @@ import logging.config
 import os
 
 from wenet_service_api.connector.collector import ServiceConnectorCollector
-from wenet_service_api.dao.dao_collector import DaoCollector
 from wenet_service_api.api.log.logging import get_logging_configuration
 from wenet_service_api.api.ws.ws import WsInterface
 
@@ -18,12 +17,10 @@ def init_ws() -> WsInterface:
     # Initializations here
     service_connector_collector = ServiceConnectorCollector.build()
 
-    dao_collector = DaoCollector.build_from_env()
-
     authorized_api_key = os.getenv("APIKEY")
     if authorized_api_key is None:
         raise RuntimeError("Missing environmental variable APIKEY")
-    ws_interface = WsInterface(service_connector_collector, dao_collector, authorized_api_key)
+    ws_interface = WsInterface(service_connector_collector, authorized_api_key)
     return ws_interface
 
 

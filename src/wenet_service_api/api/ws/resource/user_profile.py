@@ -11,7 +11,6 @@ from wenet_service_api.common.exception.exceptions import ResourceNotFound, NotA
 from wenet_service_api.connector.collector import ServiceConnectorCollector
 from wenet_service_api.api.ws.resource.common import AuthenticatedResource, WenetSource, AuthenticationResult, \
     Oauth2Result, Scope
-from wenet_service_api.dao.dao_collector import DaoCollector
 
 logger = logging.getLogger("api.api.ws.resource.wenet_user_profile")
 
@@ -19,18 +18,17 @@ logger = logging.getLogger("api.api.ws.resource.wenet_user_profile")
 class WeNetUserProfileInterfaceBuilder:
 
     @staticmethod
-    def routes(service_connector_collector: ServiceConnectorCollector, authorized_apikey: str, dao_collector: DaoCollector):
+    def routes(service_connector_collector: ServiceConnectorCollector, authorized_apikey: str):
         return [
-            (WeNetUserProfileInterface, "/profile", (service_connector_collector, authorized_apikey, dao_collector)),
-            (LegacyWeNetUserProfileInterface, "/profile/<string:profile_id>", (service_connector_collector, authorized_apikey, dao_collector))
+            (WeNetUserProfileInterface, "/profile", (service_connector_collector, authorized_apikey)),
+            (LegacyWeNetUserProfileInterface, "/profile/<string:profile_id>", (service_connector_collector, authorized_apikey))
         ]
 
 
 class WeNetUserProfileInterface(AuthenticatedResource):
 
-    def __init__(self, service_connector_collector: ServiceConnectorCollector, authorized_apikey: str, dao_collector: DaoCollector) -> None:
-        super().__init__(authorized_apikey, dao_collector)
-        self._service_connector_collector = service_connector_collector
+    def __init__(self, service_connector_collector: ServiceConnectorCollector, authorized_apikey: str) -> None:
+        super().__init__(authorized_apikey, service_connector_collector)
 
     def get(self):
 
@@ -188,9 +186,8 @@ class WeNetUserProfileInterface(AuthenticatedResource):
 # TODO remove
 class LegacyWeNetUserProfileInterface(AuthenticatedResource):
 
-    def __init__(self, service_connector_collector: ServiceConnectorCollector, authorized_apikey: str, dao_collector: DaoCollector) -> None:
-        super().__init__(authorized_apikey, dao_collector)
-        self._service_connector_collector = service_connector_collector
+    def __init__(self, service_connector_collector: ServiceConnectorCollector, authorized_apikey: str) -> None:
+        super().__init__(authorized_apikey, service_connector_collector)
 
     @staticmethod
     def _get_user_id(authentication_result: AuthenticationResult) -> str:

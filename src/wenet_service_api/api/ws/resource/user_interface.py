@@ -7,29 +7,29 @@ from flask_restful import abort
 
 from wenet.common.model.user.authentication_account import AuthenticationAccount, TelegramAuthenticationAccount, \
     WeNetUserWithAccounts
-from wenet_service_api.dao.dao_collector import DaoCollector
 from wenet_service_api.common.exception.exceptions import ResourceNotFound
 
 from wenet_service_api.api.ws.resource.common import AuthenticatedResource, WenetSource
+from wenet_service_api.connector.collector import ServiceConnectorCollector
 
 logger = logging.getLogger("api.api.ws.resource.wenet_user")
 
-
+# TODO remove
 class UserInterfaceBuilder:
 
     @staticmethod
-    def routes(dao_collector: DaoCollector, authorized_apikey: str):
+    def routes(service_connector_collector: ServiceConnectorCollector, authorized_apikey: str):
         return [
-            (UserAuthenticateInterface, "/authenticate", (dao_collector, authorized_apikey)),
-            (UserMetadataInterface, "/account/metadata", (dao_collector, authorized_apikey)),
-            (UserAccountsInterface, "/accounts", (dao_collector, authorized_apikey))
+            (UserAuthenticateInterface, "/authenticate", (service_connector_collector, authorized_apikey)),
+            (UserMetadataInterface, "/account/metadata", (service_connector_collector, authorized_apikey)),
+            (UserAccountsInterface, "/accounts", (service_connector_collector, authorized_apikey))
         ]
 
 
 class UserAuthenticateInterface(AuthenticatedResource):
 
-    def __init__(self, dao_collector: DaoCollector, authorized_apikey: str) -> None:
-        super().__init__(authorized_apikey, dao_collector)
+    def __init__(self, service_connector_collector: ServiceConnectorCollector, authorized_apikey: str) -> None:
+        super().__init__(authorized_apikey, service_connector_collector)
 
     def post(self):
         # TODO check oauth2
@@ -75,8 +75,8 @@ class UserAuthenticateInterface(AuthenticatedResource):
 
 class UserMetadataInterface(AuthenticatedResource):
 
-    def __init__(self, dao_collector: DaoCollector, authorized_apikey: str) -> None:
-        super().__init__(authorized_apikey, dao_collector)
+    def __init__(self, service_connector_collector: ServiceConnectorCollector, authorized_apikey: str) -> None:
+        super().__init__(authorized_apikey, service_connector_collector)
 
     def post(self):
         # tODO check oauth
@@ -125,8 +125,8 @@ class UserMetadataInterface(AuthenticatedResource):
 
 class UserAccountsInterface(AuthenticatedResource):
 
-    def __init__(self, dao_collector: DaoCollector, authorized_apikey: str) -> None:
-        super().__init__(authorized_apikey, dao_collector)
+    def __init__(self, service_connector_collector: ServiceConnectorCollector, authorized_apikey: str) -> None:
+        super().__init__(authorized_apikey, service_connector_collector)
 
     def get(self):
 

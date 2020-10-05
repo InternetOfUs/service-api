@@ -7,16 +7,15 @@ from typing import List, Optional
 from flask import request
 from flask_restful import Resource, abort
 
+from wenet.common.model.app.app_dto import AppStatus, App
 from wenet_service_api.common.exception.exceptions import ResourceNotFound
-from wenet_service_api.dao.dao_collector import DaoCollector
-from wenet_service_api.model.app import App
+from wenet_service_api.connector.collector import ServiceConnectorCollector
 
 logger = logging.getLogger("api.api.ws.resource.authenticated_resource")
 
 
 class WenetSource(Enum):
 
-    APP = "app"
     COMPONENT = "component"
     OAUTH2_AUTHORIZATION_CODE = "oauth2_authorization_code"
 
@@ -68,7 +67,7 @@ class ComponentAuthentication(AuthenticationResult):
 
 class AppAuthentication(AuthenticationResult):
 
-    def __init__(self, app_id: str ):
+    def __init__(self, app_id: str):
         super().__init__(WenetSource.APP)
         self.app_id = app_id
 
@@ -98,7 +97,7 @@ class Oauth2Result(AuthenticationResult):
         base_repr.update({
             "wenetUserId": self.wenet_user_id,
             "scopes": list(x.value for x in self.scopes) if self.scopes is not None else None,
-            "app": self.app.to_app_dto() if self.app is not None else None
+            "app": self.app.to_repr() if self.app is not None else None
         })
         return base_repr
 
@@ -113,10 +112,10 @@ class Oauth2Result(AuthenticationResult):
 
 class AuthenticatedResource(Resource):
 
-    def __init__(self, authorized_api_key: str, dao_collector: DaoCollector) -> None:
+    def __init__(self, authorized_api_key: str, connector_collector: ServiceConnectorCollector) -> None:
         super().__init__()
         self._authorized_api_key = authorized_api_key
-        self._dao_collector = dao_collector
+        self._service_connector_collector = connector_collector
 
     @staticmethod
     def _get_user_id(authentication_result: AuthenticationResult) -> str:
@@ -165,14 +164,6 @@ class AuthenticatedResource(Resource):
             api_key = request.headers.get("apikey")
             self._check_apikey_authentication(api_key)
             return ComponentAuthentication()
-        elif wenet_source == WenetSource.APP:
-
-            app_id = request.headers.get("appId")
-            app_token = request.headers.get("appToken")
-
-            self._check_app_authentication(app_id, app_token)
-
-            return AppAuthentication(app_id)
 
         elif wenet_source == WenetSource.OAUTH2_AUTHORIZATION_CODE:
 
@@ -199,54 +190,25 @@ class AuthenticatedResource(Resource):
                 f"Invalid apikey in request from [{request.remote_addr}], user agent: [{request.user_agent}]")
             abort(401, message="Invalid apikey")
 
-    def _check_app_authentication(self, app_id: str, app_token: str) -> None:
-
-        if not app_id:
-            logger.warning(f"Missing appId header in request from [{request.remote_addr}], user agent: [{request.user_agent}]")
-            abort(401, message="Missing appId header")
-
-        if not app_token:
-            logger.warning(f"Missing appToken header in request from [{request.remote_addr}], user agent: [{request.user_agent}]")
-            abort(401, message="Missing appToken header")
-
-        try:
-            app = self._dao_collector.app_dao.get(app_id)
-        except ResourceNotFound:
-            logger.warning(f"Unable to find an app with id [{app_id}] in request from [{request.remote_addr}], user agent: [{request.user_agent}]")
-            abort(401, message="Not authorized")
-            return
-        except Exception as e:
-            logger.exception(f"Unable to find the application with id [{app_id}]", exc_info=e)
-            abort(500)
-            return
-
-        if app.app_token != app_token:
-            logger.warning(f"Invalid token form app [{app_id}] in request from [{request.remote_addr}], user agent: [{request.user_agent}]")
-            abort(401, message="Not authorized")
-
     def _check_oauth2_code_authentication(self, authenticated_user_id: Optional[str], scopes_str: Optional[str], consumer_id: Optional[str]) -> Oauth2Result:
         if authenticated_user_id is None or authenticated_user_id == "":
             abort(401, message="Missing userid or scopes")
-            return
 
         if scopes_str is None or scopes_str == "":
             abort(401, message="Missing userid or scopes")
-            return
 
         if consumer_id is None or consumer_id == "":
             abort(401, message="Missing consumer id")
-            return
 
         try:
             scopes = list(Scope(x) for x in scopes_str.split(" "))
         except ValueError:
             abort(403, message="Invalid scopes")
-            return
 
         app_id = consumer_id.replace("app_", "")
 
         try:
-            app = self._dao_collector.app_dao.get(app_id)
+            app = self._service_connector_collector.hub_connector.get_app(app_id)
         except ResourceNotFound:
             logger.info(f"Invalid app [{app_id}]")
             abort(403, message="Invalid app")
@@ -256,13 +218,15 @@ class AuthenticatedResource(Resource):
             abort(403, message="Invalid app")
             return
 
-        if app.status == 1:
+        if app.status == AppStatus.ACTIVE:
             return Oauth2Result(authenticated_user_id, scopes, app)
         else:
-            logger.debug(f"{len(app.app_developers)} for app")
-            for dev in app.app_developers:
-                logger.debug(f"dev: {dev.user_id}")
-                if str(dev.user_id) == authenticated_user_id:
+
+            developers = self._service_connector_collector.hub_connector.get_app_developers(app_id)
+            logger.debug(f"{len(developers)} for app")
+            for dev in developers:
+                logger.debug(f"dev: {dev}")
+                if str(dev) == authenticated_user_id:
                     logger.debug(f"User [{authenticated_user_id}] is a developer of the app [{app_id}]")
                     return Oauth2Result(authenticated_user_id, scopes, app)
 

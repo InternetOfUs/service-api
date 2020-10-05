@@ -9,7 +9,6 @@ from wenet_service_api.api.ws.resource.common import AuthenticatedResource, Wene
 from wenet_service_api.api.ws.resource.utils.user_profile import filter_user_profile
 from wenet_service_api.common.exception.exceptions import ResourceNotFound, NotAuthorized
 from wenet_service_api.connector.collector import ServiceConnectorCollector
-from wenet_service_api.dao.dao_collector import DaoCollector
 
 logger = logging.getLogger("api.api.ws.resource.token_details")
 
@@ -17,19 +16,16 @@ logger = logging.getLogger("api.api.ws.resource.token_details")
 class TokenDetailsInterfaceBuilder:
 
     @staticmethod
-    def routes(service_connector_collector: ServiceConnectorCollector, authorized_apikey: str,
-               dao_collector: DaoCollector):
+    def routes(service_connector_collector: ServiceConnectorCollector, authorized_apikey: str):
         return [
-            (TokenDetailsInterface, "", (service_connector_collector, authorized_apikey, dao_collector))
+            (TokenDetailsInterface, "", (service_connector_collector, authorized_apikey))
         ]
 
 
 class TokenDetailsInterface(AuthenticatedResource):
 
-    def __init__(self, service_connector_collector: ServiceConnectorCollector, authorized_apikey: str,
-                 dao_collector: DaoCollector) -> None:
-        super().__init__(authorized_apikey, dao_collector)
-        self._service_connector_collector = service_connector_collector
+    def __init__(self, service_connector_collector: ServiceConnectorCollector, authorized_apikey: str) -> None:
+        super().__init__(authorized_apikey, service_connector_collector)
 
     def get(self):
         authentication_result = self._check_authentication([WenetSource.OAUTH2_AUTHORIZATION_CODE])
