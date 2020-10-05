@@ -57,7 +57,11 @@ class ListAppUserInterface(AuthenticatedResource):
         self._check_authentication([WenetSource.COMPONENT])
 
         try:
+            app = self._service_connector_collector.hub_connector.get_app(app_id)
             users = self._service_connector_collector.hub_connector.get_app_users(app_id)
+        except ResourceNotFound:
+            abort(404, message="Application not found")
+            return
         except Exception as e:
             logger.exception(f"Unable to retrieve the list of account for app {app_id}", exc_info=e)
             abort(500, message=f"Unable to retrieve the list of account for app {app_id}")

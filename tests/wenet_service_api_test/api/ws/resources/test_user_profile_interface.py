@@ -7,20 +7,17 @@ from datetime import datetime
 from mock import Mock
 
 from tests.wenet_service_api_test.api.common.common_test_case import CommonTestCase
+from wenet.common.model.app.app_dto import App, AppStatus
 from wenet.common.model.norm.norm import Norm, NormOperator
 from wenet.common.model.user.common import Date, Gender, UserLanguage
 from wenet.common.model.user.user_profile import WeNetUserProfile, UserName
 from wenet_service_api.api.ws.resource.common import WenetSource, Scope
-from wenet_service_api.model.app import App, AppDeveloper
 
 
 class TestUser(CommonTestCase):
     app = App(
         app_id="1",
-        status="1",
-        name="name",
-        description="description",
-        app_token="dshfgsahjfsdfdsjhfgsd",
+        status=AppStatus.ACTIVE,
         message_callback_url="url",
         metadata={},
         creation_ts=int(datetime(2020, 2, 27).timestamp()),
@@ -29,27 +26,17 @@ class TestUser(CommonTestCase):
 
     app1 = App(
         app_id="2",
-        status="0",
-        name="name",
-        description="description",
-        app_token="dshfgsahjfsdfdsjhfgsd",
+        status=AppStatus.DEVELOPMENT,
         message_callback_url="url",
         metadata={},
         creation_ts=int(datetime(2020, 2, 27).timestamp()),
         last_update_ts=int(datetime(2020, 2, 27).timestamp())
     )
 
-    app_developer = AppDeveloper(
-        app_id="2",
-        user_id=1,
-        created_at=int(datetime(2020, 2, 27).timestamp())
-    )
+    developer_lis = ["1"]
 
     def setUp(self) -> None:
         super().setUp()
-        self.dao_collector.app_dao.create_or_update(self.app)
-        self.dao_collector.app_dao.create_or_update(self.app1)
-        self.dao_collector.app_developer_dao.create_or_update(self.app_developer)
 
     def test_get(self):
         profile_id = "profile-id"
@@ -163,6 +150,7 @@ class TestUser(CommonTestCase):
         )
 
         mock_get = Mock(return_value=deepcopy(profile))
+        self.service_collector_connector.hub_connector.get_app = Mock(return_value=self.app)
         self.service_collector_connector.profile_manager_collector.get_profile = mock_get
 
         response = self.client.get("/user/profile", headers={
@@ -195,6 +183,7 @@ class TestUser(CommonTestCase):
         self.assertIsNone(user_profile.nationality)
         self.assertIsNone(user_profile.date_of_birth)
         mock_get.assert_called_once()
+        self.service_collector_connector.hub_connector.get_app.assert_called_once()
 
     def test_get_oauth3(self):
         profile_id = "1"
@@ -246,6 +235,8 @@ class TestUser(CommonTestCase):
 
         mock_get = Mock(return_value=deepcopy(profile))
         self.service_collector_connector.profile_manager_collector.get_profile = mock_get
+        self.service_collector_connector.hub_connector.get_app = Mock(return_value=self.app1)
+        self.service_collector_connector.hub_connector.get_app_developers = Mock(return_value=self.developer_lis)
 
         response = self.client.get("/user/profile", headers={
             "apikey": self.AUTHORIZED_APIKEY,
@@ -277,6 +268,8 @@ class TestUser(CommonTestCase):
         self.assertIsNone(user_profile.nationality)
         self.assertIsNone(user_profile.date_of_birth)
         mock_get.assert_called_once()
+        self.service_collector_connector.hub_connector.get_app.assert_called_once()
+        self.service_collector_connector.hub_connector.get_app_developers.assert_called_once()
 
     def test_get_oauth4(self):
         profile_id = "2"
@@ -328,6 +321,8 @@ class TestUser(CommonTestCase):
 
         mock_get = Mock(return_value=deepcopy(profile))
         self.service_collector_connector.profile_manager_collector.get_profile = mock_get
+        self.service_collector_connector.hub_connector.get_app = Mock(return_value=self.app1)
+        self.service_collector_connector.hub_connector.get_app_developers = Mock(return_value=self.developer_lis)
 
         response = self.client.get("/user/profile", headers={
             "apikey": self.AUTHORIZED_APIKEY,
@@ -338,6 +333,8 @@ class TestUser(CommonTestCase):
         })
         self.assertEqual(403, response.status_code)
 
+        self.service_collector_connector.hub_connector.get_app.assert_called_once()
+        self.service_collector_connector.hub_connector.get_app_developers.assert_called_once()
 
     def test_get_not_authorized(self):
 
@@ -407,7 +404,7 @@ class TestUser(CommonTestCase):
         mock_get.assert_called_once()
 
     def test_put_oauth2(self):
-        profile_id = "profile_id"
+        profile_id = "1"
         user_profile = WeNetUserProfile(
             name=UserName(
                 first="first",
@@ -456,6 +453,8 @@ class TestUser(CommonTestCase):
 
         mock_put = Mock(return_value=None)
         self.service_collector_connector.profile_manager_collector.update_profile = mock_put
+        self.service_collector_connector.hub_connector.get_app = Mock(return_value=self.app1)
+        self.service_collector_connector.hub_connector.get_app_developers = Mock(return_value=self.developer_lis)
 
         mock_get = Mock(return_value=deepcopy(user_profile))
         self.service_collector_connector.profile_manager_collector.get_profile = mock_get
@@ -471,6 +470,8 @@ class TestUser(CommonTestCase):
 
         mock_put.assert_called_once()
         mock_get.assert_called_once()
+        self.service_collector_connector.hub_connector.get_app.assert_called_once()
+        self.service_collector_connector.hub_connector.get_app_developers.assert_called_once()
 
     def test_put_not_authorized(self):
         profile_id = "profile_id"
@@ -526,7 +527,7 @@ class TestUser(CommonTestCase):
     def test_put2(self):
         mock_put = Mock(return_value=None)
         self.service_collector_connector.profile_manager_collector.update_profile = mock_put
-        
+
         user_profile = {'name': {'first': 'first', 'middle': 'middle', 'last': 'last', 'prefix': 'prefix', 'suffix': 'suffix'}, 'gender': 'M', 'email': 'email@example.com', 'phoneNumber': 'phone number', 'locale': 'it_IT', 'avatar': 'avatar', 'nationality': 'it', 'languages': [{'name': 'ita', 'level': 'C2', 'code': 'it'}], 'occupation': 'occupation', '_creationTs': 1579536160, '_lastUpdateTs': 1579536160, 'id': 'profile_id', 'norms': [{'id': 'norm-id', 'attribute': 'attribute', 'operator': 'EQUALS', 'comparison': True, 'negation': False}], 'plannedActivities': [], 'relevantLocations': [], 'relationships': [], 'socialPractices': [], 'personalBehaviors': []}
 
         mock_get = Mock(return_value=WeNetUserProfile.from_repr(user_profile))
