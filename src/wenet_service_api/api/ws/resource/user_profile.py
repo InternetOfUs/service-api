@@ -54,11 +54,18 @@ class WeNetUserProfileInterface(AuthenticatedResource):
             return False
 
     @staticmethod
+    def _is_owner(authentication_result: Oauth2Result, profile_id: str) -> bool:
+        if not isinstance(authentication_result, Oauth2Result):
+            raise Exception("is_owner method only accepts Oauth2Results")
+
+        return authentication_result.wenet_user_id == profile_id
+
+    @staticmethod
     def _can_edit_profile(authentication_result, profile_id: str) -> bool:
         if isinstance(authentication_result, ComponentAuthentication):
             return True
         elif isinstance(authentication_result, Oauth2Result):
-            return authentication_result.wenet_user_id == profile_id
+            return WeNetUserProfileInterface._is_owner(authentication_result, profile_id)
         else:
             return False
 
@@ -89,7 +96,10 @@ class WeNetUserProfileInterface(AuthenticatedResource):
         if isinstance(authentication_result, ComponentAuthentication):
             return profile.to_repr(), 200
         elif isinstance(authentication_result, Oauth2Result):
-            return profile.to_filtered_repr(authentication_result.scopes), 200
+            if self._is_owner(authentication_result, profile_id):
+                return profile.to_filtered_repr(authentication_result.scopes), 200
+            else:
+                return profile.to_public_repr(), 200
         else:
             logger.error(f"Unable to handle authentication of type {type(authentication_result)}")
             abort(500)
