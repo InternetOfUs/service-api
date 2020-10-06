@@ -9,10 +9,8 @@ from wenet_service_api.api.ws.resource.task_list_interface import TaskListResour
 from wenet_service_api.api.ws.resource.token_deatils_interface import TokenDetailsInterfaceBuilder
 from wenet_service_api.connector.collector import ServiceConnectorCollector
 from wenet_service_api.api.ws.resource.app_interface import AppResourceInterfaceBuilder
-from wenet_service_api.api.ws.resource.message_interface import MessageInterfaceBuilder
 from wenet_service_api.api.ws.resource.task_interface import TaskResourceInterfaceBuilder
 from wenet_service_api.api.ws.resource.task_transaction import TaskTransactionInterfaceBuilder
-from wenet_service_api.api.ws.resource.user_interface import UserInterfaceBuilder
 from wenet_service_api.api.ws.resource.user_profile import WeNetUserProfileInterfaceBuilder
 
 
@@ -33,7 +31,6 @@ class WsInterface:
             (TaskTransactionInterfaceBuilder.routes(service_connector_collector, self._authorized_api_key), "/task/transaction"),
             #(MessageInterfaceBuilder.routes(self._authorized_api_key, self._dao_collector), "/messages"),
             (AppResourceInterfaceBuilder.routes(service_connector_collector, self._authorized_api_key), "/app"),
-            #(UserInterfaceBuilder.routes(self._dao_collector, self._authorized_api_key), "/user"),
             (TaskListResourceInterfaceBuilder.routes(service_connector_collector, self._authorized_api_key), "/tasks"),
             (TokenDetailsInterfaceBuilder.routes(service_connector_collector, self._authorized_api_key), "/token")
         ]
