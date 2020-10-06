@@ -8,6 +8,7 @@ from flask import request
 from flask_restful import Resource, abort
 
 from wenet.common.model.app.app_dto import AppStatus, App
+from wenet.common.model.scope import Scope
 from wenet_service_api.common.exception.exceptions import ResourceNotFound
 from wenet_service_api.connector.collector import ServiceConnectorCollector
 
@@ -18,23 +19,6 @@ class WenetSource(Enum):
 
     COMPONENT = "component"
     OAUTH2_AUTHORIZATION_CODE = "oauth2_authorization_code"
-
-
-class Scope(Enum):
-
-    ID = "id"
-    FIRST_NAME = "first_name"
-    MIDDLE_NAME = "middle_name"
-    LAST_NAME = "last_name"
-    PREFIX_NAME = "prefix_name"
-    SUFFIX_NAME = "suffix_name"
-    BIRTHDATE = "birthdate"
-    GENDER = "gender"
-    NATIONALITY = "nationality"
-    LOCALE = "locale"
-    PHONE_NUMBER = "phone_number"
-    WRITE_FEED = "write_feed"
-    EMAIL = "email"
 
 
 class AuthenticationResult:
