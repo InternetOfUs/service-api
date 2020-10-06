@@ -101,8 +101,9 @@ class TestAuthentication(CommonTestCase):
 
         self.service_collector_connector.hub_connector.get_app = Mock(return_value=self.app)
         self.service_collector_connector.profile_manager_collector.get_profile = Mock(return_value=self.user_profile)
+        self.service_collector_connector.hub_connector.get_app_users = Mock(return_value=self.user_list)
 
-        response = self.client.get(f"/user/profile", headers={
+        response = self.client.get(f"/user/profile/1", headers={
             "x-wenet-source": WenetSource.OAUTH2_AUTHORIZATION_CODE.value,
             "X-Authenticated-Userid": "1",
             "X-Authenticated-Scope": f"{Scope.ID.value} {Scope.NATIONALITY.value} {Scope.PHONE_NUMBER.value}",
@@ -111,6 +112,9 @@ class TestAuthentication(CommonTestCase):
         })
 
         self.assertEqual(response.status_code, 200)
+        self.service_collector_connector.hub_connector.get_app_users.assert_called_once()
+        self.service_collector_connector.hub_connector.get_app.assert_called_once()
+        self.service_collector_connector.profile_manager_collector.get_profile.assert_called_once()
 
     def test_oauth_development(self):
 
@@ -118,7 +122,7 @@ class TestAuthentication(CommonTestCase):
         self.service_collector_connector.profile_manager_collector.get_profile = Mock(return_value=self.user_profile)
         self.service_collector_connector.hub_connector.get_app_developers = Mock(return_value=self.developer_list)
 
-        response = self.client.get(f"/user/profile", headers={
+        response = self.client.get(f"/user/profile/4", headers={
             "x-wenet-source": WenetSource.OAUTH2_AUTHORIZATION_CODE.value,
             "X-Authenticated-Userid": "4",
             "X-Authenticated-Scope": f"{Scope.ID.value} {Scope.NATIONALITY.value} {Scope.PHONE_NUMBER.value}",
@@ -133,8 +137,9 @@ class TestAuthentication(CommonTestCase):
         self.service_collector_connector.hub_connector.get_app = Mock(return_value=self.app_inactive)
         self.service_collector_connector.profile_manager_collector.get_profile = Mock(return_value=self.user_profile)
         self.service_collector_connector.hub_connector.get_app_developers = Mock(return_value=self.developer_list)
+        self.service_collector_connector.hub_connector.get_app_users = Mock(return_value=self.user_list)
 
-        response = self.client.get(f"/user/profile", headers={
+        response = self.client.get(f"/user/profile/2", headers={
             "x-wenet-source": WenetSource.OAUTH2_AUTHORIZATION_CODE.value,
             "X-Authenticated-Userid": "2",
             "X-Authenticated-Scope": f"{Scope.ID.value} {Scope.NATIONALITY.value} {Scope.PHONE_NUMBER.value}",
@@ -143,4 +148,8 @@ class TestAuthentication(CommonTestCase):
         })
 
         self.assertEqual(response.status_code, 200)
+        self.service_collector_connector.hub_connector.get_app.assert_called_once()
+        self.service_collector_connector.profile_manager_collector.get_profile.assert_called_once()
+        self.service_collector_connector.hub_connector.get_app_developers.assert_called_once()
+        self.service_collector_connector.hub_connector.get_app_users.assert_called_once()
 
