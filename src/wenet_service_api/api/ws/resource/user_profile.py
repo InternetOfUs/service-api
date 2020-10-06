@@ -10,7 +10,7 @@ from wenet_service_api.api.ws.resource.utils.user_profile import filter_user_pro
 from wenet_service_api.common.exception.exceptions import ResourceNotFound, NotAuthorized, BadRequestException
 from wenet_service_api.connector.collector import ServiceConnectorCollector
 from wenet_service_api.api.ws.resource.common import AuthenticatedResource, WenetSource, AuthenticationResult, \
-    Oauth2Result, Scope
+    Oauth2Result, Scope, ComponentAuthentication
 
 logger = logging.getLogger("api.api.ws.resource.wenet_user_profile")
 
@@ -20,7 +20,7 @@ class WeNetUserProfileInterfaceBuilder:
     @staticmethod
     def routes(service_connector_collector: ServiceConnectorCollector, authorized_apikey: str):
         return [
-            (WeNetUserProfileInterface, "/profile", (service_connector_collector, authorized_apikey)),
+            # (WeNetUserProfileInterface, "/profile", (service_connector_collector, authorized_apikey)),
             (LegacyWeNetUserProfileInterface, "/profile/<string:profile_id>", (service_connector_collector, authorized_apikey))
         ]
 
@@ -183,7 +183,7 @@ class WeNetUserProfileInterface(AuthenticatedResource):
 
             return stored_user_profile
 
-# TODO remove
+
 class LegacyWeNetUserProfileInterface(AuthenticatedResource):
 
     def __init__(self, service_connector_collector: ServiceConnectorCollector, authorized_apikey: str) -> None:
@@ -202,11 +202,31 @@ class LegacyWeNetUserProfileInterface(AuthenticatedResource):
             else:
                 return profile_id
 
+    def _can_view_profile(self, authentication_result: AuthenticationResult, profile_id: str) -> bool:
+        if isinstance(authentication_result, ComponentAuthentication):
+            return True
+        elif isinstance(authentication_result, Oauth2Result):
+            try:
+                user_ids = self._service_connector_collector.hub_connector.get_app_users(app_id=authentication_result.app.app_id)
+                return profile_id in user_ids
+            except ResourceNotFound:
+                return False
+        else:
+            return False
+
+    def _can_edit_profile(self, authentication_result, profile_id: str) -> bool:
+        if isinstance(authentication_result, ComponentAuthentication):
+            return True
+        elif isinstance(authentication_result, Oauth2Result):
+            return authentication_result.wenet_user_id == profile_id
+        else:
+            return False
+
     def get(self, profile_id: str):
 
         authentication_result = self._check_authentication([WenetSource.COMPONENT, WenetSource.OAUTH2_AUTHORIZATION_CODE])
 
-        if isinstance(authentication_result, Oauth2Result) and profile_id != authentication_result.wenet_user_id:
+        if not self._can_view_profile(authentication_result, profile_id):
             abort(401)
             return
 
@@ -232,7 +252,7 @@ class LegacyWeNetUserProfileInterface(AuthenticatedResource):
 
         authentication_result = self._check_authentication([WenetSource.COMPONENT, WenetSource.OAUTH2_AUTHORIZATION_CODE])
 
-        if isinstance(authentication_result, Oauth2Result) and profile_id != authentication_result.wenet_user_id:
+        if not self._can_edit_profile(authentication_result, profile_id):
             abort(401)
             return
 
@@ -293,11 +313,7 @@ class LegacyWeNetUserProfileInterface(AuthenticatedResource):
         return {}, 200
 
     def post(self, profile_id):
-        authentication_result = self._check_authentication([WenetSource.COMPONENT, WenetSource.OAUTH2_AUTHORIZATION_CODE])
-
-        if isinstance(authentication_result, Oauth2Result) and profile_id != authentication_result.wenet_user_id:
-            abort(401)
-            return
+        self._check_authentication([WenetSource.COMPONENT])
 
         try:
             user_profile = self._service_connector_collector.profile_manager_collector.create_empty_profile(profile_id)
