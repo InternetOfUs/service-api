@@ -36,27 +36,7 @@ class TestAuthentication(CommonTestCase):
     user_list = ["1", "2", "3", "4"]
     developer_list = ["1", "2"]
 
-    user_profile = WeNetUserProfile(
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None
-    )
+    user_profile = WeNetUserProfile.empty(None)
 
     def setUp(self) -> None:
         super().setUp()

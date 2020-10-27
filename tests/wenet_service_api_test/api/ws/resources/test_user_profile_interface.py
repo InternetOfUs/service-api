@@ -60,13 +60,6 @@ class TestUser(CommonTestCase):
             locale="it_IT",
             avatar="avatar",
             nationality="it",
-            languages=[
-                UserLanguage(
-                    name="ita",
-                    level="C2",
-                    code="it"
-                )
-            ],
             occupation="occupation",
             creation_ts=1579536160,
             last_update_ts=1579536160,
@@ -83,8 +76,10 @@ class TestUser(CommonTestCase):
             planned_activities=[],
             relevant_locations=[],
             relationships=[],
-            social_practices=[],
-            personal_behaviours=[]
+            personal_behaviours=[],
+            materials=[],
+            competences=[],
+            meanings=[]
         )
 
         mock_get = Mock(return_value=profile)
@@ -123,13 +118,6 @@ class TestUser(CommonTestCase):
             locale="it_IT",
             avatar="avatar",
             nationality="it",
-            languages=[
-                UserLanguage(
-                    name="ita",
-                    level="C2",
-                    code="it"
-                )
-            ],
             occupation="occupation",
             creation_ts=1579536160,
             last_update_ts=1579536160,
@@ -146,8 +134,10 @@ class TestUser(CommonTestCase):
             planned_activities=[],
             relevant_locations=[],
             relationships=[],
-            social_practices=[],
-            personal_behaviours=[]
+            personal_behaviours=[],
+            materials=[],
+            competences=[],
+            meanings=[]
         )
 
         mock_get = Mock(return_value=deepcopy(profile))
@@ -208,13 +198,6 @@ class TestUser(CommonTestCase):
             locale="it_IT",
             avatar="avatar",
             nationality="it",
-            languages=[
-                UserLanguage(
-                    name="ita",
-                    level="C2",
-                    code="it"
-                )
-            ],
             occupation="occupation",
             creation_ts=1579536160,
             last_update_ts=1579536160,
@@ -231,8 +214,10 @@ class TestUser(CommonTestCase):
             planned_activities=[],
             relevant_locations=[],
             relationships=[],
-            social_practices=[],
-            personal_behaviours=[]
+            personal_behaviours=[],
+            materials=[],
+            competences=[],
+            meanings=[]
         )
 
         mock_get = Mock(return_value=deepcopy(profile))
@@ -293,13 +278,6 @@ class TestUser(CommonTestCase):
             locale="it_IT",
             avatar="avatar",
             nationality="it",
-            languages=[
-                UserLanguage(
-                    name="ita",
-                    level="C2",
-                    code="it"
-                )
-            ],
             occupation="occupation",
             creation_ts=1579536160,
             last_update_ts=1579536160,
@@ -316,8 +294,10 @@ class TestUser(CommonTestCase):
             planned_activities=[],
             relevant_locations=[],
             relationships=[],
-            social_practices=[],
-            personal_behaviours=[]
+            personal_behaviours=[],
+            materials=[],
+            competences=[],
+            meanings=[]
         )
 
         mock_get = Mock(return_value=deepcopy(profile))
@@ -381,13 +361,6 @@ class TestUser(CommonTestCase):
             locale="it_IT",
             avatar="avatar",
             nationality="it",
-            languages=[
-                UserLanguage(
-                    name="ita",
-                    level="C2",
-                    code="it"
-                )
-            ],
             occupation="occupation",
             creation_ts=1579536160,
             last_update_ts=1579536160,
@@ -404,8 +377,10 @@ class TestUser(CommonTestCase):
             planned_activities=[],
             relevant_locations=[],
             relationships=[],
-            social_practices=[],
-            personal_behaviours=[]
+            personal_behaviours=[],
+            materials=[],
+            competences=[],
+            meanings=[]
         )
 
         mock_get = Mock(return_value=deepcopy(profile))
@@ -451,13 +426,6 @@ class TestUser(CommonTestCase):
             locale="it_IT",
             avatar="avatar",
             nationality="it",
-            languages=[
-                UserLanguage(
-                    name="ita",
-                    level="C2",
-                    code="it"
-                )
-            ],
             occupation="occupation",
             creation_ts=1579536160,
             last_update_ts=1579536160,
@@ -474,8 +442,10 @@ class TestUser(CommonTestCase):
             planned_activities=[],
             relevant_locations=[],
             relationships=[],
-            social_practices=[],
-            personal_behaviours=[]
+            personal_behaviours=[],
+            materials=[],
+            competences=[],
+            meanings=[]
         )
 
         mock_put = Mock(return_value=None)
@@ -513,13 +483,6 @@ class TestUser(CommonTestCase):
             locale="it_IT",
             avatar="avatar",
             nationality="it",
-            languages=[
-                UserLanguage(
-                    name="ita",
-                    level="C2",
-                    code="it"
-                )
-            ],
             occupation="occupation",
             creation_ts=1579536160,
             last_update_ts=1579536160,
@@ -536,8 +499,10 @@ class TestUser(CommonTestCase):
             planned_activities=[],
             relevant_locations=[],
             relationships=[],
-            social_practices=[],
-            personal_behaviours=[]
+            personal_behaviours=[],
+            materials=[],
+            competences=[],
+            meanings=[]
         )
 
         mock_put = Mock(return_value=None)
@@ -562,7 +527,7 @@ class TestUser(CommonTestCase):
         self.service_collector_connector.hub_connector.get_app.assert_called_once()
         self.service_collector_connector.hub_connector.get_app_developers.assert_called_once()
 
-    def test_put_oauth2(self):
+    def test_put_oauth3(self):
         profile_id = "1"
         user_profile = WeNetUserProfile(
             name=UserName(
@@ -583,13 +548,6 @@ class TestUser(CommonTestCase):
             locale="it_IT",
             avatar="avatar",
             nationality="it",
-            languages=[
-                UserLanguage(
-                    name="ita",
-                    level="C2",
-                    code="it"
-                )
-            ],
             occupation="occupation",
             creation_ts=1579536160,
             last_update_ts=1579536160,
@@ -606,8 +564,10 @@ class TestUser(CommonTestCase):
             planned_activities=[],
             relevant_locations=[],
             relationships=[],
-            social_practices=[],
-            personal_behaviours=[]
+            personal_behaviours=[],
+            materials=[],
+            competences=[],
+            meanings=[]
         )
 
         mock_put = Mock(return_value=None)
@@ -652,13 +612,6 @@ class TestUser(CommonTestCase):
             locale="it_IT",
             avatar="avatar",
             nationality="it",
-            languages=[
-                UserLanguage(
-                    name="ita",
-                    level="C2",
-                    code="it"
-                )
-            ],
             occupation="occupation",
             creation_ts=1579536160,
             last_update_ts=1579536160,
@@ -675,8 +628,10 @@ class TestUser(CommonTestCase):
             planned_activities=[],
             relevant_locations=[],
             relationships=[],
-            social_practices=[],
-            personal_behaviours=[]
+            personal_behaviours=[],
+            materials=[],
+            competences=[],
+            meanings=[]
         )
 
         response = self.client.put(f"/user/profile/{profile_id}", json=user_profile.to_repr())

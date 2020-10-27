@@ -90,13 +90,14 @@ class ProfileManagerConnector(ServiceConnector):
         else:
             headers = self._base_headers
 
-        empty_profile = WeNetUserProfile.empty(wenet_user_id)
-        data_repr = self.prepare_profile(empty_profile)
+        data_repr = {
+            "id": wenet_user_id
+        }
         data = json.dumps(data_repr)
 
         response = requests.post(url, data=data, headers=headers)
-        if response.status_code == 200:
-            return empty_profile  # TODO check
+        if response.status_code in [200, 201, 202]:
+            return WeNetUserProfile.empty(wenet_user_id)
         elif response.status_code == 401 or response.status_code == 403:
             raise NotAuthorized("Not authorized")
         elif response.status_code == 400:
@@ -142,13 +143,6 @@ class DummyProfileManagerConnector(ProfileManagerConnector):
             locale="it_IT",
             avatar="avatar",
             nationality="it",
-            languages=[
-                UserLanguage(
-                    name="ita",
-                    level="C2",
-                    code="it"
-                )
-            ],
             occupation="occupation",
             creation_ts=1579536160,
             last_update_ts=1579536160,
@@ -165,8 +159,10 @@ class DummyProfileManagerConnector(ProfileManagerConnector):
             planned_activities=[],
             relevant_locations=[],
             relationships=[],
-            social_practices=[],
-            personal_behaviours=[]
+            personal_behaviours=[],
+            materials=[],
+            competences=[],
+            meanings=[]
         )
 
     def update_profile(self, profile: WeNetUserProfile, headers: Optional[dict] = None):
