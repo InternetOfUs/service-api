@@ -24,6 +24,7 @@ mkdir ${SCRIPT_DIR}/documentation
 cp -R ${PROJECT_DIR}/documentation/* ${SCRIPT_DIR}/documentation
 cp ${PROJECT_DIR}/requirements.txt ${SCRIPT_DIR}
 
+
 mkdir ${SCRIPT_DIR}/test
 cp -R ${PROJECT_DIR}/tests/* ${SCRIPT_DIR}/test
 

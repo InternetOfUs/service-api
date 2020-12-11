@@ -23,6 +23,8 @@ ADD test/ /scripts/tests/
 COPY run_tests.sh .
 COPY test.sh .
 
+
+
 ENV PYTHONPATH /scripts
 
 CMD ["./run.sh"]

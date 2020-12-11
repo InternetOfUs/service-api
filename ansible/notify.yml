@@ -28,7 +28,7 @@
     deploy_manual_attachments:
       - color: "#0099ff"
         text:  "If needed, the deployment must be manually run :wave:"
-    attachments: "{{ commit_attachments + deploy_requested_attachments if deploy_triggered else commit_attachments + deploy_manual_attachments }}"
+    attachments: "{{ commit_attachments + deploy_requested_attachments if deploy_triggered == 'yes' else commit_attachments + deploy_manual_attachments }}"
 
   tasks:
     - name: Notify pipeline success
