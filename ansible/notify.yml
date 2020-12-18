@@ -2,8 +2,6 @@
 - hosts: localhost
   vars:
     slack_token: "{{ lookup('env', 'SLACK_TOKEN') }}"
-    # slack_channel: "{{ lookup('env', 'SLACK_CHANNEL') | default('#the-developers', True) }}"
-    # slack_username: "{{ lookup('env', 'SLACK_USERNAME') | default('uhopper lab', True) }}"
     build_environment: "{{ lookup('env', 'BUILD_ENVIRONMENT') }}"
     release_tag: "{{ lookup('env', 'RELEASE_TAG') }}"
     project_id: "{{ lookup('env', 'CI_PROJECT_ID') }}"
@@ -12,8 +10,8 @@
     project_path: "{{ lookup('env', 'CI_PROJECT_PATH') }}"
     commit_message: "{{ lookup('env', 'CI_COMMIT_MESSAGE') }}"
     commit_ref: "{{ lookup('env', 'CI_COMMIT_REF_NAME') }}"
-
-    deploy_triggered: "{{ lookup('env', 'DEPLOY_TRIGGERED') }}"
+    deploy_triggered: "{{ lookup('env', 'DEPLOY_TRIGGERED') }} | default('no', True) }}"
+    with_deploy: "{{ lookup('env', 'WITH_DEPLOY') }} | default('yes', True) }}"
 
     commit_attachments:
       - color: "#2eb887"
@@ -28,13 +26,12 @@
     deploy_manual_attachments:
       - color: "#0099ff"
         text:  "If needed, the deployment must be manually run :wave:"
-    attachments: "{{ commit_attachments + deploy_requested_attachments if deploy_triggered else commit_attachments + deploy_manual_attachments }}"
+    deploy_attachment: "{{ [] if with_deploy == 'no' else deploy_requested_attachments if deploy_triggered == 'yes' else deploy_manual_attachments }}"
+    attachments: "{{ commit_attachments + deploy_attachment }}"
 
   tasks:
     - name: Notify pipeline success
       slack:
         token: "{{ slack_token }}"
-        # username: "{{ slack_username }}"
-        # channel: "{{ slack_channel }}"
         msg: "Pipeline succeeded :rocket:"
         attachments: "{{ attachments }}"

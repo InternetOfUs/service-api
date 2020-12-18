@@ -5,13 +5,16 @@
   connection: local
   vars:
     project_path: .
+    project_type: python
     project_features:
       - test
       - docker
       - ci_cd
 
-    project_test_folder: tests
-    docker_image_name: wenet/service-api
+    docker_python_image_base_image: public.registry.u-hopper.com/python:3.8
+    project_python_test_folder: tests
+    docker_image_name: internetofus/service-api
+    docker_registry: docker.io
     docker_run_services:
       - name: ws
         main_module: wenet_service_api.api.main
@@ -30,7 +33,7 @@
       - prod
       - dev
       - issue
-    project_submodules:
+    project_python_submodules:
       - name: wenet-common-models
   roles:
     - uh.project-template

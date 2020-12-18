@@ -1,4 +1,4 @@
-FROM python:3.8
+FROM public.registry.u-hopper.com/python:3.8
 
 
 
@@ -22,6 +22,8 @@ ENV DOCUMENTATION_PATH /documentation
 ADD test/ /scripts/tests/
 COPY run_tests.sh .
 COPY test.sh .
+
+
 
 ENV PYTHONPATH /scripts
 

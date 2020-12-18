@@ -70,8 +70,8 @@ else
 fi
 
 # Exporting image name for the build and test scripts
-REGISTRY=registry.u-hopper.com
-export IMAGE_NAME=wenet/service-api:${VERSION}
+REGISTRY=docker.io
+export IMAGE_NAME=internetofus/service-api:${VERSION}
 export REGISTRY=${REGISTRY}
 
 # Build step
@@ -112,6 +112,7 @@ if [[ ${PUSH_IMAGE} == 1 ]]; then
 fi
 
 if [[ ${BUILD} == 0 ]] && [[ ${TEST} == 0 ]] && [[ ${PUSH_IMAGE} == 0 ]]; then
-  echo "Need to specify at least one parameter (-b, -t, -p)"
+  echo "Need to specify at least one parameter"
+  usage
   exit 1
 fi

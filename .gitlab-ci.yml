@@ -7,14 +7,14 @@ services:
 cache:
   key: ${CI_COMMIT_REF_SLUG}
 
-before_script:
-  - apk add --update bash wget ca-certificates openssl git tar openssh-client curl ansible ansible-lint
-  - docker login registry.u-hopper.com -u $REGISTRY_USERNAME -p $REGISTRY_PASSWORD
-
 variables:
   DOCKER_TLS_CERTDIR: ""
   DOCKER_HOST: "tcp://docker:2375"
   GIT_SUBMODULE_STRATEGY: recursive
+
+before_script:
+  - apk add --update bash wget ca-certificates openssl git tar openssh-client curl ansible ansible-lint
+  - docker login docker.io -u $REGISTRY_USERNAME -p $REGISTRY_PASSWORD
 
 stages:
   - build
@@ -61,7 +61,8 @@ notify_prod:
   script:
     - export RELEASE_TAG="$CI_COMMIT_TAG"
     - export BUILD_ENVIRONMENT="prod"
-    - export DEPLOY_TRIGGERED=no
+    - export WITH_DEPLOY="yes"
+    - export DEPLOY_TRIGGERED="no"
     - ansible-playbook ansible/notify.yml
   dependencies:
     - build_prod
@@ -112,6 +113,7 @@ deploy_dev:
     - build_dev
     - test_dev
     - push_dev
+  allow_failure: false
   only:
     - develop
 
@@ -120,7 +122,8 @@ notify_dev:
   script:
     - export RELEASE_TAG="latest"
     - export BUILD_ENVIRONMENT="dev"
-    - export DEPLOY_TRIGGERED=yes
+    - export WITH_DEPLOY="yes"
+    - export DEPLOY_TRIGGERED="yes"
     - ansible-playbook ansible/notify.yml
   dependencies:
     - build_dev
@@ -193,7 +196,8 @@ notify_issue:
   script:
     - export RELEASE_TAG="latest"
     - export BUILD_ENVIRONMENT="issue"
-    - export DEPLOY_TRIGGERED=yes
+    - export WITH_DEPLOY="yes"
+    - export DEPLOY_TRIGGERED="yes"
     - ansible-playbook ansible/notify.yml
   dependencies:
     - build_issue
