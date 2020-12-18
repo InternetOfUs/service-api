@@ -11,6 +11,7 @@
       - docker
       - ci_cd
 
+    docker_python_image_base_image: public.registry.u-hopper.com/python:3.8
     project_python_test_folder: tests
     docker_image_name: internetofus/service-api
     docker_registry: docker.io

@@ -1,4 +1,4 @@
-FROM python:3.8
+FROM public.registry.u-hopper.com/python:3.8
 
 
 
