@@ -29,9 +29,6 @@ class TestTaskListInterface(CommonTestCase):
                         name="goal",
                         description="description"
                     ),
-                    start_ts=1577833100,
-                    end_ts=1577833300,
-                    deadline_ts=1577833350,
                     norms=[
                         Norm(
                             norm_id="norm-id",
@@ -43,7 +40,10 @@ class TestTaskListInterface(CommonTestCase):
                     ],
                     attributes={
                         "key": "value"
-                    }
+                    },
+                    community_id="community_id",
+                    close_ts=None,
+                    transactions=[]
                 ),
                 Task(
                     task_id="task-id1",
@@ -56,9 +56,6 @@ class TestTaskListInterface(CommonTestCase):
                         name="goal",
                         description="description"
                     ),
-                    start_ts=1577833100,
-                    end_ts=1577833300,
-                    deadline_ts=1577833350,
                     norms=[
                         Norm(
                             norm_id="norm-id",
@@ -70,7 +67,10 @@ class TestTaskListInterface(CommonTestCase):
                     ],
                     attributes={
                         "key": "value"
-                    }
+                    },
+                    community_id="community_id",
+                    close_ts=None,
+                    transactions=[]
                 )
             ]
         )

@@ -11,7 +11,7 @@ class TestTaskTransactionInterface(CommonTestCase):
 
     def test_post(self):
 
-        task_transaction = TaskTransaction("taskId", "label", {"key": "value"})
+        task_transaction = TaskTransaction("id", "taskId", "label", 12, 100, "actioner id", {"key": "value"}, [])
 
         mock_post = Mock()
 
@@ -23,7 +23,7 @@ class TestTaskTransactionInterface(CommonTestCase):
 
     def test_post_not_authenticated(self):
 
-        task_transaction = TaskTransaction("taskId", "label", {"key": "value"})
+        task_transaction = TaskTransaction("id", "taskId", "label", 12, 100, "actioner id", {"key": "value"}, [])
 
         mock_post = Mock()
 

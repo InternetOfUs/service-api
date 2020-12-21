@@ -21,13 +21,11 @@ class TestTaskInterface(CommonTestCase):
             task_type_id="task_type_id",
             requester_id="requester_id",
             app_id="app_id",
+            community_id="community_id",
             goal=TaskGoal(
                 name="goal",
                 description="description"
             ),
-            start_ts=1577833100,
-            end_ts=1577833300,
-            deadline_ts=1577833350,
             norms=[
                 Norm(
                     norm_id="norm-id",
@@ -39,7 +37,9 @@ class TestTaskInterface(CommonTestCase):
             ],
             attributes={
                 "key": "value"
-            }
+            },
+            close_ts=None,
+            transactions=[]
         )
 
         mock_get = Mock(return_value=task)
@@ -71,9 +71,6 @@ class TestTaskInterface(CommonTestCase):
                 name="goal",
                 description="description"
             ),
-            start_ts=1577833100,
-            end_ts=1577833300,
-            deadline_ts=1577833350,
             norms=[
                 Norm(
                     norm_id="norm-id",
@@ -85,7 +82,11 @@ class TestTaskInterface(CommonTestCase):
             ],
             attributes={
                 "key": "value"
-            }
+            },
+            community_id="community_id",
+            close_ts=None,
+            transactions=[]
+
         )
 
         mock_put = Mock(return_value=task)
@@ -114,9 +115,6 @@ class TestTaskInterface(CommonTestCase):
                 name="goal",
                 description="description"
             ),
-            start_ts=1577833100,
-            end_ts=1577833300,
-            deadline_ts=1577833350,
             norms=[
                 Norm(
                     norm_id="norm-id",
@@ -128,7 +126,10 @@ class TestTaskInterface(CommonTestCase):
             ],
             attributes={
                 "key": "value"
-            }
+            },
+            community_id="community_id",
+            close_ts=None,
+            transactions=[]
         )
 
         response = self.client.put("/task/%s" % task_id, json=task.to_repr())
@@ -147,9 +148,6 @@ class TestTaskInterface(CommonTestCase):
                 name="goal",
                 description="description"
             ),
-            start_ts=1577833100,
-            end_ts=1577833300,
-            deadline_ts=1577833350,
             norms=[
                 Norm(
                     norm_id="norm-id",
@@ -161,7 +159,10 @@ class TestTaskInterface(CommonTestCase):
             ],
             attributes={
                 "key": "value"
-            }
+            },
+            community_id="community_id",
+            close_ts=None,
+            transactions=[]
         )
 
         data = task.to_repr()
@@ -190,9 +191,6 @@ class TestTaskPostInterface(CommonTestCase):
                 name="goal",
                 description="description"
             ),
-            start_ts=1577833100,
-            end_ts=1577833300,
-            deadline_ts=1577833350,
             norms=[
                 Norm(
                     norm_id="norm-id",
@@ -204,7 +202,10 @@ class TestTaskPostInterface(CommonTestCase):
             ],
             attributes={
                 "key": "value"
-            }
+            },
+            community_id="community_id",
+            close_ts=None,
+            transactions=[]
         )
 
         mock_post = Mock(return_value=task)
@@ -233,9 +234,6 @@ class TestTaskPostInterface(CommonTestCase):
                 name="goal",
                 description="description"
             ),
-            start_ts=1577833100,
-            end_ts=1577833300,
-            deadline_ts=1577833350,
             norms=[
                 Norm(
                     norm_id="norm-id",
@@ -247,7 +245,10 @@ class TestTaskPostInterface(CommonTestCase):
             ],
             attributes={
                 "key": "value"
-            }
+            },
+            community_id="community_id",
+            close_ts=None,
+            transactions=[]
         )
 
         response = self.client.post("/task", json=task.to_repr())
@@ -265,9 +266,6 @@ class TestTaskPostInterface(CommonTestCase):
                 name="goal",
                 description="description"
             ),
-            start_ts=1577833100,
-            end_ts=1577833300,
-            deadline_ts=1577833350,
             norms=[
                 Norm(
                     norm_id="norm-id",
@@ -279,7 +277,10 @@ class TestTaskPostInterface(CommonTestCase):
             ],
             attributes={
                 "key": "value"
-            }
+            },
+            community_id="community_id",
+            close_ts=None,
+            transactions=[]
         )
 
         mock_post = Mock()
