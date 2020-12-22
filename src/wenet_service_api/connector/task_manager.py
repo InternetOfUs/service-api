@@ -244,9 +244,15 @@ class DummyTaskManagerConnector(TaskManagerConnector):
                   headers: Optional[dict] = None,
                   has_close_ts: Optional[dict] = None
                   ) -> TaskPage:
+
+        logger.info(f"offset: {offset}")
+        if offset is None:
+            offset = 0
+        else:
+            offset = int(offset)
         return TaskPage(
             offset=offset,
-            total=100,
+            total=2,
             tasks=[
                 Task(
                     task_id="task-id",
