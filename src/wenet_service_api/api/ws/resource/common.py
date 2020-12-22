@@ -1,6 +1,7 @@
 from __future__ import absolute_import, annotations
 
 import logging
+import os
 from enum import Enum
 from typing import List, Optional
 
@@ -185,9 +186,10 @@ class AuthenticatedResource(Resource):
             abort(401, message="Missing consumer id")
 
         try:
-            scopes = list(Scope(x) for x in scopes_str.split(" "))
+            scopes: List[Scope] = list(Scope(x) for x in scopes_str.split(" "))
         except ValueError:
             abort(403, message="Invalid scopes")
+            return
 
         app_id = consumer_id.replace("app_", "")
 
@@ -201,6 +203,10 @@ class AuthenticatedResource(Resource):
             logger.exception(f"Unable to find the app with id [{app_id}]", exc_info=e)
             abort(403, message="Invalid app")
             return
+
+        if os.getenv("DEBUG", None):
+            logger.info("Using debug authentication")
+            return Oauth2Result(authenticated_user_id, scopes, app)
 
         if app.status == AppStatus.ACTIVE:
             return Oauth2Result(authenticated_user_id, scopes, app)

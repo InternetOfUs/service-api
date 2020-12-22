@@ -111,3 +111,11 @@ class DummyHubConnector(HubConnector):
                 "2"
             )
         ]
+
+    def get_app_users(self, app_id: str, headers: Optional[dict] = None) -> List[str]:
+        return [
+            "1",
+            "2",
+            "3",
+            "4"
+        ]
