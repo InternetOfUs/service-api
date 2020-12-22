@@ -2,6 +2,7 @@ from __future__ import absolute_import, annotations
 
 import json
 import os
+from datetime import datetime
 from typing import Optional
 
 import requests
@@ -208,9 +209,6 @@ class DummyTaskManagerConnector(TaskManagerConnector):
                 name="goal",
                 description="description"
             ),
-            start_ts=1577833100,
-            end_ts=1577833300,
-            deadline_ts=1577833350,
             norms=[
                 Norm(
                     norm_id="norm-id",
@@ -222,16 +220,30 @@ class DummyTaskManagerConnector(TaskManagerConnector):
             ],
             attributes={
                 "key": "value"
-            }
+            },
+            community_id="community_id",
+            close_ts=None,
+            transactions=[]
         )
         return task
 
-    def get_tasks(self, app_id: Optional[str] = None, requester_id: Optional[str] = None,
-                  task_type_id: Optional[str] = None, goal_name: Optional[str] = None,
-                  goal_description: Optional[str] = None, start_from: Optional[int] = None,
-                  start_to: Optional[int] = None, end_from: Optional[int] = None, end_to: Optional[int] = None,
-                  deadline_from: Optional[int] = None, deadline_to: Optional[int] = None, offset: Optional[int] = None,
-                  limit: Optional[int] = None, headers: Optional[dict] = None) -> TaskPage:
+    def get_tasks(self,
+                  app_id: Optional[str] = None,
+                  requester_id: Optional[str] = None,
+                  task_type_id: Optional[str] = None,
+                  goal_name: Optional[str] = None,
+                  goal_description: Optional[str] = None,
+                  start_from: Optional[int] = None,
+                  start_to: Optional[int] = None,
+                  end_from: Optional[int] = None,
+                  end_to: Optional[int] = None,
+                  deadline_from: Optional[int] = None,
+                  deadline_to: Optional[int] = None,
+                  offset: Optional[int] = None,
+                  limit: Optional[int] = None,
+                  headers: Optional[dict] = None,
+                  has_close_ts: Optional[dict] = None
+                  ) -> TaskPage:
         return TaskPage(
             offset=offset,
             total=100,
@@ -247,9 +259,6 @@ class DummyTaskManagerConnector(TaskManagerConnector):
                         name="goal",
                         description="description"
                     ),
-                    start_ts=1577833100,
-                    end_ts=1577833300,
-                    deadline_ts=1577833350,
                     norms=[
                         Norm(
                             norm_id="norm-id",
@@ -261,7 +270,9 @@ class DummyTaskManagerConnector(TaskManagerConnector):
                     ],
                     attributes={
                         "key": "value"
-                    }
+                    },
+                    close_ts=None,
+                    community_id="community_id"
                 ),
                 Task(
                     task_id="task-id1",
@@ -274,9 +285,6 @@ class DummyTaskManagerConnector(TaskManagerConnector):
                         name="goal",
                         description="description"
                     ),
-                    start_ts=1577833100,
-                    end_ts=1577833300,
-                    deadline_ts=1577833350,
                     norms=[
                         Norm(
                             norm_id="norm-id",
@@ -288,7 +296,9 @@ class DummyTaskManagerConnector(TaskManagerConnector):
                     ],
                     attributes={
                         "key": "value"
-                    }
+                    },
+                    community_id="community_id",
+                    close_ts=datetime.now().timestamp()
                 )
             ]
         )
