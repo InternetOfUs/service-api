@@ -7,7 +7,7 @@ from wenet_service_api.connector.collector import ServiceConnectorCollector
 from wenet_service_api.api.log.logging import get_logging_configuration
 from wenet_service_api.api.ws.ws import WsInterface
 
-logging.config.dictConfig(get_logging_configuration())
+logging.config.dictConfig(get_logging_configuration("service-api"))
 
 logger = logging.getLogger("api.api.main")
 
