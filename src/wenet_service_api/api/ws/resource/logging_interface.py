@@ -6,11 +6,22 @@ from flask import request
 from flask_restful import abort
 
 from wenet.common.model.logging_messages.messages import BaseMessage
-from wenet_service_api.api.ws.resource.common import AuthenticatedResource, WenetSource
+from wenet.common.model.scope import Scope
+from wenet_service_api.api.ws.resource.common import AuthenticatedResource, WenetSource, AuthenticationResult, \
+    ComponentAuthentication, Oauth2Result
 from wenet_service_api.common.exception.exceptions import BadRequestException
 from wenet_service_api.connector.collector import ServiceConnectorCollector
 
 logger = logging.getLogger("api.api.ws.resource.logging")
+
+
+class MessageLoggingInterfaceBuilder:
+
+    @staticmethod
+    def routes(service_connector_collector: ServiceConnectorCollector, authorized_apikey: str):
+        return [
+            (MessageLoggingInterface, "/messages", (service_connector_collector, authorized_apikey))
+        ]
 
 
 class MessageLoggingInterface(AuthenticatedResource):
@@ -18,9 +29,22 @@ class MessageLoggingInterface(AuthenticatedResource):
     def __init__(self, service_connector_collector: ServiceConnectorCollector, authorized_apikey: str) -> None:
         super().__init__(authorized_apikey, service_connector_collector)
 
+    @staticmethod
+    def _can_log(authentication_result: AuthenticationResult) -> bool:
+        if isinstance(authentication_result, ComponentAuthentication):
+            return True
+        elif isinstance(authentication_result, Oauth2Result):
+            return Scope.CONVERSATIONS in authentication_result.scopes
+        else:
+            return False
+
     def post(self):
 
-        self._check_authentication([WenetSource.COMPONENT, WenetSource.OAUTH2_AUTHORIZATION_CODE])
+        authentication_result=self._check_authentication([WenetSource.COMPONENT, WenetSource.OAUTH2_AUTHORIZATION_CODE])
+
+        if not self._can_log(authentication_result):
+            abort(401)
+            return
 
         try:
             posted_data: dict = request.get_json()
