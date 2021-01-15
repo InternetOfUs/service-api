@@ -46,11 +46,6 @@ class TestLoggingInterface(CommonTestCase):
         self.assertEqual(201, response.status_code)
         self.service_collector_connector.logger_connector.post_messages.assert_called_once()
 
-        json_response = json.loads(response.data)
-
-        self.assertIsInstance(json_response, list)
-        self.assertListEqual(["message_id"], json_response)
-
     def test_post_messages(self):
         messages = [
             RequestMessage(
@@ -84,11 +79,6 @@ class TestLoggingInterface(CommonTestCase):
 
         self.assertEqual(201, response.status_code)
         self.service_collector_connector.logger_connector.post_messages.assert_called_once()
-
-        json_response = json.loads(response.data)
-
-        self.assertIsInstance(json_response, list)
-        self.assertListEqual(["message_id", "message_id2"], json_response)
 
     def test_post_bad_request(self):
         messages = [
@@ -164,7 +154,7 @@ class TestLoggingInterface(CommonTestCase):
             "apikey": self.AUTHORIZED_APIKEY,
             "x-wenet-source": WenetSource.OAUTH2_AUTHORIZATION_CODE.value,
             "X-Authenticated-Scope": f"{Scope.CONVERSATIONS.value} {Scope.FIRST_NAME.value}",
-            "X-Authenticated-Userid": "11",
+            "X-Authenticated-Userid": "user_id",
             "X-Consumer-Username": "app_1"
         })
 
@@ -173,8 +163,54 @@ class TestLoggingInterface(CommonTestCase):
 
         json_response = json.loads(response.data)
 
-        self.assertIsInstance(json_response, list)
-        self.assertListEqual(["message_id", "message_id2"], json_response)
+        self.assertFalse("warning" in json_response)
+
+    def test_post_messages_oauth_multiple_users(self):
+        messages = [
+            RequestMessage(
+                message_id="message_id",
+                channel="channel",
+                user_id="user_id",
+                project="project",
+                content=ActionContent(
+                    button_text="text",
+                    button_payload="payload"
+                ),
+                timestamp=datetime.now()
+            ),
+            RequestMessage(
+                message_id="message_id2",
+                channel="channel",
+                user_id="user_id1",
+                project="project",
+                content=ActionContent(
+                    button_text="text",
+                    button_payload="payload"
+                ),
+                timestamp=datetime.now()
+            )
+        ]
+
+        json_messages = [x.to_repr() for x in messages]
+
+        self.service_collector_connector.hub_connector.get_app = Mock(return_value=self.app)
+        self.service_collector_connector.hub_connector.get_app_users = Mock(return_value=self.user_list)
+
+        self.service_collector_connector.logger_connector.post_messages = Mock(return_value=["message_id", "message_id2"])
+        response = self.client.post("/log/messages", json=json_messages, headers={
+            "apikey": self.AUTHORIZED_APIKEY,
+            "x-wenet-source": WenetSource.OAUTH2_AUTHORIZATION_CODE.value,
+            "X-Authenticated-Scope": f"{Scope.CONVERSATIONS.value} {Scope.FIRST_NAME.value}",
+            "X-Authenticated-Userid": "user_id",
+            "X-Consumer-Username": "app_1"
+        })
+
+        self.assertEqual(201, response.status_code)
+        self.service_collector_connector.logger_connector.post_messages.assert_called_once()
+
+        json_response = json.loads(response.data)
+
+        self.assertTrue("warning" in json_response)
 
     def test_post_messages_oauth_not_authorized(self):
         messages = [

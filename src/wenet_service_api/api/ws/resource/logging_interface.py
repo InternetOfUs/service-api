@@ -31,10 +31,29 @@ class MessageLoggingInterface(AuthenticatedResource):
 
     @staticmethod
     def _can_log(authentication_result: AuthenticationResult) -> bool:
+        """
+        check if the caller is properly authenticated
+        @param authentication_result:
+        @return:
+        """
         if isinstance(authentication_result, ComponentAuthentication):
             return True
         elif isinstance(authentication_result, Oauth2Result):
             return Scope.CONVERSATIONS in authentication_result.scopes
+        else:
+            return False
+
+    @staticmethod
+    def _can_log_message(message: BaseMessage, authentication_result: AuthenticationResult):
+        """
+        Check if an the caller can og a specific message
+        @param message:
+        @param authentication_result:
+        """
+        if isinstance(authentication_result, ComponentAuthentication):
+            return True
+        elif isinstance(authentication_result, Oauth2Result):
+            return message.user_id == authentication_result.wenet_user_id or message.user_id == authentication_result.app.app_id
         else:
             return False
 
@@ -68,10 +87,25 @@ class MessageLoggingInterface(AuthenticatedResource):
                 abort(400, message="Malformed message")
                 return
 
+        ok_messages = []
+        wrong_messages = []
+
+        for message in messages:
+            if self._can_log_message(message, authentication_result):
+                ok_messages.append(message)
+            else:
+                wrong_messages.append(message)
+
         try:
-            traces = self._service_connector_collector.logger_connector.post_messages(messages)
+            self._service_connector_collector.logger_connector.post_messages(ok_messages)
             logger.info(f"Received new LogMessages to save [{messages}]")
-            return traces, 201
+
+            if not wrong_messages:
+                return {}, 201
+            else:
+                return {
+                    "warning": "Some of the messages has not been saved due to some scope problems"
+                }, 201
         except BadRequestException as e:
             logger.exception(f"Bad request during message logging of the messages [{messages}]", exc_info=e)
             abort(400, messages="Bad request")
