@@ -72,9 +72,10 @@ The following environmental variables are required for the component to run prop
 - APIKEY: apikey required for authenticating the incoming requests
 - PROFILE_MANAGER_CONNECTOR_BASE_URL: base url for the profile manager connection
 - TASK_MANAGER_CONNECTOR_BASE_URL: base url for the task manager endpoints
-- PROFILE_MANAGER_CONNECTOR_BASE_URL> base url for wenet hub (ex. https://wenet.u-hopper.com/dev/hub/frontend)
+- PROFILE_MANAGER_CONNECTOR_BASE_URL: base url for wenet hub (ex. https://wenet.u-hopper.com/dev/hub/frontend)
 - DEBUG: if set put the ws in "DEBUG" mode, the debug mode consist in:
     - use dummy endpoint for profile and task manager instead of the production one
+- LOGGER_CONNECTOR_BASE_URL: base url for logger component
 
 
 ## Documentation
