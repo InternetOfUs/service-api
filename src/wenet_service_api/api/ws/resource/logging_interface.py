@@ -59,7 +59,7 @@ class MessageLoggingInterface(AuthenticatedResource):
 
     def post(self):
 
-        authentication_result=self._check_authentication([WenetSource.COMPONENT, WenetSource.OAUTH2_AUTHORIZATION_CODE])
+        authentication_result = self._check_authentication([WenetSource.COMPONENT, WenetSource.OAUTH2_AUTHORIZATION_CODE])
 
         if not self._can_log(authentication_result):
             abort(401)
@@ -75,14 +75,14 @@ class MessageLoggingInterface(AuthenticatedResource):
         if isinstance(posted_data, list):
             try:
                 messages = [BaseMessage.from_repr(x) for x in posted_data]
-            except (ValueError, TypeError) as v:
+            except (ValueError, TypeError, KeyError) as v:
                 logger.exception(f"Unable to build a list of messages from payload [{posted_data}]")
                 abort(400, message="Malformed message")
                 return
         else:
             try:
                 messages = [BaseMessage.from_repr(posted_data)]
-            except (ValueError, TypeError) as v:
+            except (ValueError, TypeError, KeyError) as v:
                 logger.exception(f"Unable to build a BaseMessage from [{posted_data}]", exc_info=v)
                 abort(400, message="Malformed message")
                 return
