@@ -62,7 +62,12 @@ class MessageLoggingInterface(AuthenticatedResource):
         authentication_result = self._check_authentication([WenetSource.COMPONENT, WenetSource.OAUTH2_AUTHORIZATION_CODE])
 
         if not self._can_log(authentication_result):
-            abort(401)
+            if isinstance(authentication_result, Oauth2Result):
+                logger.info(f"Missing conversation scope, unable to log the message for the user [{authentication_result.wenet_user_id}] and app [{authentication_result.app}]")
+                message = "the conversation scope is required  to save the logs"
+            else:
+                message = "The conversation logging is not allowed with this authentication method"
+            abort(401, message=message)
             return
 
         try:
