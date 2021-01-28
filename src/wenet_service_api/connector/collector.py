@@ -27,18 +27,28 @@ class ServiceConnectorCollector:
     @staticmethod
     def build() -> ServiceConnectorCollector:
 
+        component_apikey = os.getenv("COMP_AUTH_KEY", None)
+        component_apikey_header = os.getenv("COMP_AUTH_KEY_HEADER", "x-wenet-component-apikey")
+
+        if component_apikey is not None:
+            headers = {
+                component_apikey_header: component_apikey
+            }
+        else:
+            headers = {}
+
         if os.getenv("DEBUG", None):
             logger.info("Using dummy connectors")
             return ServiceConnectorCollector(
-                profile_manager_collector=DummyProfileManagerConnector.build_from_env(),
-                task_manager_connector=DummyTaskManagerConnector.build_from_env(),
-                hub_connector=DummyHubConnector.build_from_env(),
-                logger_connector=DummyLoggerConnector.build_from_env()
+                profile_manager_collector=DummyProfileManagerConnector.build_from_env(headers),
+                task_manager_connector=DummyTaskManagerConnector.build_from_env(headers),
+                hub_connector=DummyHubConnector.build_from_env(headers),
+                logger_connector=DummyLoggerConnector.build_from_env(headers)
             )
         else:
             return ServiceConnectorCollector(
-                profile_manager_collector=ProfileManagerConnector.build_from_env(),
-                task_manager_connector=TaskManagerConnector.build_from_env(),
-                hub_connector=HubConnector.build_from_env(),
-                logger_connector=LoggerConnector.build_from_env()
+                profile_manager_collector=ProfileManagerConnector.build_from_env(headers),
+                task_manager_connector=TaskManagerConnector.build_from_env(headers),
+                hub_connector=HubConnector.build_from_env(headers),
+                logger_connector=LoggerConnector.build_from_env(headers)
             )

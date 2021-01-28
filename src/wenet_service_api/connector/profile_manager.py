@@ -22,19 +22,24 @@ class ProfileManagerConnector(ServiceConnector):
         super().__init__(base_url, base_headers)
 
     @staticmethod
-    def build_from_env() -> ProfileManagerConnector:
+    def build_from_env(extra_headers: Optional[dict] = None) -> ProfileManagerConnector:
 
         base_url = os.getenv("PROFILE_MANAGER_CONNECTOR_BASE_URL")
 
         if not base_url:
             raise RuntimeError("ENV: PROFILE_MANAGER_CONNECTOR_BASE_URL is not defined")
 
-        return ProfileManagerConnector(
-            base_url=base_url,
-            base_headers={
+        base_headers = {
                 "Accept": "application/json",
                 "Content-Type": "application/json"
             }
+
+        if extra_headers is not None:
+            base_headers.update(extra_headers)
+
+        return ProfileManagerConnector(
+            base_url=base_url,
+            base_headers=base_headers
         )
 
     def get_profile(self, profile_id, headers: Optional[dict] = None) -> WeNetUserProfile:
@@ -120,7 +125,7 @@ class DummyProfileManagerConnector(ProfileManagerConnector):
         super().__init__("", None)
 
     @staticmethod
-    def build_from_env() -> ProfileManagerConnector:
+    def build_from_env(extra_headers: Optional[dict] = None) -> ProfileManagerConnector:
         return DummyProfileManagerConnector()
 
     def get_profile(self, profile_id, headers: Optional[dict] = None) -> WeNetUserProfile:

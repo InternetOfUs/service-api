@@ -16,19 +16,23 @@ logger = logging.getLogger("api.connector.logger_connector")
 class LoggerConnector(ServiceConnector):
 
     @staticmethod
-    def build_from_env() -> LoggerConnector:
+    def build_from_env(extra_headers: Optional[dict] = None) -> LoggerConnector:
         base_url = os.getenv("LOGGER_CONNECTOR_BASE_URL")
 
         if not base_url:
             raise RuntimeError("ENV: LOGGER_CONNECTOR_BASE_URL is not defined")
 
+        base_headers = {
+            "Accept": "application/json",
+            "Content-Type": "application/json"
+        }
+
+        if extra_headers is not None:
+            base_headers.update(extra_headers)
+
         return LoggerConnector(
             base_url=base_url,
-            base_headers={
-                "Accept": "application/json",
-                "Content-Type": "application/json"
-                # TODO auth
-            }
+            base_headers=base_headers
         )
 
     def post_messages(self, messages: List[BaseMessage], headers: Optional[dict] = None) -> List[str]:
@@ -62,5 +66,5 @@ class DummyLoggerConnector(LoggerConnector):
         ]
 
     @staticmethod
-    def build_from_env() -> LoggerConnector:
+    def build_from_env(extra_headers: Optional[dict] = None) -> LoggerConnector:
         return DummyLoggerConnector("")

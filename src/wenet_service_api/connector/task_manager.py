@@ -23,19 +23,24 @@ class TaskManagerConnector(ServiceConnector):
         super().__init__(base_url, base_headers)
 
     @staticmethod
-    def build_from_env() -> TaskManagerConnector:
+    def build_from_env(extra_headers: Optional[dict] = None) -> TaskManagerConnector:
 
         base_url = os.getenv("TASK_MANAGER_CONNECTOR_BASE_URL")
 
         if not base_url:
             raise RuntimeError("ENV: TASK_MANAGER_CONNECTOR_BASE_URL is not defined")
 
+        base_headers = {
+            "Accept": "application/json",
+            "Content-Type": "application/json"
+        }
+
+        if extra_headers is not None:
+            base_headers.update(extra_headers)
+
         return TaskManagerConnector(
             base_url=base_url,
-            base_headers={
-                "Accept": "application/json",
-                "Content-Type": "application/json"
-            }
+            base_headers=base_headers
         )
 
     def get_task(self, task_id: str, headers: Optional[dict] = None) -> Task:
@@ -104,7 +109,7 @@ class TaskManagerConnector(ServiceConnector):
             if query_params_temp[key] is not None:
                 query_params[key] = query_params_temp[key]
 
-        response = requests.get(url, params=query_params)
+        response = requests.get(url, params=query_params, headers=headers)
 
         if response.status_code == 200:
             task_page = TaskPage.from_repr(response.json())
@@ -194,7 +199,7 @@ class DummyTaskManagerConnector(TaskManagerConnector):
         super().__init__("")
 
     @staticmethod
-    def build_from_env() -> TaskManagerConnector:
+    def build_from_env(extra_headers: Optional[dict] = None) -> TaskManagerConnector:
         return DummyTaskManagerConnector()
 
     def get_task(self, task_id: str, headers: Optional[dict] = None) -> Task:

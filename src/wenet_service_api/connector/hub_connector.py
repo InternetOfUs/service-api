@@ -17,20 +17,24 @@ logger = logging.getLogger("api.connector.hub")
 class HubConnector(ServiceConnector):
 
     @staticmethod
-    def build_from_env() -> HubConnector:
+    def build_from_env(extra_headers: Optional[dict] = None) -> HubConnector:
 
         base_url = os.getenv("HUB_CONNECTOR_BASE_URL")
 
         if not base_url:
             raise RuntimeError("ENV: HUB_CONNECTOR_BASE_URL is not defined")
 
+        base_headers = {
+            "Accept": "application/json",
+            "Content-Type": "application/json"
+        }
+
+        if extra_headers is not None:
+            base_headers.update(extra_headers)
+
         return HubConnector(
             base_url=base_url,
-            base_headers={
-                "Accept": "application/json",
-                "Content-Type": "application/json"
-                # TODO auth
-            }
+            base_headers=base_headers
         )
 
     def get_app(self, app_id: str, headers: Optional[dict] = None) -> App:
@@ -87,7 +91,7 @@ class DummyHubConnector(HubConnector):
         super().__init__("", None)
 
     @staticmethod
-    def build_from_env() -> HubConnector:
+    def build_from_env(extra_headers: Optional[dict] = None) -> HubConnector:
         return DummyHubConnector()
 
     def get_app(self, app_id: str, headers: Optional[dict] = None) -> App:
