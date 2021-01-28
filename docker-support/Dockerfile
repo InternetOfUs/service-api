@@ -27,4 +27,6 @@ COPY test.sh .
 
 ENV PYTHONPATH /scripts
 
+ARG GIT_REF
+
 CMD ["./run.sh"]

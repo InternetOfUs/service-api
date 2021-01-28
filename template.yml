@@ -15,7 +15,7 @@
     project_python_test_folder: tests
     docker_image_name: internetofus/service-api
     docker_registry: docker.io
-    docker_run_services:
+    docker_python_services:
       - name: ws
         main_module: wenet_service_api.api.main
         required_env_variables:
@@ -30,8 +30,8 @@
       - deploy
       - notify
     ci_environments:
-      - prod
-      - dev
+      - production
+      - staging
       - issue
     project_python_submodules:
       - name: wenet-common-models

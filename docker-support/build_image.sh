@@ -33,7 +33,8 @@ cp -R ${PROJECT_DIR}/wenet-common-models/requirements.txt ${SCRIPT_DIR}/wenet-co
 
 
 # Building image
-docker build --cache-from ${REGISTRY}/${IMAGE_NAME} -t ${IMAGE_NAME} ${SCRIPT_DIR}
+GIT_REF=`git rev-parse --short HEAD`
+docker build --build-arg GIT_REF=${GIT_REF} --cache-from ${REGISTRY}/${IMAGE_NAME} -t ${IMAGE_NAME} ${SCRIPT_DIR}
 if [[ $? == 0 ]]; then
     echo "Build successful: ${IMAGE_NAME}."
 
