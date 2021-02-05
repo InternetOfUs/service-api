@@ -2,6 +2,14 @@
 
 DEFAULT_VERSION="latest"
 
+SCRIPT_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+
+BUILD=0
+TEST=0
+DELETE_IF_FAILED=0
+SAVE_IMAGE_TO_TARGZ=0
+PUSH_IMAGE=0
+
 usage() {
   echo '''Usage: ...
 
@@ -20,17 +28,7 @@ Example:
   '''
 }
 
-
-SCRIPT_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
-
-BUILD=0
-TEST=0
-DELETE_IF_FAILED=0
-SAVE_IMAGE_TO_TARGZ=0
-PUSH_IMAGE=0
-PULL_IMAGE=0
-
-args=`getopt btdspi $*`
+args=`getopt btdsp $*`
 # you should not use `getopt abo: "$@"` since that would parse
 # the arguments differently from what the set command below does.
 if [[ $? != 0 ]]
@@ -59,9 +57,6 @@ for i do
      -p)
        PUSH_IMAGE=1
        shift;;
-     -i)
-       PULL_IMAGE=1
-       shift;;
   esac
 done
 
@@ -69,45 +64,42 @@ done
 VERSION=$2
 if [[ -z "${VERSION}" ]]; then
     VERSION=${DEFAULT_VERSION}
-    echo "Version not specified: building with default version [${VERSION}]"
+    echo "Version not specified: building with default version [${VERSION}]."
 else
-    echo "Using specified version [${VERSION}]"
+    echo "Using specified version [${VERSION}]."
 fi
 
-# Exporting image name for the build and test script
-REGISTRY=registry.u-hopper.com
-export IMAGE_NAME=wenet/service-api:${VERSION}
+# Exporting image name for the build and test scripts
+REGISTRY=docker.io
+export IMAGE_NAME=internetofus/service-api:${VERSION}
 export REGISTRY=${REGISTRY}
 
-
-if [[ ${PULL_IMAGE} == 1 ]]; then
-  docker pull ${REGISTRY}/${IMAGE_NAME} || true
-fi
-
-
+# Build step
 if [[ ${BUILD} == 1 ]]; then
-  echo "Building image"
+  echo "Building image."
   ${SCRIPT_DIR}/build_image.sh
 
   if [[ $? != 0 ]]; then
-    echo "Build Failed"
+    echo "Error: Build Failed"
     exit 1
   fi
 
+  # Save step
   if [[ ${SAVE_IMAGE_TO_TARGZ} == 1 ]]; then
-    echo "Saving image to service_api_image.tar.gz"
-    docker save ${REGISTRY}/${IMAGE_NAME} | gzip > service_api_image.tar.gz
+    echo "Saving image to docker_image.tar.gz."
+    docker save ${REGISTRY}/${IMAGE_NAME} | gzip > docker_image.tar.gz
   fi
 fi
 
+# Test step
 if [[ ${TEST} == 1 ]]; then
-  echo "Running tests"
+  echo "Running tests."
   ${SCRIPT_DIR}/test.sh
 
   if [[ $? != 0 ]]; then
-      echo "Error: One or more tests are failing"
+      echo "Error: One or more tests are failed."
       if [[ ${DELETE_IF_FAILED} == 1 ]]; then
-        docker rmi ${IMAGE_NAME}
+        docker rmi ${REGISTRY}/${IMAGE_NAME}  # TODO check if correct
       fi
       exit 1
   fi
@@ -119,8 +111,8 @@ if [[ ${PUSH_IMAGE} == 1 ]]; then
   docker push ${REGISTRY}/${IMAGE_NAME}
 fi
 
-if [[ ${BUILD} == 0 ]] && [[ ${TEST} == 0 ]] && [[ ${PUSH_IMAGE} == 0 ]] && [[ ${PULL_IMAGE} == 0 ]]; then
-  echo "Need to specify at least one parameter (-b, -t, -p, -i)"
+if [[ ${BUILD} == 0 ]] && [[ ${TEST} == 0 ]] && [[ ${PUSH_IMAGE} == 0 ]]; then
+  echo "Need to specify at least one parameter"
   usage
   exit 1
 fi

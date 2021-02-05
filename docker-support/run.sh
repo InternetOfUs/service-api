@@ -1,26 +1,32 @@
 #!/bin/bash
 
-echo "Verifying env variables presence"
+echo "Verifying env variables presence."
 declare -a REQUIRED_ENV_VARS=(
-                                  "${MYSQL_DATABASE}"
-                                  "${MYSQL_USER}"
-                                  "${MYSQL_PASSWORD}"
-                                  "${MYSQL_HOST}"
-                                  "${MYSQL_PORT}"
+                                "${PROFILE_MANAGER_CONNECTOR_BASE_URL}"
+                                "${TASK_MANAGER_CONNECTOR_BASE_URL}"
+                                "${HUB_CONNECTOR_BASE_URL}"
                               )
 
 for e in "${REQUIRED_ENV_VARS[@]}"
 do
-    if [ -z "$e" ]; then
-        echo >&2 "Required env variable is missing"
-        exit 1
-    fi
+  if [[ -z "$e" ]]; then
+    # TODO should print the missing variable
+    echo >&2 "Error: A required env variable is missing."
+    exit 1
+  fi
 done
 
+echo "Running service..."
+
+#
+# Important note: env variables should not be passed as arguments to the module!
+# This will allow for an easier automatisation of the docker support creation.
+#
+
+
 DEFAULT_WORKERS=4
-if [ -z "${WORKERS}" ]; then
-    WORKERS=$DEFAULT_WORKERS
+if [[ -z "${GUNICORN_WORKERS}" ]]; then
+    GUNICORN_WORKERS=${DEFAULT_WORKERS}
 fi
 
-echo "Running ws"
-exec gunicorn -w "${WORKERS}" -b 0.0.0.0:80 "wenet_service_api.api.main:service_api_app"
+exec gunicorn -w "${GUNICORN_WORKERS}" -b 0.0.0.0:80 "wenet_service_api.api.main:service_api_app"

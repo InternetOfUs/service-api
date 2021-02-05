@@ -15,5 +15,5 @@ class ServiceConnector(abc.ABC):
             self._base_headers = {}
 
     @staticmethod
-    def build_from_env() -> ServiceConnector:
+    def build_from_env(extra_headers: Optional[dict] = None) -> ServiceConnector:
         pass

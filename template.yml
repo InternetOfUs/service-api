@@ -1,0 +1,39 @@
+---
+
+- name: Setup Python project.
+  hosts: 127.0.0.1
+  connection: local
+  vars:
+    project_path: .
+    project_type: python
+    project_features:
+      - test
+      - docker
+      - ci_cd
+
+    docker_python_image_base_image: public.registry.u-hopper.com/python:3.8
+    project_python_test_folder: tests
+    docker_image_name: internetofus/service-api
+    docker_registry: docker.io
+    docker_python_services:
+      - name: ws
+        main_module: wenet_service_api.api.main
+        required_env_variables:
+          - ${PROFILE_MANAGER_CONNECTOR_BASE_URL}
+          - ${TASK_MANAGER_CONNECTOR_BASE_URL}
+          - ${HUB_CONNECTOR_BASE_URL}
+        gunicorn_app: service_api_app
+    ci_stages:
+      - build
+      - test
+      - push
+      - trigger
+      - notify
+    ci_environments:
+      - production
+      - staging
+      - issue
+    project_python_submodules:
+      - name: wenet-common-models
+  roles:
+    - uh.project-template

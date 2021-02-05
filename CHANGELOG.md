@@ -1,5 +1,15 @@
 # Changelog
 
+## Version 2.*
+
+### 2.0.0
+
+* Added Oauth2 support
+* Removed old application authentication
+* Updated WeNetCommonModel to version 1.0.1
+* Added support for logging component
+* Detached hub database
+
 ## Version 1.*
 
 ### 1.0.0

@@ -7,7 +7,7 @@ from mock import Mock
 from tests.wenet_service_api_test.api.common.common_test_case import CommonTestCase
 from wenet.common.model.norm.norm import Norm, NormOperator
 from wenet.common.model.task.task import Task, TaskGoal
-from wenet_service_api.api.ws.resource.common import WenetSources
+from wenet_service_api.api.ws.resource.common import WenetSource
 
 
 class TestTaskInterface(CommonTestCase):
@@ -21,13 +21,11 @@ class TestTaskInterface(CommonTestCase):
             task_type_id="task_type_id",
             requester_id="requester_id",
             app_id="app_id",
+            community_id="community_id",
             goal=TaskGoal(
                 name="goal",
                 description="description"
             ),
-            start_ts=1577833100,
-            end_ts=1577833300,
-            deadline_ts=1577833350,
             norms=[
                 Norm(
                     norm_id="norm-id",
@@ -39,12 +37,14 @@ class TestTaskInterface(CommonTestCase):
             ],
             attributes={
                 "key": "value"
-            }
+            },
+            close_ts=None,
+            transactions=[]
         )
 
         mock_get = Mock(return_value=task)
         self.service_collector_connector.task_manager_connector.get_task = mock_get
-        response = self.client.get("/task/%s" % task_id, headers={"apikey": self.AUTHORIZED_APIKEY, "x-wenet-source": WenetSources.COMPONENT.value})
+        response = self.client.get("/task/%s" % task_id, headers={"apikey": self.AUTHORIZED_APIKEY, "x-wenet-source": WenetSource.COMPONENT.value})
 
         self.assertEqual(response.status_code, 200)
         mock_get.assert_called_once()
@@ -71,9 +71,6 @@ class TestTaskInterface(CommonTestCase):
                 name="goal",
                 description="description"
             ),
-            start_ts=1577833100,
-            end_ts=1577833300,
-            deadline_ts=1577833350,
             norms=[
                 Norm(
                     norm_id="norm-id",
@@ -85,13 +82,17 @@ class TestTaskInterface(CommonTestCase):
             ],
             attributes={
                 "key": "value"
-            }
+            },
+            community_id="community_id",
+            close_ts=None,
+            transactions=[]
+
         )
 
         mock_put = Mock(return_value=task)
         self.service_collector_connector.task_manager_connector.updated_task = mock_put
 
-        response = self.client.put("/task/%s" % task_id, json=task.to_repr(), headers={"apikey": self.AUTHORIZED_APIKEY, "x-wenet-source": WenetSources.COMPONENT.value})
+        response = self.client.put("/task/%s" % task_id, json=task.to_repr(), headers={"apikey": self.AUTHORIZED_APIKEY, "x-wenet-source": WenetSource.COMPONENT.value})
         self.assertEqual(response.status_code, 200)
 
         json_data = json.loads(response.data)
@@ -114,9 +115,6 @@ class TestTaskInterface(CommonTestCase):
                 name="goal",
                 description="description"
             ),
-            start_ts=1577833100,
-            end_ts=1577833300,
-            deadline_ts=1577833350,
             norms=[
                 Norm(
                     norm_id="norm-id",
@@ -128,7 +126,10 @@ class TestTaskInterface(CommonTestCase):
             ],
             attributes={
                 "key": "value"
-            }
+            },
+            community_id="community_id",
+            close_ts=None,
+            transactions=[]
         )
 
         response = self.client.put("/task/%s" % task_id, json=task.to_repr())
@@ -147,9 +148,6 @@ class TestTaskInterface(CommonTestCase):
                 name="goal",
                 description="description"
             ),
-            start_ts=1577833100,
-            end_ts=1577833300,
-            deadline_ts=1577833350,
             norms=[
                 Norm(
                     norm_id="norm-id",
@@ -161,7 +159,10 @@ class TestTaskInterface(CommonTestCase):
             ],
             attributes={
                 "key": "value"
-            }
+            },
+            community_id="community_id",
+            close_ts=None,
+            transactions=[]
         )
 
         data = task.to_repr()
@@ -170,7 +171,7 @@ class TestTaskInterface(CommonTestCase):
         mock_put = Mock()
         self.service_collector_connector.task_manager_connector.get_task = mock_put
 
-        response = self.client.put("/task/%s" % task_id, json=data, headers={"apikey": self.AUTHORIZED_APIKEY, "x-wenet-source": WenetSources.COMPONENT.value})
+        response = self.client.put("/task/%s" % task_id, json=data, headers={"apikey": self.AUTHORIZED_APIKEY, "x-wenet-source": WenetSource.COMPONENT.value})
         self.assertEqual(response.status_code, 400)
 
         mock_put.assert_not_called()
@@ -190,9 +191,6 @@ class TestTaskPostInterface(CommonTestCase):
                 name="goal",
                 description="description"
             ),
-            start_ts=1577833100,
-            end_ts=1577833300,
-            deadline_ts=1577833350,
             norms=[
                 Norm(
                     norm_id="norm-id",
@@ -204,13 +202,16 @@ class TestTaskPostInterface(CommonTestCase):
             ],
             attributes={
                 "key": "value"
-            }
+            },
+            community_id="community_id",
+            close_ts=None,
+            transactions=[]
         )
 
         mock_post = Mock(return_value=task)
         self.service_collector_connector.task_manager_connector.create_task = mock_post
 
-        response = self.client.post("/task", json=task.to_repr(), headers={"apikey": self.AUTHORIZED_APIKEY, "x-wenet-source": WenetSources.COMPONENT.value})
+        response = self.client.post("/task", json=task.to_repr(), headers={"apikey": self.AUTHORIZED_APIKEY, "x-wenet-source": WenetSource.COMPONENT.value})
         self.assertEqual(response.status_code, 201)
 
         json_data = json.loads(response.data)
@@ -233,9 +234,6 @@ class TestTaskPostInterface(CommonTestCase):
                 name="goal",
                 description="description"
             ),
-            start_ts=1577833100,
-            end_ts=1577833300,
-            deadline_ts=1577833350,
             norms=[
                 Norm(
                     norm_id="norm-id",
@@ -247,7 +245,10 @@ class TestTaskPostInterface(CommonTestCase):
             ],
             attributes={
                 "key": "value"
-            }
+            },
+            community_id="community_id",
+            close_ts=None,
+            transactions=[]
         )
 
         response = self.client.post("/task", json=task.to_repr())
@@ -265,9 +266,6 @@ class TestTaskPostInterface(CommonTestCase):
                 name="goal",
                 description="description"
             ),
-            start_ts=1577833100,
-            end_ts=1577833300,
-            deadline_ts=1577833350,
             norms=[
                 Norm(
                     norm_id="norm-id",
@@ -279,7 +277,10 @@ class TestTaskPostInterface(CommonTestCase):
             ],
             attributes={
                 "key": "value"
-            }
+            },
+            community_id="community_id",
+            close_ts=None,
+            transactions=[]
         )
 
         mock_post = Mock()
@@ -287,6 +288,6 @@ class TestTaskPostInterface(CommonTestCase):
 
         data = task.to_repr()
         data["norms"] = "text"
-        response = self.client.post("/task", json=data, headers={"apikey": self.AUTHORIZED_APIKEY, "x-wenet-source": WenetSources.COMPONENT.value})
+        response = self.client.post("/task", json=data, headers={"apikey": self.AUTHORIZED_APIKEY, "x-wenet-source": WenetSource.COMPONENT.value})
         self.assertEqual(response.status_code, 400)
         mock_post.assert_not_called()

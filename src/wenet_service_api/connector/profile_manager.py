@@ -22,19 +22,24 @@ class ProfileManagerConnector(ServiceConnector):
         super().__init__(base_url, base_headers)
 
     @staticmethod
-    def build_from_env() -> ProfileManagerConnector:
+    def build_from_env(extra_headers: Optional[dict] = None) -> ProfileManagerConnector:
 
         base_url = os.getenv("PROFILE_MANAGER_CONNECTOR_BASE_URL")
 
         if not base_url:
             raise RuntimeError("ENV: PROFILE_MANAGER_CONNECTOR_BASE_URL is not defined")
 
-        return ProfileManagerConnector(
-            base_url=base_url,
-            base_headers={
+        base_headers = {
                 "Accept": "application/json",
                 "Content-Type": "application/json"
             }
+
+        if extra_headers is not None:
+            base_headers.update(extra_headers)
+
+        return ProfileManagerConnector(
+            base_url=base_url,
+            base_headers=base_headers
         )
 
     def get_profile(self, profile_id, headers: Optional[dict] = None) -> WeNetUserProfile:
@@ -90,13 +95,14 @@ class ProfileManagerConnector(ServiceConnector):
         else:
             headers = self._base_headers
 
-        empty_profile = WeNetUserProfile.empty(wenet_user_id)
-        data_repr = self.prepare_profile(empty_profile)
+        data_repr = {
+            "id": wenet_user_id
+        }
         data = json.dumps(data_repr)
 
         response = requests.post(url, data=data, headers=headers)
-        if response.status_code == 200:
-            return empty_profile  # TODO check
+        if response.status_code in [200, 201, 202]:
+            return WeNetUserProfile.empty(wenet_user_id)
         elif response.status_code == 401 or response.status_code == 403:
             raise NotAuthorized("Not authorized")
         elif response.status_code == 400:
@@ -119,7 +125,7 @@ class DummyProfileManagerConnector(ProfileManagerConnector):
         super().__init__("", None)
 
     @staticmethod
-    def build_from_env() -> ProfileManagerConnector:
+    def build_from_env(extra_headers: Optional[dict] = None) -> ProfileManagerConnector:
         return DummyProfileManagerConnector()
 
     def get_profile(self, profile_id, headers: Optional[dict] = None) -> WeNetUserProfile:
@@ -142,13 +148,6 @@ class DummyProfileManagerConnector(ProfileManagerConnector):
             locale="it_IT",
             avatar="avatar",
             nationality="it",
-            languages=[
-                UserLanguage(
-                    name="ita",
-                    level="C2",
-                    code="it"
-                )
-            ],
             occupation="occupation",
             creation_ts=1579536160,
             last_update_ts=1579536160,
@@ -165,8 +164,10 @@ class DummyProfileManagerConnector(ProfileManagerConnector):
             planned_activities=[],
             relevant_locations=[],
             relationships=[],
-            social_practices=[],
-            personal_behaviours=[]
+            personal_behaviours=[],
+            materials=[],
+            competences=[],
+            meanings=[]
         )
 
     def update_profile(self, profile: WeNetUserProfile, headers: Optional[dict] = None):

@@ -3,36 +3,49 @@ from __future__ import absolute_import, annotations
 import json
 from datetime import datetime
 
+from mock import Mock
+
 from tests.wenet_service_api_test.api.common.common_test_case import CommonTestCase
-from wenet.common.model.app.app_dto import AppDTO
-from wenet_service_api.api.ws.resource.common import WenetSources
-from wenet_service_api.model.app import App
+from wenet.common.model.app.app_dto import AppDTO, App, AppStatus
+from wenet.common.model.user.user_profile import WeNetUserProfile
+from wenet_service_api.api.ws.resource.common import WenetSource, Scope
 
 
 class TestAuthentication(CommonTestCase):
 
     app = App(
         app_id="c0b7f45b-06c7-449c-9cc0-f778d7800193",
-        status="1",
-        name="name",
-        description="description",
-        app_token="dshfgsahjfsdfdsjhfgsd",
+        status=AppStatus.ACTIVE,
         message_callback_url="url",
         metadata={},
         creation_ts=int(datetime(2020, 2, 27).timestamp()),
         last_update_ts=int(datetime(2020, 2, 27).timestamp())
     )
 
-    app_dto = app.to_app_dto()
+    app_inactive = App(
+        app_id="c0b7f45b-06c7-449c-9cc0-f778d7800193",
+        status=AppStatus.DEVELOPMENT,
+        message_callback_url="url",
+        metadata={},
+        creation_ts=int(datetime(2020, 2, 27).timestamp()),
+        last_update_ts=int(datetime(2020, 2, 27).timestamp())
+    )
+
+    app_dto = AppDTO.from_app(app)
+
+    user_list = ["1", "2", "3", "4"]
+    developer_list = ["1", "2"]
+
+    user_profile = WeNetUserProfile.empty(None)
 
     def setUp(self) -> None:
         super().setUp()
-        self.dao_collector.app_dao.create_or_update(self.app)
 
     def test_component_authentication(self):
         app_id = self.app.app_id
 
-        response = self.client.get(f"/app/{app_id}", headers={"apikey": self.AUTHORIZED_APIKEY,  "x-wenet-source": WenetSources.COMPONENT.value})
+        self.service_collector_connector.hub_connector.get_app = Mock(return_value=self.app)
+        response = self.client.get(f"/app/{app_id}", headers={"apikey": self.AUTHORIZED_APIKEY,  "x-wenet-source": WenetSource.COMPONENT.value})
 
         self.assertEqual(response.status_code, 200)
 
@@ -46,7 +59,7 @@ class TestAuthentication(CommonTestCase):
     def test_component_authentication2(self):
         app_id = self.app.app_id
 
-        response = self.client.get(f"/app/{app_id}", headers={"apikey": "asd",  "x-wenet-source": WenetSources.COMPONENT.value})
+        response = self.client.get(f"/app/{app_id}", headers={"apikey": "asd",  "x-wenet-source": WenetSource.COMPONENT.value})
 
         self.assertEqual(response.status_code, 401)
 
@@ -64,69 +77,59 @@ class TestAuthentication(CommonTestCase):
 
         self.assertEqual(response.status_code, 401)
 
-    def test_app_authentication(self):
-        app_id = self.app.app_id
+    def test_oauth(self):
 
-        response = self.client.get(
-            f"/app/{app_id}",
-            headers={
-                "apikey": self.AUTHORIZED_APIKEY,
-                "x-wenet-source": WenetSources.APP.value,
-                "appId": self.app.app_id,
-                "appToken": self.app.app_token
-            }
-        )
+        self.service_collector_connector.hub_connector.get_app = Mock(return_value=self.app)
+        self.service_collector_connector.profile_manager_collector.get_profile = Mock(return_value=self.user_profile)
+        self.service_collector_connector.hub_connector.get_app_users = Mock(return_value=self.user_list)
+
+        response = self.client.get(f"/user/profile/1", headers={
+            "x-wenet-source": WenetSource.OAUTH2_AUTHORIZATION_CODE.value,
+            "X-Authenticated-Userid": "1",
+            "X-Authenticated-Scope": f"{Scope.ID.value} {Scope.NATIONALITY.value} {Scope.PHONE_NUMBER.value}",
+            "X-Consumer-Username": f"app_{self.app.app_id}",
+            "apikey": self.AUTHORIZED_APIKEY
+        })
 
         self.assertEqual(response.status_code, 200)
+        self.service_collector_connector.hub_connector.get_app_users.assert_called_once()
+        self.service_collector_connector.hub_connector.get_app.assert_called_once()
+        self.service_collector_connector.profile_manager_collector.get_profile.assert_called_once()
 
-        json_data = json.loads(response.data)
-        result_app = AppDTO.from_repr(json_data)
+    def test_oauth_development(self):
 
-        self.assertIsInstance(result_app, AppDTO)
-        self.assertEqual(app_id, result_app.app_id)
-        self.assertEqual(self.app_dto, result_app)
+        self.service_collector_connector.hub_connector.get_app = Mock(return_value=self.app_inactive)
+        self.service_collector_connector.profile_manager_collector.get_profile = Mock(return_value=self.user_profile)
+        self.service_collector_connector.hub_connector.get_app_developers = Mock(return_value=self.developer_list)
 
-    def test_app_authentication2(self):
-        app_id = self.app.app_id
+        response = self.client.get(f"/user/profile/4", headers={
+            "x-wenet-source": WenetSource.OAUTH2_AUTHORIZATION_CODE.value,
+            "X-Authenticated-Userid": "4",
+            "X-Authenticated-Scope": f"{Scope.ID.value} {Scope.NATIONALITY.value} {Scope.PHONE_NUMBER.value}",
+            "X-Consumer-Username": f"app_{self.app.app_id}",
+            "apikey": self.AUTHORIZED_APIKEY
+        })
 
-        response = self.client.get(
-            f"/app/{app_id}",
-            headers={
-                "apikey": self.AUTHORIZED_APIKEY,
-                "x-wenet-source": WenetSources.APP.value,
-                "appId": "asd",
-                "appToken": self.app.app_token
-            }
-        )
+        self.assertEqual(response.status_code, 403)
 
-        self.assertEqual(response.status_code, 401)
+    def test_oauth_development_developer(self):
 
-    def test_app_authentication3(self):
-        app_id = self.app.app_id
+        self.service_collector_connector.hub_connector.get_app = Mock(return_value=self.app_inactive)
+        self.service_collector_connector.profile_manager_collector.get_profile = Mock(return_value=self.user_profile)
+        self.service_collector_connector.hub_connector.get_app_developers = Mock(return_value=self.developer_list)
+        self.service_collector_connector.hub_connector.get_app_users = Mock(return_value=self.user_list)
 
-        response = self.client.get(
-            f"/app/{app_id}",
-            headers={
-                "apikey": self.AUTHORIZED_APIKEY,
-                "x-wenet-source": WenetSources.APP.value,
-                "appId": self.app.app_id,
-                "appToken": "asd"
-            }
-        )
+        response = self.client.get(f"/user/profile/2", headers={
+            "x-wenet-source": WenetSource.OAUTH2_AUTHORIZATION_CODE.value,
+            "X-Authenticated-Userid": "2",
+            "X-Authenticated-Scope": f"{Scope.ID.value} {Scope.NATIONALITY.value} {Scope.PHONE_NUMBER.value}",
+            "X-Consumer-Username": f"app_{self.app.app_id}",
+            "apikey": self.AUTHORIZED_APIKEY
+        })
 
-        self.assertEqual(response.status_code, 401)
-
-    def test_app_authentication4(self):
-        app_id = self.app.app_id
-
-        response = self.client.get(
-            f"/app/{app_id}",
-            headers={
-                "apikey": self.AUTHORIZED_APIKEY,
-                "appId": self.app.app_id,
-                "appToken": self.app.app_token
-            }
-        )
-
-        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.status_code, 200)
+        self.service_collector_connector.hub_connector.get_app.assert_called_once()
+        self.service_collector_connector.profile_manager_collector.get_profile.assert_called_once()
+        self.service_collector_connector.hub_connector.get_app_developers.assert_called_once()
+        self.service_collector_connector.hub_connector.get_app_users.assert_called_once()
 
