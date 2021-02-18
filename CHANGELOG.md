@@ -2,6 +2,10 @@
 
 ## Version 2.*
 
+### 2.1.0
+
+* Updated to the latest version of the wenet common models
+
 ### 2.0.0
 
 * Added Oauth2 support
