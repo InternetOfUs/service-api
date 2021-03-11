@@ -1,10 +1,10 @@
 # Changelog
 
-## next
+## Version 2.*
+
+### 2.2.0
 
 * Updated WeNetCommonModels to version 1.1.0
-
-## Version 2.*
 
 ### 2.1.0
 
