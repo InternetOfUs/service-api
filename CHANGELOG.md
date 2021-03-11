@@ -2,6 +2,10 @@
 
 ## Version 2.*
 
+### 2.2.0
+
+* Updated WeNetCommonModels to version 1.1.0
+
 ### 2.1.0
 
 * Updated to the latest version of the wenet common models
