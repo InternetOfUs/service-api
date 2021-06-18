@@ -34,7 +34,10 @@ cp -R ${PROJECT_DIR}/wenet-common-models/requirements.txt ${SCRIPT_DIR}/wenet-co
 
 # Building image
 GIT_REF=`git rev-parse --short HEAD`
-docker build --build-arg GIT_REF=${GIT_REF} --cache-from ${REGISTRY}/${IMAGE_NAME} -t ${IMAGE_NAME} ${SCRIPT_DIR}
+if [[ -z "${PIP_CONF_DOCKER}" ]]; then
+    PIP_CONF_DOCKER="~/.config/pip/pip.conf"
+fi
+docker build --build-arg GIT_REF=${GIT_REF} --build-arg PIP_CONF_DOCKER --cache-from ${REGISTRY}/${IMAGE_NAME} -t ${IMAGE_NAME} ${SCRIPT_DIR}
 if [[ $? == 0 ]]; then
     echo "Build successful: ${IMAGE_NAME}."
 

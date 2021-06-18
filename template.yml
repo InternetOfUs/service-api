@@ -10,7 +10,6 @@
       - test
       - docker
       - ci_cd
-
     docker_python_image_base_image: public.registry.u-hopper.com/python:3.8
     project_python_test_folder: tests
     docker_image_name: internetofus/service-api
@@ -23,16 +22,26 @@
           - ${TASK_MANAGER_CONNECTOR_BASE_URL}
           - ${HUB_CONNECTOR_BASE_URL}
         gunicorn_app: service_api_app
-    ci_stages:
-      - build
-      - test
-      - push
-      - trigger
-      - notify
+
     ci_environments:
-      - production
-      - staging
-      - issue
+      production:
+        stages:
+          - name: build
+          - name: test
+          - name: push
+          - name: notify
+      staging:
+        stages:
+          - name: build
+          - name: test
+          - name: push
+          - name: trigger
+            git_ref: develop
+      issue:
+        stages:
+          - name: build
+            manual: true
+          - name: test
     project_python_submodules:
       - name: wenet-common-models
   roles:
