@@ -78,6 +78,9 @@ The following environmental variables are required for the component to run prop
 - DEBUG: if set put the ws in "DEBUG" mode, the debug mode consist in:
     - use dummy endpoint for profile and task manager instead of the production one
 - LOGGER_CONNECTOR_BASE_URL: base url for logger component
+- SENTRY_DSN: The data source name for sentry, if not set the project will not create any event
+- SENTRY_RELEASE: If set, sentry will associate the events to the given release
+- SENTRY_ENVIRONMENT: If set, sentry will associate the events to the given environment (ex. `production`, `staging`)
 
 
 ## Documentation
