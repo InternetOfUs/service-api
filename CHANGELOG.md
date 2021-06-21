@@ -2,6 +2,10 @@
 
 ## Version 2.*
 
+### 2.3.0
+
+* Added sentry integration
+
 ### 2.2.0
 
 * Updated WeNetCommonModels to version 1.1.0
