@@ -33,11 +33,22 @@
       staging:
         stages:
           - name: build
+            manual: true
           - name: test
           - name: push
           - name: trigger
+            manual: true
             git_ref: develop
       issue:
+        stages:
+          - name: build
+            manual: true
+          - name: test
+          - name: push
+          - name: trigger
+            manual: true
+            git_ref: develop
+      mr:
         stages:
           - name: build
             manual: true
