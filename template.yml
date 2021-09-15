@@ -28,6 +28,9 @@
         stages:
           - name: build
           - name: test
+            in_docker: true #TODO disable when the issue https://lab.u-hopper.com/wenet/wenet-services/-/issues/41 is completed
+          - name: test
+            type: coverage
           - name: push
           - name: notify
       staging:
@@ -35,15 +38,7 @@
           - name: build
             manual: true
           - name: test
-          - name: push
-          - name: trigger
-            manual: true
-            git_ref: develop
-      issue:
-        stages:
-          - name: build
-            manual: true
-          - name: test
+            in_docker: true #TODO disable when the issue https://lab.u-hopper.com/wenet/wenet-services/-/issues/41 is completed
           - name: push
           - name: trigger
             manual: true
@@ -51,8 +46,19 @@
       mr:
         stages:
           - name: build
-            manual: true
           - name: test
+            in_docker: true #TODO disable when the issue https://lab.u-hopper.com/wenet/wenet-services/-/issues/41 is completed
+          - name: test
+            type: coverage
+      default:
+        stages:
+          - name: build
+          - name: build
+            type: badge
+          - name: test
+            type: coverage
+            in_docker: true #TODO disable when the issue https://lab.u-hopper.com/wenet/wenet-services/-/issues/41 is completed
+
     project_python_submodules:
       - name: wenet-common-models
   roles:
