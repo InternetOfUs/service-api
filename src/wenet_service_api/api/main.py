@@ -8,6 +8,7 @@ from wenet_service_api.connector.collector import ServiceConnectorCollector
 from wenet_service_api.api.log.logging import get_logging_configuration
 from wenet_service_api.api.ws.ws import WsInterface
 from sentry_sdk.integrations.logging import LoggingIntegration
+from sentry_sdk.integrations.flask import FlaskIntegration
 
 
 logging.config.dictConfig(get_logging_configuration("service-api"))
@@ -21,7 +22,7 @@ sentry_logging = LoggingIntegration(
 )
 
 sentry_sdk.init(
-
+    integrations=[FlaskIntegration()],
     # Set traces_sample_rate to 1.0 to capture 100%
     # of transactions for performance monitoring.
     # We recommend adjusting this value in production.
