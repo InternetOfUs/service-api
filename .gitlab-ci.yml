@@ -17,6 +17,7 @@ variables:
   DOCKER_TLS_CERTDIR: ""
   DOCKER_HOST: "tcp://docker:2375"
   GIT_SUBMODULE_STRATEGY: recursive
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
 
 #
 # Workflow defining rules for running the pipeline.
@@ -101,7 +102,7 @@ stages:
 #
 
 
-build:production:
+docker image:production:
   stage: build
   script:
     - *apk-before-script
@@ -112,18 +113,21 @@ build:production:
     paths:
       - docker_image.tar.gz
     expire_in: 1 day
+  needs: []
   only:
     - tags
 
 
-test:production:
+unit:production:
   stage: test
   script:
     - *apk-before-script
     - docker load -i docker_image.tar.gz
     - ./docker-support/runner.sh -t $CI_COMMIT_TAG
   dependencies:
-    - build:production
+    - docker image:production
+  needs: 
+    - docker image:production
   only:
     - tags
 
@@ -136,8 +140,10 @@ push:production:
     - docker load -i docker_image.tar.gz
     - ./docker-support/runner.sh -p $CI_COMMIT_TAG
   dependencies:
-    - build:production
-    - test:production
+    - docker image:production
+  needs: 
+    - docker image:production
+    - unit:production
   only:
     - tags
 
@@ -150,11 +156,12 @@ notify:production:
     - *ansible-script
     - export RELEASE_TAG="$CI_COMMIT_TAG"
     - export BUILD_ENVIRONMENT="production"
-    - export WITH_DEPLOY="no"    - export DEPLOY_TRIGGERED="no"
+    - export WITH_DEPLOY="no"
+    - export DEPLOY_TRIGGERED="no"
     - ansible-playbook ansible/notify.yml
   dependencies:
-    - build:production
-    - test:production
+    - docker image:production
+    - unit:production
     - push:production
   allow_failure: true
   only:
@@ -166,70 +173,7 @@ notify:production:
 #
 
 
-build:staging:
-  stage: build
-  script:
-    - *apk-before-script
-    - *docker-script
-
-    - ./docker-support/runner.sh -bs latest
-  artifacts:
-    paths:
-      - docker_image.tar.gz
-    expire_in: 1 day
-  only:
-    - develop
-
-
-test:staging:
-  stage: test
-  script:
-    - *apk-before-script
-    - docker load -i docker_image.tar.gz
-    - ./docker-support/runner.sh -t latest
-  dependencies:
-    - build:staging
-  only:
-    - develop
-
-
-push:staging:
-  stage: push
-  script:
-    - *apk-before-script
-    - *docker-script
-    - docker load -i docker_image.tar.gz
-    - ./docker-support/runner.sh -p latest
-  dependencies:
-    - build:staging
-    - test:staging
-  only:
-    - develop
-
-
-trigger:staging:
-  stage: deploy
-  image: public.registry.u-hopper.com/alpine:3.13
-  script:
-    - *apk-before-script
-    - *ansible-script
-    - export GIT_REF="develop"
-    - ansible-playbook ansible/trigger.yml
-  dependencies:
-    - build:staging
-    - test:staging
-    - push:staging
-  allow_failure: false
-  only:
-    - develop
-
-
-#
-# Stages for issue.
-#
-
-
-build:issue:
+docker image:staging:
   stage: build
   script:
     - *apk-before-script
@@ -242,37 +186,121 @@ build:issue:
     expire_in: 1 day
   when: manual
   allow_failure: false
+  needs: []
   only:
-    - /^feature.*$/i
-    - /^hotfix.*$/i
-    - /^milestone.*$/i
+    - develop
 
 
-test:issue:
+unit:staging:
   stage: test
   script:
     - *apk-before-script
     - docker load -i docker_image.tar.gz
     - ./docker-support/runner.sh -t latest
   dependencies:
-    - build:issue
+    - docker image:staging
+  needs: 
+    - docker image:staging
   only:
-    - /^feature.*$/i
-    - /^hotfix.*$/i
-    - /^milestone.*$/i
+    - develop
 
 
-# 
-# Stages for master.
-# Allows to build badges and run the test coverage.
-# 
+push:staging:
+  stage: push
+  script:
+    - *apk-before-script
+    - *docker-script
+    - docker load -i docker_image.tar.gz
+    - ./docker-support/runner.sh -p latest
+  dependencies:
+    - docker image:staging
+  needs: 
+    - docker image:staging
+    - unit:staging
+  only:
+    - develop
 
-build:badges:
+
+trigger:staging:
+  stage: deploy
+  image: public.registry.u-hopper.com/alpine:3.13
+  allow_failure: false
+  script:
+    - *apk-before-script
+    - *ansible-script
+    - export GIT_REF="develop"
+    - ansible-playbook ansible/trigger.yml
+  needs: 
+    - push:staging
+  when: manual
+  only:
+    - develop
+
+
+#
+# Stages for mr.
+#
+
+
+docker image:mr:
+  stage: build
+  script:
+    - *apk-before-script
+    - *docker-script
+
+    - ./docker-support/runner.sh -bs latest
+  artifacts:
+    paths:
+      - docker_image.tar.gz
+    expire_in: 1 day
+  needs: []
+  only:
+    - merge_requests
+
+
+unit:mr:
+  stage: test
+  script:
+    - *apk-before-script
+    - docker load -i docker_image.tar.gz
+    - ./docker-support/runner.sh -t latest
+  dependencies:
+    - docker image:mr
+  needs: 
+    - docker image:mr
+  only:
+    - merge_requests
+
+
+#
+# Stages for default.
+#
+
+
+docker image:default:
+  stage: build
+  script:
+    - *apk-before-script
+    - *docker-script
+
+    - ./docker-support/runner.sh -bs latest
+  artifacts:
+    paths:
+      - docker_image.tar.gz
+    expire_in: 1 day
+  needs: []
+  only:
+    - master
+
+
+badges:default:
   stage: build
   image: public.registry.u-hopper.com/python:3.8
   script:
     - pip install PyYAML anybadge
     - python docker-support/badges.py
+  needs: []
+  allow_failure: true
   artifacts:
     paths:
       - template.svg
@@ -282,26 +310,3 @@ build:badges:
   only:
     - master
 
-build:master:
-  stage: build
-  script:
-    - *apk-before-script
-    - *docker-script
-    - ./docker-support/runner.sh -bs latest
-  artifacts:
-    paths:
-      - docker_image.tar.gz
-    expire_in: 1 day
-  only:
-    - master
-
-test:coverage:
-  stage: test
-  script:
-    - *apk-before-script
-    - docker load -i docker_image.tar.gz
-    - ./docker-support/runner.sh -c latest
-  dependencies:
-    - build:master
-  only:
-    - master
