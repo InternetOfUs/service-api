@@ -2,6 +2,10 @@
 
 ## Version 2.*
 
+### 2.3.1
+
+* Enabled flask sentry integration
+
 ### 2.3.0
 
 * Added sentry integration
