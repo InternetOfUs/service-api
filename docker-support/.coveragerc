@@ -1,4 +1,4 @@
 [run]
 omit =
-    /scripts/tests/*
+    */tests/*
     */__init__.py
