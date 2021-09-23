@@ -18,9 +18,9 @@
       - name: ws
         main_module: wenet_service_api.api.main
         required_env_variables:
-          - ${PROFILE_MANAGER_CONNECTOR_BASE_URL}
-          - ${TASK_MANAGER_CONNECTOR_BASE_URL}
-          - ${HUB_CONNECTOR_BASE_URL}
+          - ${PLATFORM_BASE_URL}
+          - ${COMP_AUTH_KEY}
+          - ${COMP_AUTH_KEY_HEADER}
         gunicorn_app: service_api_app
 
     ci_environments:

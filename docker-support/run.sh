@@ -2,9 +2,9 @@
 
 echo "Verifying env variables presence."
 declare -a REQUIRED_ENV_VARS=(
-                                "${PROFILE_MANAGER_CONNECTOR_BASE_URL}"
-                                "${TASK_MANAGER_CONNECTOR_BASE_URL}"
-                                "${HUB_CONNECTOR_BASE_URL}"
+                                "${PLATFORM_BASE_URL}"
+                                "${COMP_AUTH_KEY}"
+                                "${COMP_AUTH_KEY_HEADER}"
                               )
 
 for e in "${REQUIRED_ENV_VARS[@]}"
