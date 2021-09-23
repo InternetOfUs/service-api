@@ -6,7 +6,7 @@ import logging
 
 from flask_restful import abort
 
-from wenet.common.model.task.transaction import TaskTransaction
+from wenet.model.task.transaction import TaskTransaction
 from wenet_service_api.common.exception.exceptions import NotAuthorized, BadRequestException
 from wenet_service_api.connector.collector import ServiceConnectorCollector
 from wenet_service_api.api.ws.resource.common import AuthenticatedResource, WenetSource
@@ -54,7 +54,7 @@ class TaskTransactionInterface(AuthenticatedResource):
         logger.info(f"Received TaskTransaction {task_transaction}")
 
         try:
-            self._service_connector_collector.task_manager_connector.post_task_transaction(task_transaction)
+            self._service_connector_collector.task_manager_connector.create_task_transaction(task_transaction)
         except NotAuthorized as n:
             logger.exception(f"User unauthorized to post the task transaction", exc_info=n)
         except BadRequestException as e:

@@ -4,7 +4,7 @@ import logging
 
 from flask_restful import abort
 
-from wenet.common.model.user.token_details import TokenDetails
+from wenet.model.user.token import TokenDetails
 from wenet_service_api.api.ws.resource.common import AuthenticatedResource, WenetSource, Oauth2Result
 from wenet_service_api.common.exception.exceptions import ResourceNotFound, NotAuthorized
 from wenet_service_api.connector.collector import ServiceConnectorCollector
@@ -36,7 +36,7 @@ class TokenDetailsInterface(AuthenticatedResource):
         profile_id = self._get_user_id(authentication_result)
 
         try:
-            profile = self._service_connector_collector.profile_manager_collector.get_profile(profile_id)
+            profile = self._service_connector_collector.profile_manager_collector.get_user_profile(profile_id)
             logger.info(f"Retrieved profile [{profile_id}] from profile manager connector")
         except ResourceNotFound as e:
             logger.exception("Unable to retrieve the profile", exc_info=e)

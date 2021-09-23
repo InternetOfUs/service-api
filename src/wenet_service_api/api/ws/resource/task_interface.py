@@ -5,7 +5,7 @@ import logging
 from flask import request
 from flask_restful import abort
 
-from wenet.common.model.task.task import Task
+from wenet.model.task.task import Task
 from wenet_service_api.common.exception.exceptions import ResourceNotFound, NotAuthorized, BadRequestException
 from wenet_service_api.connector.collector import ServiceConnectorCollector
 from wenet_service_api.api.ws.resource.common import AuthenticatedResource, WenetSource
@@ -74,7 +74,7 @@ class TaskResourceInterface(AuthenticatedResource):
             return
 
         try:
-            updated_task = self._service_connector_collector.task_manager_connector.updated_task(task)
+            self._service_connector_collector.task_manager_connector.update_task(task)
         except NotAuthorized as e:
             logger.exception(f"Unauthorized to update the task [{task_id}]", exc_info=e)
             abort(403)
@@ -92,8 +92,8 @@ class TaskResourceInterface(AuthenticatedResource):
             abort(500)
             return
 
-        logger.info(f"Updated task [{updated_task}]")
-        return updated_task.to_repr(), 200
+        logger.info(f"Updated task [{task}]")
+        return task.to_repr(), 200
 
 
 class TaskResourcePostInterface(AuthenticatedResource):

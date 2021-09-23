@@ -6,7 +6,7 @@ from datetime import datetime
 from mock import Mock
 
 from tests.wenet_service_api_test.api.common.common_test_case import CommonTestCase
-from wenet.common.model.app.app_dto import AppDTO, App, AppStatus
+from wenet.model.app import AppDTO, App, AppStatus
 from wenet_service_api.api.ws.resource.common import WenetSource
 from wenet_service_api.common.exception.exceptions import ResourceNotFound
 

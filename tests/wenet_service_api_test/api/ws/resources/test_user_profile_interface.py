@@ -7,10 +7,10 @@ from datetime import datetime
 from mock import Mock
 
 from tests.wenet_service_api_test.api.common.common_test_case import CommonTestCase
-from wenet.common.model.app.app_dto import App, AppStatus
-from wenet.common.model.norm.norm import Norm, NormOperator
-from wenet.common.model.user.common import Date, Gender, UserLanguage
-from wenet.common.model.user.user_profile import WeNetUserProfile, UserName
+from wenet.model.app import App, AppStatus
+from wenet.model.norm import Norm, NormOperator
+from wenet.model.user.common import Date, Gender, UserLanguage
+from wenet.model.user.profile import WeNetUserProfile, UserName
 from wenet_service_api.api.ws.resource.common import WenetSource, Scope
 
 

@@ -6,10 +6,10 @@ from datetime import datetime
 from mock import Mock
 
 from tests.wenet_service_api_test.api.common.common_test_case import CommonTestCase
-from wenet.common.model.app.app_dto import App, AppStatus
-from wenet.common.model.logging_messages.contents import ActionContent
-from wenet.common.model.logging_messages.messages import RequestMessage
-from wenet.common.model.scope import Scope
+from wenet.model.app import App, AppStatus
+from wenet.model.logging_message.content import ActionContent
+from wenet.model.logging_message.message import RequestMessage
+from wenet.model.scope import Scope
 from wenet_service_api.api.ws.resource.common import WenetSource
 from wenet_service_api.common.exception.exceptions import BadRequestException
 

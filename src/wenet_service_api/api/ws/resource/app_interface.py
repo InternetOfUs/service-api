@@ -4,7 +4,7 @@ from flask_restful import abort
 
 import logging
 
-from wenet.common.model.app.app_dto import AppDTO
+from wenet.model.app import AppDTO
 from wenet_service_api.common.exception.exceptions import ResourceNotFound
 from wenet_service_api.connector.collector import ServiceConnectorCollector
 from wenet_service_api.api.ws.resource.common import AuthenticatedResource, WenetSource
@@ -32,7 +32,7 @@ class AppResourceInterface(AuthenticatedResource):
         self._check_authentication([WenetSource.COMPONENT])
 
         try:
-            app = self._service_connector_collector.hub_connector.get_app(app_id=app_id)
+            app = self._service_connector_collector.hub_connector.get_app_details(app_id=app_id)
         except ResourceNotFound:
             logger.info(f"Resource with id [{app_id}] not found")
             abort(404, message=f"Resource with id [{app_id}] not found")
@@ -57,8 +57,8 @@ class ListAppUserInterface(AuthenticatedResource):
         self._check_authentication([WenetSource.COMPONENT])
 
         try:
-            app = self._service_connector_collector.hub_connector.get_app(app_id)
-            users = self._service_connector_collector.hub_connector.get_app_users(app_id)
+            app = self._service_connector_collector.hub_connector.get_app_details(app_id)
+            users = self._service_connector_collector.hub_connector.get_user_ids_for_app(app_id)
         except ResourceNotFound:
             abort(404, message="Application not found")
             return

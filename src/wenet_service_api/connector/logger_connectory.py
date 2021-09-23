@@ -6,7 +6,7 @@ import requests
 import os
 import logging
 
-from wenet.common.model.logging_messages.messages import BaseMessage
+from wenet.model.logging_message.message import BaseMessage
 from wenet_service_api.common.exception.exceptions import BadRequestException
 from wenet_service_api.connector.service_connector import ServiceConnector
 

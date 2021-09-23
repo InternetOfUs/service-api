@@ -8,9 +8,9 @@ from typing import Optional
 import requests
 import logging
 
-from wenet.common.model.norm.norm import Norm, NormOperator
-from wenet.common.model.task.task import Task, TaskGoal, TaskPage
-from wenet.common.model.task.transaction import TaskTransaction
+from wenet.model.norm import Norm, NormOperator
+from wenet.model.task.task import Task, TaskGoal, TaskPage
+from wenet.model.task.transaction import TaskTransaction
 from wenet_service_api.common.exception.exceptions import ResourceNotFound, NotAuthorized, BadRequestException
 from wenet_service_api.connector.service_connector import ServiceConnector
 

@@ -7,9 +7,9 @@ from typing import Optional
 import requests
 import logging
 
-from wenet.common.model.norm.norm import Norm, NormOperator
-from wenet.common.model.user.common import Date, Gender, UserLanguage
-from wenet.common.model.user.user_profile import WeNetUserProfile, UserName
+from wenet.model.norm import Norm, NormOperator
+from wenet.model.user.common import Date, Gender, UserLanguage
+from wenet.model.user.profile import WeNetUserProfile, UserName
 from wenet_service_api.common.exception.exceptions import ResourceNotFound, NotAuthorized, BadRequestException
 from wenet_service_api.connector.service_connector import ServiceConnector
 
