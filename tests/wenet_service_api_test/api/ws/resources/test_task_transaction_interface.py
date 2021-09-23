@@ -15,7 +15,7 @@ class TestTaskTransactionInterface(CommonTestCase):
 
         mock_post = Mock()
 
-        self.service_collector_connector.task_manager_connector.post_task_transaction = mock_post
+        self.service_collector_connector.task_manager_connector.create_task_transaction = mock_post
 
         response = self.client.post("/task/transaction", json=task_transaction.to_repr(), headers={"apikey": self.AUTHORIZED_APIKEY, "x-wenet-source": WenetSource.COMPONENT.value})
         self.assertEqual(response.status_code, 201)

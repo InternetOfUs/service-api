@@ -208,7 +208,7 @@ class AuthenticatedResource(Resource):
             logger.info("Using debug authentication")
             return Oauth2Result(authenticated_user_id, scopes, app)
 
-        if app.status == AppStatus.ACTIVE:
+        if app.status == AppStatus.STATUS_ACTIVE:
             return Oauth2Result(authenticated_user_id, scopes, app)
         else:
 

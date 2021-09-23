@@ -17,11 +17,14 @@ from wenet_service_api.common.exception.exceptions import BadRequestException
 class TestLoggingInterface(CommonTestCase):
     app = App(
         app_id="1",
-        status=AppStatus.ACTIVE,
+        status=AppStatus.STATUS_ACTIVE,
         message_callback_url="url",
         metadata={},
         creation_ts=int(datetime(2020, 2, 27).timestamp()),
-        last_update_ts=int(datetime(2020, 2, 27).timestamp())
+        last_update_ts=int(datetime(2020, 2, 27).timestamp()),
+        image_url="url",
+        name="app_name",
+        owner_id=1
     )
 
     developer_lis = ["1"]
@@ -146,8 +149,8 @@ class TestLoggingInterface(CommonTestCase):
 
         json_messages = [x.to_repr() for x in messages]
 
-        self.service_collector_connector.hub_connector.get_app = Mock(return_value=self.app)
-        self.service_collector_connector.hub_connector.get_app_users = Mock(return_value=self.user_list)
+        self.service_collector_connector.hub_connector.get_app_details = Mock(return_value=self.app)
+        self.service_collector_connector.hub_connector.get_user_ids_for_app = Mock(return_value=self.user_list)
 
         self.service_collector_connector.logger_connector.post_messages = Mock(return_value=["message_id", "message_id2"])
         response = self.client.post("/log/messages", json=json_messages, headers={
@@ -193,8 +196,8 @@ class TestLoggingInterface(CommonTestCase):
 
         json_messages = [x.to_repr() for x in messages]
 
-        self.service_collector_connector.hub_connector.get_app = Mock(return_value=self.app)
-        self.service_collector_connector.hub_connector.get_app_users = Mock(return_value=self.user_list)
+        self.service_collector_connector.hub_connector.get_app_details = Mock(return_value=self.app)
+        self.service_collector_connector.hub_connector.get_user_ids_for_app = Mock(return_value=self.user_list)
 
         self.service_collector_connector.logger_connector.post_messages = Mock(return_value=["message_id", "message_id2"])
         response = self.client.post("/log/messages", json=json_messages, headers={
@@ -240,8 +243,8 @@ class TestLoggingInterface(CommonTestCase):
 
         json_messages = [x.to_repr() for x in messages]
 
-        self.service_collector_connector.hub_connector.get_app = Mock(return_value=self.app)
-        self.service_collector_connector.hub_connector.get_app_users = Mock(return_value=self.user_list)
+        self.service_collector_connector.hub_connector.get_app_details = Mock(return_value=self.app)
+        self.service_collector_connector.hub_connector.get_user_ids_for_app = Mock(return_value=self.user_list)
 
         self.service_collector_connector.logger_connector.post_messages = Mock(return_value=["message_id", "message_id2"])
         response = self.client.post("/log/messages", json=json_messages, headers={

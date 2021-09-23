@@ -90,7 +90,7 @@ class TestTaskInterface(CommonTestCase):
         )
 
         mock_put = Mock(return_value=task)
-        self.service_collector_connector.task_manager_connector.updated_task = mock_put
+        self.service_collector_connector.task_manager_connector.update_task = mock_put
 
         response = self.client.put("/task/%s" % task_id, json=task.to_repr(), headers={"apikey": self.AUTHORIZED_APIKEY, "x-wenet-source": WenetSource.COMPONENT.value})
         self.assertEqual(response.status_code, 200)
