@@ -4,7 +4,6 @@ echo "Verifying env variables presence."
 declare -a REQUIRED_ENV_VARS=(
                                 "${PLATFORM_BASE_URL}"
                                 "${COMP_AUTH_KEY}"
-                                "${COMP_AUTH_KEY_HEADER}"
                               )
 
 for e in "${REQUIRED_ENV_VARS[@]}"

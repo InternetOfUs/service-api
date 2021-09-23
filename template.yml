@@ -20,7 +20,6 @@
         required_env_variables:
           - ${PLATFORM_BASE_URL}
           - ${COMP_AUTH_KEY}
-          - ${COMP_AUTH_KEY_HEADER}
         gunicorn_app: service_api_app
 
     ci_environments:
