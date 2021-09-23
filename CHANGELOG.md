@@ -2,6 +2,11 @@
 
 ## Version 2.*
 
+### 2.4.0
+
+* Removed wenet-common-model submodule
+* Added wenet-common library
+
 ### 2.3.1
 
 * Enabled flask sentry integration
