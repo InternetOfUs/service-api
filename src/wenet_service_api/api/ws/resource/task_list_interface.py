@@ -46,18 +46,16 @@ class TaskListResourceInterface(AuthenticatedResource):
         has_close_ts = request.args.get('hasCloseTs', None)
 
         try:
-            task_page = self._service_connector_collector.task_manager_connector.get_tasks(
+            task_page = self._service_connector_collector.task_manager_connector.get_task_page(
                 app_id=app_id,
                 requester_id=requester_id,
                 task_type_id=task_type_id,
                 goal_name=goal_name,
                 goal_description=goal_description,
-                start_from=start_from,
-                start_to=start_to,
-                end_from=end_from,
-                end_to=end_to,
-                deadline_from=deadline_from,
-                deadline_to=deadline_to,
+                creation_from=start_from,
+                creation_to=start_to,
+                closed_from=end_from,
+                closed_to=end_to,
                 offset=offset,
                 limit=limit,
                 has_close_ts=has_close_ts
