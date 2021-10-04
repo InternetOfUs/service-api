@@ -42,7 +42,6 @@
             git_ref: develop
       mr:
         stages:
-          - name: build
           - name: test
           - name: test
             type: coverage
