@@ -10,6 +10,7 @@
   * The endFrom and endTo parameter will be renamed in closeFrom and closeTo
   * The updateFrom and updateTo parameter are missing
   * The order parameter is missing
+* Updated the service api endpoint for updating the user profile in order to return the updated profile
 
 ## Version 2.*
 
