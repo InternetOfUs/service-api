@@ -24,7 +24,7 @@ cp ${PROJECT_DIR}/requirements.txt ${SCRIPT_DIR}
 
 
 mkdir ${SCRIPT_DIR}/test
-cp -R ${PROJECT_DIR}/tests/* ${SCRIPT_DIR}/test
+cp -R ${PROJECT_DIR}/test/* ${SCRIPT_DIR}/test
 
 
 # Building image

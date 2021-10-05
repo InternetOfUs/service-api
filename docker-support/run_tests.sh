@@ -1,5 +1,5 @@
 #!/bin/bash
-python -m unittest discover tests
+python -m unittest discover test
 
 if [[ $? != 0 ]]; then
     echo "Error: Tests are failing."
