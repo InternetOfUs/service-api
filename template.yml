@@ -52,7 +52,6 @@
             type: badge
           - name: test
             type: coverage
-
     project_python_submodules: []
   roles:
     - uh.project-template
