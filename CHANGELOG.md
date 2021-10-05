@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 3.*
+
+* Removed wenet-common-model submodule
+* Added wenet-common library
+
 ## Version 2.*
 
 ### 2.3.1

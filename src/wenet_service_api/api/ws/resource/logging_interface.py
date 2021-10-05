@@ -5,8 +5,8 @@ import logging
 from flask import request
 from flask_restful import abort
 
-from wenet.common.model.logging_messages.messages import BaseMessage
-from wenet.common.model.scope import Scope
+from wenet.model.logging_message.message import BaseMessage
+from wenet.model.scope import Scope
 from wenet_service_api.api.ws.resource.common import AuthenticatedResource, WenetSource, AuthenticationResult, \
     ComponentAuthentication, Oauth2Result
 from wenet_service_api.common.exception.exceptions import BadRequestException

@@ -6,7 +6,7 @@ from datetime import datetime
 from mock import Mock
 
 from tests.wenet_service_api_test.api.common.common_test_case import CommonTestCase
-from wenet.common.model.app.app_dto import AppDTO, App, AppStatus
+from wenet.model.app import AppDTO, App, AppStatus
 from wenet_service_api.api.ws.resource.common import WenetSource
 from wenet_service_api.common.exception.exceptions import ResourceNotFound
 
@@ -15,11 +15,14 @@ class TestAppResourceInterface(CommonTestCase):
 
     app = App(
         app_id="c0b7f45b-06c7-449c-9cc0-f778d7800193",
-        status=AppStatus.ACTIVE,
+        status=AppStatus.STATUS_ACTIVE,
         message_callback_url="url",
         metadata={},
         creation_ts=int(datetime(2020, 2, 27).timestamp()),
-        last_update_ts=int(datetime(2020, 2, 27).timestamp())
+        last_update_ts=int(datetime(2020, 2, 27).timestamp()),
+        image_url="url",
+        name="app_name",
+        owner_id=1
     )
 
     app_dto = AppDTO.from_app(app)
@@ -31,7 +34,7 @@ class TestAppResourceInterface(CommonTestCase):
 
         app_id = self.app.app_id
 
-        self.service_collector_connector.hub_connector.get_app = Mock(return_value=self.app)
+        self.service_collector_connector.hub_connector.get_app_details = Mock(return_value=self.app)
 
         response = self.client.get(f"/app/{app_id}", headers={"apikey": self.AUTHORIZED_APIKEY, "x-wenet-source": WenetSource.COMPONENT.value})
 
@@ -44,7 +47,7 @@ class TestAppResourceInterface(CommonTestCase):
         self.assertEqual(app_id, result_app.app_id)
         self.assertEqual(self.app_dto, result_app)
 
-        self.service_collector_connector.hub_connector.get_app.assert_called_once()
+        self.service_collector_connector.hub_connector.get_app_details.assert_called_once()
 
     def test_get_not_authorized(self):
 
@@ -58,7 +61,7 @@ class TestAppResourceInterface(CommonTestCase):
 
         app_id = "5354f062-ace2-4da9-bee8-b2d286814636"
 
-        self.service_collector_connector.hub_connector.get_app = Mock(side_effect=ResourceNotFound)
+        self.service_collector_connector.hub_connector.get_app_details = Mock(side_effect=ResourceNotFound)
 
         response = self.client.get(f"/app/{app_id}", headers={"apikey": self.AUTHORIZED_APIKEY, "x-wenet-source": WenetSource.COMPONENT.value})
 
@@ -68,11 +71,14 @@ class TestAppResourceInterface(CommonTestCase):
 class TestListAppUserInterface(CommonTestCase):
     app = App(
         app_id="c0b7f45b-06c7-449c-9cc0-f778d7800193",
-        status=AppStatus.ACTIVE,
+        status=AppStatus.STATUS_ACTIVE,
         message_callback_url="url",
         metadata={},
         creation_ts=int(datetime(2020, 2, 27).timestamp()),
-        last_update_ts=int(datetime(2020, 2, 27).timestamp())
+        last_update_ts=int(datetime(2020, 2, 27).timestamp()),
+        image_url="url",
+        name="app_name",
+        owner_id=1
     )
 
     app_dto = AppDTO.from_app(app)
@@ -88,8 +94,8 @@ class TestListAppUserInterface(CommonTestCase):
 
         mock_get = Mock(return_value=user_list)
 
-        self.service_collector_connector.hub_connector.get_app = Mock(return_value=self.app)
-        self.service_collector_connector.hub_connector.get_app_users = mock_get
+        self.service_collector_connector.hub_connector.get_app_details = Mock(return_value=self.app)
+        self.service_collector_connector.hub_connector.get_user_ids_for_app = mock_get
 
         response = self.client.get(f"/app/{app_id}/users", headers={"apikey": self.AUTHORIZED_APIKEY, "x-wenet-source": WenetSource.COMPONENT.value})
 
@@ -101,7 +107,7 @@ class TestListAppUserInterface(CommonTestCase):
         self.assertEqual(user_list, json_data)
 
         mock_get.assert_called_once()
-        self.service_collector_connector.hub_connector.get_app.assert_called_once()
+        self.service_collector_connector.hub_connector.get_app_details.assert_called_once()
 
     def test_get_not_authorized(self):
 
@@ -115,9 +121,9 @@ class TestListAppUserInterface(CommonTestCase):
 
         app_id = "5354f062-ace2-4da9-bee8-b2d286814636"
 
-        self.service_collector_connector.hub_connector.get_app = Mock(side_effect=ResourceNotFound)
+        self.service_collector_connector.hub_connector.get_app_details = Mock(side_effect=ResourceNotFound)
 
         response = self.client.get(f"/app/{app_id}/users", headers={"apikey": self.AUTHORIZED_APIKEY, "x-wenet-source": WenetSource.COMPONENT.value})
 
         self.assertEqual(response.status_code, 404)
-        self.service_collector_connector.hub_connector.get_app.assert_called_once()
+        self.service_collector_connector.hub_connector.get_app_details.assert_called_once()

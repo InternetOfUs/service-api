@@ -5,7 +5,7 @@ from flask_restful import abort
 
 import logging
 
-from wenet.common.model.user.user_profile import CoreWeNetUserProfile, WeNetUserProfile
+from wenet.model.user.profile import CoreWeNetUserProfile, WeNetUserProfile
 from wenet_service_api.common.exception.exceptions import ResourceNotFound, NotAuthorized, BadRequestException
 from wenet_service_api.connector.collector import ServiceConnectorCollector
 from wenet_service_api.api.ws.resource.common import AuthenticatedResource, WenetSource, AuthenticationResult, \
@@ -46,7 +46,7 @@ class WeNetUserProfileInterface(AuthenticatedResource):
             return True
         elif isinstance(authentication_result, Oauth2Result):
             try:
-                user_ids = self._service_connector_collector.hub_connector.get_app_users(app_id=authentication_result.app.app_id)
+                user_ids = self._service_connector_collector.hub_connector.get_user_ids_for_app(app_id=authentication_result.app.app_id)
                 return profile_id in user_ids
             except ResourceNotFound:
                 return False
@@ -78,7 +78,7 @@ class WeNetUserProfileInterface(AuthenticatedResource):
             return
 
         try:
-            profile = self._service_connector_collector.profile_manager_collector.get_profile(profile_id)
+            profile = self._service_connector_collector.profile_manager_collector.get_user_profile(profile_id)
             logger.info(f"Retrieved profile [{profile_id}] from profile manager connector")
         except ResourceNotFound as e:
             logger.exception("Unable to retrieve the profile", exc_info=e)
@@ -132,7 +132,7 @@ class WeNetUserProfileInterface(AuthenticatedResource):
             return
 
         try:
-            stored_user_profile = self._service_connector_collector.profile_manager_collector.get_profile(profile_id)
+            stored_user_profile = self._service_connector_collector.profile_manager_collector.get_user_profile(profile_id)
             logger.info(f"Retrieved profile [{profile_id}] from profile manager connector")
         except ResourceNotFound as e:
             logger.exception("Unable to retrieve the profile", exc_info=e)
@@ -152,7 +152,7 @@ class WeNetUserProfileInterface(AuthenticatedResource):
         logger.info("updating profile [%s]" % stored_user_profile)
 
         try:
-            self._service_connector_collector.profile_manager_collector.update_profile(stored_user_profile)
+            self._service_connector_collector.profile_manager_collector.update_user_profile(stored_user_profile)
             logger.info("Profile [%s] updated successfully" % profile_id)
         except ResourceNotFound as e:
             logger.exception("Unable to retrieve the profile", exc_info=e)
@@ -173,7 +173,7 @@ class WeNetUserProfileInterface(AuthenticatedResource):
         self._check_authentication([WenetSource.COMPONENT])
 
         try:
-            user_profile = self._service_connector_collector.profile_manager_collector.create_empty_profile(profile_id)
+            user_profile = self._service_connector_collector.profile_manager_collector.create_empty_user_profile(profile_id)
         except BadRequestException as e:
             logger.exception(f"Bad request during profile creation [{str(e)}")
             abort(400, message=f"Bad request: {str(e)}")

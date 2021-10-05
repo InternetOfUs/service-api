@@ -57,7 +57,12 @@ def get_logging_configuration(service_name: str):
                 "level": log_level,
                 "handlers": log_handlers,
                 "propagate": 0
-            }
+            },
+            "wenet": {
+                "level": log_level,
+                "handlers": log_handlers,
+                "propagate": 0
+            },
         }
     }
 
