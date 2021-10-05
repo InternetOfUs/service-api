@@ -159,7 +159,7 @@ coverage:production:
     - cp docker-support/run_test_coverage.sh src/
     - cp docker-support/.coveragerc src/
     - cd src
-    - PYTHONPATH=. ./run_test_coverage.sh test .
+    - PYTHONPATH=. ./run_test_coverage.sh tests .
   cache:
     paths:
       - .cache/pip
@@ -335,7 +335,7 @@ coverage:mr:
     - cp docker-support/run_test_coverage.sh src/
     - cp docker-support/.coveragerc src/
     - cd src
-    - PYTHONPATH=. ./run_test_coverage.sh test .
+    - PYTHONPATH=. ./run_test_coverage.sh tests .
   cache:
     paths:
       - .cache/pip
@@ -405,7 +405,7 @@ coverage:default:
     - cp docker-support/run_test_coverage.sh src/
     - cp docker-support/.coveragerc src/
     - cd src
-    - PYTHONPATH=. ./run_test_coverage.sh test .
+    - PYTHONPATH=. ./run_test_coverage.sh tests .
   cache:
     paths:
       - .cache/pip
