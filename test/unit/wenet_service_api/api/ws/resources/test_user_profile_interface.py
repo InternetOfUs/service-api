@@ -455,7 +455,7 @@ class TestUser(CommonTestCase):
             meanings=[]
         )
 
-        mock_put = Mock(return_value=None)
+        mock_put = Mock(return_value=user_profile)
         self.service_collector_connector.profile_manager_collector.update_user_profile = mock_put
 
         mock_get = Mock(return_value=deepcopy(user_profile))
@@ -463,9 +463,10 @@ class TestUser(CommonTestCase):
 
         response = self.client.put(f"/user/profile/{profile_id}", json=user_profile.to_repr(), headers={"apikey": self.AUTHORIZED_APIKEY, "x-wenet-source": WenetSource.COMPONENT.value})
         self.assertEqual(200, response.status_code)
-        # json_response = json.loads(response.data)
-        # user_profile = WeNetUserProfile.from_repr(json_response)
-        # self.assertIsInstance(user_profile, WeNetUserProfile)
+        json_response = json.loads(response.data)
+        updated_user_profile = WeNetUserProfile.from_repr(json_response)
+        self.assertIsInstance(updated_user_profile, WeNetUserProfile)
+        self.assertEqual(user_profile, updated_user_profile)
         mock_put.assert_called_once()
         mock_get.assert_called_once()
 
@@ -512,7 +513,7 @@ class TestUser(CommonTestCase):
             meanings=[]
         )
 
-        mock_put = Mock(return_value=None)
+        mock_put = Mock(return_value=user_profile)
         self.service_collector_connector.profile_manager_collector.update_user_profile = mock_put
         self.service_collector_connector.hub_connector.get_app_details = Mock(return_value=self.app1)
         self.service_collector_connector.hub_connector.get_app_developers = Mock(return_value=self.developer_lis)
@@ -645,10 +646,10 @@ class TestUser(CommonTestCase):
         self.assertEqual(401, response.status_code)
 
     def test_put2(self):
-        mock_put = Mock(return_value=None)
-        self.service_collector_connector.profile_manager_collector.update_user_profile = mock_put
-
         user_profile = {'name': {'first': 'first', 'middle': 'middle', 'last': 'last', 'prefix': 'prefix', 'suffix': 'suffix'}, 'gender': 'M', 'email': 'email@example.com', 'phoneNumber': 'phone number', 'locale': 'it_IT', 'avatar': 'avatar', 'nationality': 'it', 'languages': [{'name': 'ita', 'level': 'C2', 'code': 'it'}], 'occupation': 'occupation', '_creationTs': 1579536160, '_lastUpdateTs': 1579536160, 'id': 'profile_id', 'norms': [{'id': 'norm-id', 'attribute': 'attribute', 'operator': 'EQUALS', 'comparison': True, 'negation': False}], 'plannedActivities': [], 'relevantLocations': [], 'relationships': [], 'socialPractices': [], 'personalBehaviors': []}
+
+        mock_put = Mock(return_value=WeNetUserProfile.from_repr(user_profile))
+        self.service_collector_connector.profile_manager_collector.update_user_profile = mock_put
 
         mock_get = Mock(return_value=WeNetUserProfile.from_repr(user_profile))
         self.service_collector_connector.profile_manager_collector.get_user_profile = mock_get
