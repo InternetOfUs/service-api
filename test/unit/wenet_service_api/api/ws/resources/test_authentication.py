@@ -5,9 +5,10 @@ from datetime import datetime
 
 from mock import Mock
 
-from tests.wenet_service_api_test.api.common.common_test_case import CommonTestCase
 from wenet.model.app import AppDTO, App, AppStatus
 from wenet.model.user.profile import WeNetUserProfile
+
+from test.unit.wenet_service_api.api.common.common_test_case import CommonTestCase
 from wenet_service_api.api.ws.resource.common import WenetSource, Scope
 
 

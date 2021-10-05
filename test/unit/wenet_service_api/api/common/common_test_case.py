@@ -2,7 +2,7 @@ from __future__ import absolute_import, annotations
 
 from unittest import TestCase
 
-from tests.wenet_service_api_test.api.common.mocks.mock_service_connector_collector import MockServiceConnectorCollector
+from test.unit.wenet_service_api.api.common.mocks.mock_service_connector_collector import MockServiceConnectorCollector
 from wenet_service_api.api.ws.ws import WsInterface
 
 
