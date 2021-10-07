@@ -15,7 +15,8 @@ from test.unit.wenet_service_api.api.common.common_test_case import CommonTestCa
 from wenet_service_api.api.ws.resource.common import WenetSource, Scope
 
 
-class TestUser(CommonTestCase):
+class TestWeNetUserCoreProfileInterface(CommonTestCase):
+
     app = App(
         app_id="1",
         status=AppStatus.STATUS_ACTIVE,
