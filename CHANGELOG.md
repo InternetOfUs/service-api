@@ -4,6 +4,13 @@
 
 * Removed wenet-common-model submodule
 * Added wenet-common library
+* Update the query params of task list endpoint:
+  * The deadlineFrom and deadlineTo parameters no longer exists
+  * The startFrom and startFrom will be renamed in creationFrom and creationTo
+  * The endFrom and endTo parameter will be renamed in closeFrom and closeTo
+  * The updateFrom and updateTo parameter are missing
+  * The order parameter is missing
+* Updated the service api endpoint for updating the user profile in order to return the updated profile
 
 ## Version 2.*
 

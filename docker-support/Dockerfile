@@ -33,7 +33,7 @@ COPY  run.sh .
 
 ENV DOCUMENTATION_PATH /documentation
 
-ADD  test/ /scripts/tests/
+ADD  test/ /scripts/test/
 COPY  run_tests.sh .
 COPY  test.sh .
 

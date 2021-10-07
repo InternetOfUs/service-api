@@ -129,7 +129,7 @@ unit:production:
     - source venv/bin/activate
     - pip install --upgrade pip
     - pip install -r requirements.txt
-    - cp -r tests src/
+    - cp -r test src/
     - cp docker-support/run_tests.sh src/
     - cd src
     - ./run_tests.sh
@@ -155,11 +155,11 @@ coverage:production:
     - pip install --upgrade pip
     - pip install -r requirements.txt
     - pip install coverage pytest-cov
-    - cp -r tests src/
+    - cp -r test src/
     - cp docker-support/run_test_coverage.sh src/
     - cp docker-support/.coveragerc src/
     - cd src
-    - PYTHONPATH=. ./run_test_coverage.sh tests .
+    - PYTHONPATH=. ./run_test_coverage.sh test .
   cache:
     paths:
       - .cache/pip
@@ -244,7 +244,7 @@ unit:staging:
     - source venv/bin/activate
     - pip install --upgrade pip
     - pip install -r requirements.txt
-    - cp -r tests src/
+    - cp -r test src/
     - cp docker-support/run_tests.sh src/
     - cd src
     - ./run_tests.sh
@@ -305,7 +305,7 @@ unit:mr:
     - source venv/bin/activate
     - pip install --upgrade pip
     - pip install -r requirements.txt
-    - cp -r tests src/
+    - cp -r test src/
     - cp docker-support/run_tests.sh src/
     - cd src
     - ./run_tests.sh
@@ -331,11 +331,11 @@ coverage:mr:
     - pip install --upgrade pip
     - pip install -r requirements.txt
     - pip install coverage pytest-cov
-    - cp -r tests src/
+    - cp -r test src/
     - cp docker-support/run_test_coverage.sh src/
     - cp docker-support/.coveragerc src/
     - cd src
-    - PYTHONPATH=. ./run_test_coverage.sh tests .
+    - PYTHONPATH=. ./run_test_coverage.sh test .
   cache:
     paths:
       - .cache/pip
@@ -401,11 +401,11 @@ coverage:default:
     - pip install --upgrade pip
     - pip install -r requirements.txt
     - pip install coverage pytest-cov
-    - cp -r tests src/
+    - cp -r test src/
     - cp docker-support/run_test_coverage.sh src/
     - cp docker-support/.coveragerc src/
     - cd src
-    - PYTHONPATH=. ./run_test_coverage.sh tests .
+    - PYTHONPATH=. ./run_test_coverage.sh test .
   cache:
     paths:
       - .cache/pip

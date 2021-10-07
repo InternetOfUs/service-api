@@ -4,7 +4,7 @@
 # The variable TEST_DIR_PATH hosts the path to the tests folder.
 TEST_DIR_PATH=$1
 if [[ -z "${TEST_DIR_PATH}" ]]; then
-    TEST_DIR_PATH=/scripts/tests
+    TEST_DIR_PATH=/scripts/test
 fi
 
 # The variable COV_DIR_PATH hosts the path to the folder the coverage should be matched against.

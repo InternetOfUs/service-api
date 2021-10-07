@@ -35,15 +35,16 @@ class TaskListResourceInterface(AuthenticatedResource):
         task_type_id = request.args.get('taskTypeId', None)
         goal_name = request.args.get('goalName', None)
         goal_description = request.args.get('goalDescription', None)
-        start_from = request.args.get('startFrom', None)
-        start_to = request.args.get('startTo', None)
-        end_from = request.args.get('endFrom', None)
-        end_to = request.args.get('endTo', None)
-        deadline_from = request.args.get('deadlineFrom', None)
-        deadline_to = request.args.get('deadlineTo', None)
+        creation_from = request.args.get('creationFrom', None)
+        creation_to = request.args.get('creationTo', None)
+        update_from = request.args.get('updateFrom', None)
+        update_to = request.args.get('updateTo', None)
+        has_close_ts = request.args.get('hasCloseTs', None)
+        close_from = request.args.get('closeFrom', None)
+        close_to = request.args.get('closeTo', None)
+        order = request.args.get('order', None)
         offset = request.args.get('offset', None)
         limit = request.args.get('limit', None)
-        has_close_ts = request.args.get('hasCloseTs', None)
 
         try:
             task_page = self._service_connector_collector.task_manager_connector.get_task_page(
@@ -52,13 +53,16 @@ class TaskListResourceInterface(AuthenticatedResource):
                 task_type_id=task_type_id,
                 goal_name=goal_name,
                 goal_description=goal_description,
-                creation_from=start_from,
-                creation_to=start_to,
-                closed_from=end_from,
-                closed_to=end_to,
+                creation_from=creation_from,
+                creation_to=creation_to,
+                update_from=update_from,
+                update_to=update_to,
+                has_close_ts=has_close_ts,
+                closed_from=close_from,
+                closed_to=close_to,
+                order=order,
                 offset=offset,
-                limit=limit,
-                has_close_ts=has_close_ts
+                limit=limit
             )
         except NotAuthorized as e:
             logger.exception(f"Unauthorized to retrieve the task list", exc_info=e)

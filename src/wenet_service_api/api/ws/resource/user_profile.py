@@ -152,7 +152,7 @@ class WeNetUserProfileInterface(AuthenticatedResource):
         logger.info("updating profile [%s]" % stored_user_profile)
 
         try:
-            self._service_connector_collector.profile_manager_collector.update_user_profile(stored_user_profile)
+            updated_profile = self._service_connector_collector.profile_manager_collector.update_user_profile(stored_user_profile)
             logger.info("Profile [%s] updated successfully" % profile_id)
         except ResourceNotFound as e:
             logger.exception("Unable to retrieve the profile", exc_info=e)
@@ -167,7 +167,17 @@ class WeNetUserProfileInterface(AuthenticatedResource):
             abort(500)
             return
 
-        return {}, 200
+        if isinstance(authentication_result, ComponentAuthentication):
+            return updated_profile.to_repr(), 200
+        elif isinstance(authentication_result, Oauth2Result):
+            if self._is_owner(authentication_result, profile_id):
+                return updated_profile.to_filtered_repr(authentication_result.scopes), 200
+            else:
+                return updated_profile.to_public_repr(), 200
+        else:
+            logger.error(f"Unable to handle authentication of type {type(authentication_result)}")
+            abort(500)
+            return
 
     def post(self, profile_id):
         self._check_authentication([WenetSource.COMPONENT])
