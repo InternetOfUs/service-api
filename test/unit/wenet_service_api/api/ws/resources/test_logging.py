@@ -12,7 +12,6 @@ from wenet.model.scope import Scope
 
 from test.unit.wenet_service_api.api.common.common_test_case import CommonTestCase
 from wenet_service_api.api.ws.resource.common import WenetSource
-from wenet_service_api.common.exception.exceptions import BadRequestException
 
 
 class TestLoggingInterface(CommonTestCase):
@@ -84,43 +83,43 @@ class TestLoggingInterface(CommonTestCase):
         self.assertEqual(201, response.status_code)
         self.service_collector_connector.logger_connector.post_messages.assert_called_once()
 
-    def test_post_bad_request(self):
-        messages = [
-            RequestMessage(
-                message_id="message_id",
-                channel="channel",
-                user_id="user_id",
-                project="project",
-                content=ActionContent(
-                    button_text="text",
-                    button_payload="payload"
-                ),
-                timestamp=datetime.now()
-            ),
-            RequestMessage(
-                message_id="message_id2",
-                channel="channel",
-                user_id="user_id",
-                project="project",
-                content=ActionContent(
-                    button_text="text",
-                    button_payload="payload"
-                ),
-                timestamp=datetime.now()
-            )
-        ]
-
-        json_messages = [x.to_repr() for x in messages]
-
-        self.service_collector_connector.logger_connector.post_messages = Mock(side_effect=BadRequestException)
-        response = self.client.post("/log/messages", json=json_messages, headers={"apikey": self.AUTHORIZED_APIKEY, "x-wenet-source": WenetSource.COMPONENT.value})
-
-        self.assertEqual(400, response.status_code)
-        self.service_collector_connector.logger_connector.post_messages.assert_called_once()
-
-        json_response = json.loads(response.data)
-
-        self.assertNotIsInstance(json_response, list)
+    # def test_post_bad_request(self):
+    #     messages = [
+    #         RequestMessage(
+    #             message_id="message_id",
+    #             channel="channel",
+    #             user_id="user_id",
+    #             project="project",
+    #             content=ActionContent(
+    #                 button_text="text",
+    #                 button_payload="payload"
+    #             ),
+    #             timestamp=datetime.now()
+    #         ),
+    #         RequestMessage(
+    #             message_id="message_id2",
+    #             channel="channel",
+    #             user_id="user_id",
+    #             project="project",
+    #             content=ActionContent(
+    #                 button_text="text",
+    #                 button_payload="payload"
+    #             ),
+    #             timestamp=datetime.now()
+    #         )
+    #     ]
+    #
+    #     json_messages = [x.to_repr() for x in messages]
+    #
+    #     self.service_collector_connector.logger_connector.post_messages = Mock(side_effect=BadRequestException)
+    #     response = self.client.post("/log/messages", json=json_messages, headers={"apikey": self.AUTHORIZED_APIKEY, "x-wenet-source": WenetSource.COMPONENT.value})
+    #
+    #     self.assertEqual(400, response.status_code)
+    #     self.service_collector_connector.logger_connector.post_messages.assert_called_once()
+    #
+    #     json_response = json.loads(response.data)
+    #
+    #     self.assertNotIsInstance(json_response, list)
 
     def test_post_messages_oauth(self):
         messages = [

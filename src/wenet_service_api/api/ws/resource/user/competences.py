@@ -86,7 +86,7 @@ class WeNetUserCompetencesInterface(CommonWeNetUserInterface):
             logger.exception(f"Unauthorized to update the competences of the profile [{profile_id}]", exc_info=e)
             abort(403)
             return
-        # except ResourceNotFound as e:
+        # except NotFound as e:
         #     logger.exception(f"Unable to find the profile [{profile_id}]", exc_info=e)
         #     abort(404, message="Resource not found")
         #     return

@@ -2,7 +2,8 @@ from __future__ import absolute_import, annotations
 
 import logging
 
-from wenet_service_api.common.exception.exceptions import ResourceNotFound
+from wenet.interface.exceptions import NotFound
+
 from wenet_service_api.connector.collector import ServiceConnectorCollector
 from wenet_service_api.api.ws.resource.common import AuthenticatedResource, AuthenticationResult, Oauth2Result, ComponentAuthentication
 
@@ -21,7 +22,7 @@ class CommonWeNetUserInterface(AuthenticatedResource):
             try:
                 user_ids = self._service_connector_collector.hub_connector.get_user_ids_for_app(app_id=authentication_result.app.app_id)
                 return profile_id in user_ids
-            except ResourceNotFound:
+            except NotFound:
                 return False
         else:
             return False

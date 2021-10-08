@@ -4,12 +4,12 @@ import json
 from datetime import datetime
 
 from mock import Mock
+from wenet.interface.exceptions import NotFound
 
 from wenet.model.app import AppDTO, App, AppStatus
 
 from test.unit.wenet_service_api.api.common.common_test_case import CommonTestCase
 from wenet_service_api.api.ws.resource.common import WenetSource
-from wenet_service_api.common.exception.exceptions import ResourceNotFound
 
 
 class TestAppResourceInterface(CommonTestCase):
@@ -62,7 +62,7 @@ class TestAppResourceInterface(CommonTestCase):
 
         app_id = "5354f062-ace2-4da9-bee8-b2d286814636"
 
-        self.service_collector_connector.hub_connector.get_app_details = Mock(side_effect=ResourceNotFound)
+        self.service_collector_connector.hub_connector.get_app_details = Mock(side_effect=NotFound("App", app_id, 404, "Not found"))
 
         response = self.client.get(f"/app/{app_id}", headers={"apikey": self.AUTHORIZED_APIKEY, "x-wenet-source": WenetSource.COMPONENT.value})
 
@@ -122,7 +122,7 @@ class TestListAppUserInterface(CommonTestCase):
 
         app_id = "5354f062-ace2-4da9-bee8-b2d286814636"
 
-        self.service_collector_connector.hub_connector.get_app_details = Mock(side_effect=ResourceNotFound)
+        self.service_collector_connector.hub_connector.get_app_details = Mock(side_effect=NotFound("App", app_id, 404, "Not found"))
 
         response = self.client.get(f"/app/{app_id}/users", headers={"apikey": self.AUTHORIZED_APIKEY, "x-wenet-source": WenetSource.COMPONENT.value})
 

@@ -105,7 +105,7 @@ class WeNetUserCoreProfileInterface(CommonWeNetUserInterface):
             logger.exception(f"Unauthorized to update the profile [{profile_id}]", exc_info=e)
             abort(403)
             return
-        # except ResourceNotFound as e:
+        # except NotFound as e:
         #     logger.exception("Unable to retrieve the profile [{profile_id}]", exc_info=e)
         #     abort(404, message="Resource not found")
         #     return

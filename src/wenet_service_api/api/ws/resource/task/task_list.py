@@ -4,9 +4,9 @@ import logging
 
 from flask import request
 from flask_restful import abort
+from wenet.interface.exceptions import AuthenticationException
 
 from wenet_service_api.api.ws.resource.common import AuthenticatedResource, WenetSource
-from wenet_service_api.common.exception.exceptions import NotAuthorized
 from wenet_service_api.connector.collector import ServiceConnectorCollector
 
 logger = logging.getLogger("api.api.ws.resource.task_list")
@@ -64,7 +64,7 @@ class TaskListResourceInterface(AuthenticatedResource):
                 offset=offset,
                 limit=limit
             )
-        except NotAuthorized as e:
+        except AuthenticationException as e:
             logger.exception(f"Unauthorized to retrieve the task list", exc_info=e)
             abort(403)
             return
