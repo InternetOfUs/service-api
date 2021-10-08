@@ -7,7 +7,6 @@ from datetime import datetime
 from mock import Mock
 
 from wenet.model.app import App, AppStatus
-from wenet.model.norm import Norm, NormOperator
 from wenet.model.user.common import Date, Gender
 from wenet.model.user.profile import WeNetUserProfile, UserName
 
@@ -41,7 +40,7 @@ class TestWeNetUserCoreProfileInterface(CommonTestCase):
         owner_id=1
     )
 
-    developer_lis = ["1"]
+    developer_list = ["1"]
     user_list = ["1", "11"]
 
     def setUp(self) -> None:
@@ -73,13 +72,12 @@ class TestWeNetUserCoreProfileInterface(CommonTestCase):
             last_update_ts=1579536160,
             profile_id=profile_id,
             norms=[
-                Norm(
-                    norm_id="norm-id",
-                    attribute="attribute",
-                    operator=NormOperator.EQUALS,
-                    comparison=True,
-                    negation=False
-                )
+                {
+                    "description": "Notify to all the participants that the task is closed.",
+                    "whenever": "is_received_do_transaction('close',Reason) and not(is_task_closed()) and get_profile_id(Me) and get_task_requester_id(RequesterId) and =(Me,RequesterId) and get_participants(Participants)",
+                    "thenceforth": "add_message_transaction() and close_task() and send_messages(Participants,'close',Reason)",
+                    "ontology": "get_participants(P) :- get_task_state_attribute(UserIds,'participants',[]), get_profile_id(Me), wenet_remove(P,Me,UserIds)."
+                }
             ],
             planned_activities=[],
             relevant_locations=[],
@@ -131,13 +129,12 @@ class TestWeNetUserCoreProfileInterface(CommonTestCase):
             last_update_ts=1579536160,
             profile_id=profile_id,
             norms=[
-                Norm(
-                    norm_id="norm-id",
-                    attribute="attribute",
-                    operator=NormOperator.EQUALS,
-                    comparison=True,
-                    negation=False
-                )
+                {
+                    "description": "Notify to all the participants that the task is closed.",
+                    "whenever": "is_received_do_transaction('close',Reason) and not(is_task_closed()) and get_profile_id(Me) and get_task_requester_id(RequesterId) and =(Me,RequesterId) and get_participants(Participants)",
+                    "thenceforth": "add_message_transaction() and close_task() and send_messages(Participants,'close',Reason)",
+                    "ontology": "get_participants(P) :- get_task_state_attribute(UserIds,'participants',[]), get_profile_id(Me), wenet_remove(P,Me,UserIds)."
+                }
             ],
             planned_activities=[],
             relevant_locations=[],
@@ -182,8 +179,10 @@ class TestWeNetUserCoreProfileInterface(CommonTestCase):
         self.assertIsNone(user_profile.locale)
         self.assertIsNone(user_profile.nationality)
         self.assertIsNone(user_profile.date_of_birth)
+
         mock_get.assert_called_once()
         self.service_collector_connector.hub_connector.get_app_details.assert_called_once()
+        self.service_collector_connector.hub_connector.get_user_ids_for_app.assert_called_once()
 
     def test_get_oauth_public_profile(self):
         profile_id = "1"
@@ -211,13 +210,12 @@ class TestWeNetUserCoreProfileInterface(CommonTestCase):
             last_update_ts=1579536160,
             profile_id=profile_id,
             norms=[
-                Norm(
-                    norm_id="norm-id",
-                    attribute="attribute",
-                    operator=NormOperator.EQUALS,
-                    comparison=True,
-                    negation=False
-                )
+                {
+                    "description": "Notify to all the participants that the task is closed.",
+                    "whenever": "is_received_do_transaction('close',Reason) and not(is_task_closed()) and get_profile_id(Me) and get_task_requester_id(RequesterId) and =(Me,RequesterId) and get_participants(Participants)",
+                    "thenceforth": "add_message_transaction() and close_task() and send_messages(Participants,'close',Reason)",
+                    "ontology": "get_participants(P) :- get_task_state_attribute(UserIds,'participants',[]), get_profile_id(Me), wenet_remove(P,Me,UserIds)."
+                }
             ],
             planned_activities=[],
             relevant_locations=[],
@@ -262,8 +260,10 @@ class TestWeNetUserCoreProfileInterface(CommonTestCase):
         self.assertIsNone(user_profile.locale)
         self.assertIsNone(user_profile.nationality)
         self.assertIsNone(user_profile.date_of_birth)
+
         mock_get.assert_called_once()
         self.service_collector_connector.hub_connector.get_app_details.assert_called_once()
+        self.service_collector_connector.hub_connector.get_user_ids_for_app.assert_called_once()
 
     def test_get_oauth3(self):
         profile_id = "1"
@@ -291,13 +291,12 @@ class TestWeNetUserCoreProfileInterface(CommonTestCase):
             last_update_ts=1579536160,
             profile_id=profile_id,
             norms=[
-                Norm(
-                    norm_id="norm-id",
-                    attribute="attribute",
-                    operator=NormOperator.EQUALS,
-                    comparison=True,
-                    negation=False
-                )
+                {
+                    "description": "Notify to all the participants that the task is closed.",
+                    "whenever": "is_received_do_transaction('close',Reason) and not(is_task_closed()) and get_profile_id(Me) and get_task_requester_id(RequesterId) and =(Me,RequesterId) and get_participants(Participants)",
+                    "thenceforth": "add_message_transaction() and close_task() and send_messages(Participants,'close',Reason)",
+                    "ontology": "get_participants(P) :- get_task_state_attribute(UserIds,'participants',[]), get_profile_id(Me), wenet_remove(P,Me,UserIds)."
+                }
             ],
             planned_activities=[],
             relevant_locations=[],
@@ -311,7 +310,7 @@ class TestWeNetUserCoreProfileInterface(CommonTestCase):
         mock_get = Mock(return_value=deepcopy(profile))
         self.service_collector_connector.profile_manager_collector.get_user_profile = mock_get
         self.service_collector_connector.hub_connector.get_app_details = Mock(return_value=self.app1)
-        self.service_collector_connector.hub_connector.get_app_developers = Mock(return_value=self.developer_lis)
+        self.service_collector_connector.hub_connector.get_app_developers = Mock(return_value=self.developer_list)
         self.service_collector_connector.hub_connector.get_user_ids_for_app = Mock(return_value=self.user_list)
 
         response = self.client.get(f"/user/profile/{profile_id}", headers={
@@ -343,6 +342,7 @@ class TestWeNetUserCoreProfileInterface(CommonTestCase):
         self.assertIsNone(user_profile.locale)
         self.assertIsNone(user_profile.nationality)
         self.assertIsNone(user_profile.date_of_birth)
+
         mock_get.assert_called_once()
         self.service_collector_connector.hub_connector.get_app_details.assert_called_once()
         self.service_collector_connector.hub_connector.get_app_developers.assert_called_once()
@@ -374,13 +374,12 @@ class TestWeNetUserCoreProfileInterface(CommonTestCase):
             last_update_ts=1579536160,
             profile_id=profile_id,
             norms=[
-                Norm(
-                    norm_id="norm-id",
-                    attribute="attribute",
-                    operator=NormOperator.EQUALS,
-                    comparison=True,
-                    negation=False
-                )
+                {
+                    "description": "Notify to all the participants that the task is closed.",
+                    "whenever": "is_received_do_transaction('close',Reason) and not(is_task_closed()) and get_profile_id(Me) and get_task_requester_id(RequesterId) and =(Me,RequesterId) and get_participants(Participants)",
+                    "thenceforth": "add_message_transaction() and close_task() and send_messages(Participants,'close',Reason)",
+                    "ontology": "get_participants(P) :- get_task_state_attribute(UserIds,'participants',[]), get_profile_id(Me), wenet_remove(P,Me,UserIds)."
+                }
             ],
             planned_activities=[],
             relevant_locations=[],
@@ -394,7 +393,7 @@ class TestWeNetUserCoreProfileInterface(CommonTestCase):
         mock_get = Mock(return_value=deepcopy(profile))
         self.service_collector_connector.profile_manager_collector.get_user_profile = mock_get
         self.service_collector_connector.hub_connector.get_app_details = Mock(return_value=self.app1)
-        self.service_collector_connector.hub_connector.get_app_developers = Mock(return_value=self.developer_lis)
+        self.service_collector_connector.hub_connector.get_app_developers = Mock(return_value=self.developer_list)
 
         response = self.client.get(f"/user/profile/{profile_id}", headers={
             "apikey": self.AUTHORIZED_APIKEY,
@@ -405,13 +404,16 @@ class TestWeNetUserCoreProfileInterface(CommonTestCase):
         })
         self.assertEqual(403, response.status_code)
 
+        mock_get.assert_not_called()
         self.service_collector_connector.hub_connector.get_app_details.assert_called_once()
         self.service_collector_connector.hub_connector.get_app_developers.assert_called_once()
 
     def test_get_not_authorized(self):
-
+        mock_get = Mock(return_value=None)
+        self.service_collector_connector.profile_manager_collector.get_user_profile = mock_get
         response = self.client.get("/user/profile/1")
         self.assertEqual(response.status_code, 401)
+        mock_get.assert_not_called()
 
     def test_put(self):
         profile_id = "1"
@@ -439,13 +441,12 @@ class TestWeNetUserCoreProfileInterface(CommonTestCase):
             last_update_ts=1579536160,
             profile_id=profile_id,
             norms=[
-                Norm(
-                    norm_id="norm-id",
-                    attribute="attribute",
-                    operator=NormOperator.EQUALS,
-                    comparison=True,
-                    negation=False
-                )
+                {
+                    "description": "Notify to all the participants that the task is closed.",
+                    "whenever": "is_received_do_transaction('close',Reason) and not(is_task_closed()) and get_profile_id(Me) and get_task_requester_id(RequesterId) and =(Me,RequesterId) and get_participants(Participants)",
+                    "thenceforth": "add_message_transaction() and close_task() and send_messages(Participants,'close',Reason)",
+                    "ontology": "get_participants(P) :- get_task_state_attribute(UserIds,'participants',[]), get_profile_id(Me), wenet_remove(P,Me,UserIds)."
+                }
             ],
             planned_activities=[],
             relevant_locations=[],
@@ -468,6 +469,7 @@ class TestWeNetUserCoreProfileInterface(CommonTestCase):
         updated_user_profile = WeNetUserProfile.from_repr(json_response)
         self.assertIsInstance(updated_user_profile, WeNetUserProfile)
         self.assertEqual(user_profile, updated_user_profile)
+
         mock_put.assert_called_once()
         mock_get.assert_called_once()
 
@@ -497,13 +499,12 @@ class TestWeNetUserCoreProfileInterface(CommonTestCase):
             last_update_ts=1579536160,
             profile_id=profile_id,
             norms=[
-                Norm(
-                    norm_id="norm-id",
-                    attribute="attribute",
-                    operator=NormOperator.EQUALS,
-                    comparison=True,
-                    negation=False
-                )
+                {
+                    "description": "Notify to all the participants that the task is closed.",
+                    "whenever": "is_received_do_transaction('close',Reason) and not(is_task_closed()) and get_profile_id(Me) and get_task_requester_id(RequesterId) and =(Me,RequesterId) and get_participants(Participants)",
+                    "thenceforth": "add_message_transaction() and close_task() and send_messages(Participants,'close',Reason)",
+                    "ontology": "get_participants(P) :- get_task_state_attribute(UserIds,'participants',[]), get_profile_id(Me), wenet_remove(P,Me,UserIds)."
+                }
             ],
             planned_activities=[],
             relevant_locations=[],
@@ -517,7 +518,7 @@ class TestWeNetUserCoreProfileInterface(CommonTestCase):
         mock_put = Mock(return_value=user_profile)
         self.service_collector_connector.profile_manager_collector.update_user_profile = mock_put
         self.service_collector_connector.hub_connector.get_app_details = Mock(return_value=self.app1)
-        self.service_collector_connector.hub_connector.get_app_developers = Mock(return_value=self.developer_lis)
+        self.service_collector_connector.hub_connector.get_app_developers = Mock(return_value=self.developer_list)
 
         mock_get = Mock(return_value=deepcopy(user_profile))
         self.service_collector_connector.profile_manager_collector.get_user_profile = mock_get
@@ -562,13 +563,12 @@ class TestWeNetUserCoreProfileInterface(CommonTestCase):
             last_update_ts=1579536160,
             profile_id=profile_id,
             norms=[
-                Norm(
-                    norm_id="norm-id",
-                    attribute="attribute",
-                    operator=NormOperator.EQUALS,
-                    comparison=True,
-                    negation=False
-                )
+                {
+                    "description": "Notify to all the participants that the task is closed.",
+                    "whenever": "is_received_do_transaction('close',Reason) and not(is_task_closed()) and get_profile_id(Me) and get_task_requester_id(RequesterId) and =(Me,RequesterId) and get_participants(Participants)",
+                    "thenceforth": "add_message_transaction() and close_task() and send_messages(Participants,'close',Reason)",
+                    "ontology": "get_participants(P) :- get_task_state_attribute(UserIds,'participants',[]), get_profile_id(Me), wenet_remove(P,Me,UserIds)."
+                }
             ],
             planned_activities=[],
             relevant_locations=[],
@@ -582,7 +582,7 @@ class TestWeNetUserCoreProfileInterface(CommonTestCase):
         mock_put = Mock(return_value=None)
         self.service_collector_connector.profile_manager_collector.update_user_profile = mock_put
         self.service_collector_connector.hub_connector.get_app_details = Mock(return_value=self.app1)
-        self.service_collector_connector.hub_connector.get_app_developers = Mock(return_value=self.developer_lis)
+        self.service_collector_connector.hub_connector.get_app_developers = Mock(return_value=self.developer_list)
 
         self.service_collector_connector.profile_manager_collector.get_profile = Mock(return_value=deepcopy(user_profile))
 
@@ -626,13 +626,12 @@ class TestWeNetUserCoreProfileInterface(CommonTestCase):
             last_update_ts=1579536160,
             profile_id=profile_id,
             norms=[
-                Norm(
-                    norm_id="norm-id",
-                    attribute="attribute",
-                    operator=NormOperator.EQUALS,
-                    comparison=True,
-                    negation=False
-                )
+                {
+                    "description": "Notify to all the participants that the task is closed.",
+                    "whenever": "is_received_do_transaction('close',Reason) and not(is_task_closed()) and get_profile_id(Me) and get_task_requester_id(RequesterId) and =(Me,RequesterId) and get_participants(Participants)",
+                    "thenceforth": "add_message_transaction() and close_task() and send_messages(Participants,'close',Reason)",
+                    "ontology": "get_participants(P) :- get_task_state_attribute(UserIds,'participants',[]), get_profile_id(Me), wenet_remove(P,Me,UserIds)."
+                }
             ],
             planned_activities=[],
             relevant_locations=[],
@@ -647,7 +646,35 @@ class TestWeNetUserCoreProfileInterface(CommonTestCase):
         self.assertEqual(401, response.status_code)
 
     def test_put2(self):
-        user_profile = {'name': {'first': 'first', 'middle': 'middle', 'last': 'last', 'prefix': 'prefix', 'suffix': 'suffix'}, 'gender': 'M', 'email': 'email@example.com', 'phoneNumber': 'phone number', 'locale': 'it_IT', 'avatar': 'avatar', 'nationality': 'it', 'languages': [{'name': 'ita', 'level': 'C2', 'code': 'it'}], 'occupation': 'occupation', '_creationTs': 1579536160, '_lastUpdateTs': 1579536160, 'id': 'profile_id', 'norms': [{'id': 'norm-id', 'attribute': 'attribute', 'operator': 'EQUALS', 'comparison': True, 'negation': False}], 'plannedActivities': [], 'relevantLocations': [], 'relationships': [], 'socialPractices': [], 'personalBehaviors': []}
+        user_profile = {
+            'name': {'first': 'first', 'middle': 'middle', 'last': 'last', 'prefix': 'prefix', 'suffix': 'suffix'},
+            'gender': 'M',
+            'dateOfBirth': {"year": 1993, "month": 4, "day": 7},
+            'email': 'email@example.com',
+            'phoneNumber': 'phone number',
+            'locale': 'it_IT',
+            'avatar': 'avatar',
+            'nationality': 'it',
+            'occupation': 'occupation',
+            '_creationTs': 1579536160,
+            '_lastUpdateTs': 1579536160,
+            'id': 'profile_id',
+            'norms': [
+                {
+                    "description": "Notify to all the participants that the task is closed.",
+                    "whenever": "is_received_do_transaction('close',Reason) and not(is_task_closed()) and get_profile_id(Me) and get_task_requester_id(RequesterId) and =(Me,RequesterId) and get_participants(Participants)",
+                    "thenceforth": "add_message_transaction() and close_task() and send_messages(Participants,'close',Reason)",
+                    "ontology": "get_participants(P) :- get_task_state_attribute(UserIds,'participants',[]), get_profile_id(Me), wenet_remove(P,Me,UserIds)."
+                }
+            ],
+            'plannedActivities': [],
+            'relevantLocations': [],
+            'relationships': [],
+            'personalBehaviors': [],
+            'materials': [],
+            'competences': [],
+            'meanings': []
+        }
 
         mock_put = Mock(return_value=WeNetUserProfile.from_repr(user_profile))
         self.service_collector_connector.profile_manager_collector.update_user_profile = mock_put

@@ -43,7 +43,7 @@ class WeNetUserCompetencesInterface(CommonWeNetUserInterface):
         if isinstance(authentication_result, ComponentAuthentication):
             return profile.competences, 200
         elif isinstance(authentication_result, Oauth2Result):
-            if self._is_owner(authentication_result, profile_id):  # and authentication_result.has_scope(Scope.ID):  # TODO check for the reading scope when will be added
+            if self._is_owner(authentication_result, profile_id):  # and authentication_result.has_scope(Scope.COMPETENCES):  # TODO check for the reading scope when will be added
                 return profile.competences, 200
             else:
                 abort(403)
@@ -70,13 +70,18 @@ class WeNetUserCompetencesInterface(CommonWeNetUserInterface):
 
         logger.info("Updating competences [%s]" % posted_competences)
 
+        patched_profile = PatchWeNetUserProfile(profile_id=profile_id, competences=posted_competences)
+
         try:
             if not isinstance(authentication_result, Oauth2Result):
-                updated_competences = self._service_connector_collector.profile_manager_collector.patch_user_profile(PatchWeNetUserProfile(profile_id=profile_id, competences=posted_competences))
+                updated_profile = self._service_connector_collector.profile_manager_collector.patch_user_profile(patched_profile)
             else:
-                # if authentication_result.has_scope(Scope.ID):  # TODO check for the writing scope when will be added
-                updated_competences = self._service_connector_collector.profile_manager_collector.patch_user_profile(PatchWeNetUserProfile(profile_id=profile_id, competences=posted_competences))
-            logger.info("Updated successfully competences [%s]" % updated_competences)
+                # if authentication_result.has_scope(Scope.COMPETENCES):  # TODO check for the writing scope when will be added
+                updated_profile = self._service_connector_collector.profile_manager_collector.patch_user_profile(patched_profile)
+                # else:
+                #     abort(403)
+                #     return
+            logger.info("Updated successfully competences [%s]" % updated_profile.competences)
         except AuthenticationException as e:
             logger.exception(f"Unauthorized to update the competences of the profile [{profile_id}]", exc_info=e)
             abort(403)
@@ -95,10 +100,10 @@ class WeNetUserCompetencesInterface(CommonWeNetUserInterface):
             return
 
         if isinstance(authentication_result, ComponentAuthentication):
-            return updated_competences, 200
-        elif isinstance(authentication_result, Oauth2Result):  # and authentication_result.has_scope(Scope.ID):  # TODO check for the reading scope when will be added
-            if self._is_owner(authentication_result, profile_id):
-                return updated_competences, 200
+            return updated_profile.competences, 200
+        elif isinstance(authentication_result, Oauth2Result):
+            if self._is_owner(authentication_result, profile_id):  # and authentication_result.has_scope(Scope.COMPETENCES):  # TODO check for the reading scope when will be added
+                return updated_profile.competences, 200
             else:
                 return [], 200
         else:

@@ -4,7 +4,6 @@ import json
 
 from mock import Mock
 
-from wenet.model.norm import Norm, NormOperator
 from wenet.model.task.task import Task, TaskGoal
 
 from test.unit.wenet_service_api.api.common.common_test_case import CommonTestCase
@@ -28,13 +27,12 @@ class TestTaskInterface(CommonTestCase):
                 description="description"
             ),
             norms=[
-                Norm(
-                    norm_id="norm-id",
-                    attribute="attribute",
-                    operator=NormOperator.EQUALS,
-                    comparison=True,
-                    negation=False
-                )
+                {
+                    "description": "Notify to all the participants that the task is closed.",
+                    "whenever": "is_received_do_transaction('close',Reason) and not(is_task_closed()) and get_profile_id(Me) and get_task_requester_id(RequesterId) and =(Me,RequesterId) and get_participants(Participants)",
+                    "thenceforth": "add_message_transaction() and close_task() and send_messages(Participants,'close',Reason)",
+                    "ontology": "get_participants(P) :- get_task_state_attribute(UserIds,'participants',[]), get_profile_id(Me), wenet_remove(P,Me,UserIds)."
+                }
             ],
             attributes={
                 "key": "value"
@@ -73,13 +71,12 @@ class TestTaskInterface(CommonTestCase):
                 description="description"
             ),
             norms=[
-                Norm(
-                    norm_id="norm-id",
-                    attribute="attribute",
-                    operator=NormOperator.EQUALS,
-                    comparison=True,
-                    negation=False
-                )
+                {
+                    "description": "Notify to all the participants that the task is closed.",
+                    "whenever": "is_received_do_transaction('close',Reason) and not(is_task_closed()) and get_profile_id(Me) and get_task_requester_id(RequesterId) and =(Me,RequesterId) and get_participants(Participants)",
+                    "thenceforth": "add_message_transaction() and close_task() and send_messages(Participants,'close',Reason)",
+                    "ontology": "get_participants(P) :- get_task_state_attribute(UserIds,'participants',[]), get_profile_id(Me), wenet_remove(P,Me,UserIds)."
+                }
             ],
             attributes={
                 "key": "value"
@@ -117,13 +114,12 @@ class TestTaskInterface(CommonTestCase):
                 description="description"
             ),
             norms=[
-                Norm(
-                    norm_id="norm-id",
-                    attribute="attribute",
-                    operator=NormOperator.EQUALS,
-                    comparison=True,
-                    negation=False
-                )
+                {
+                    "description": "Notify to all the participants that the task is closed.",
+                    "whenever": "is_received_do_transaction('close',Reason) and not(is_task_closed()) and get_profile_id(Me) and get_task_requester_id(RequesterId) and =(Me,RequesterId) and get_participants(Participants)",
+                    "thenceforth": "add_message_transaction() and close_task() and send_messages(Participants,'close',Reason)",
+                    "ontology": "get_participants(P) :- get_task_state_attribute(UserIds,'participants',[]), get_profile_id(Me), wenet_remove(P,Me,UserIds)."
+                }
             ],
             attributes={
                 "key": "value"
@@ -150,13 +146,12 @@ class TestTaskInterface(CommonTestCase):
                 description="description"
             ),
             norms=[
-                Norm(
-                    norm_id="norm-id",
-                    attribute="attribute",
-                    operator=NormOperator.EQUALS,
-                    comparison=True,
-                    negation=False
-                )
+                {
+                    "description": "Notify to all the participants that the task is closed.",
+                    "whenever": "is_received_do_transaction('close',Reason) and not(is_task_closed()) and get_profile_id(Me) and get_task_requester_id(RequesterId) and =(Me,RequesterId) and get_participants(Participants)",
+                    "thenceforth": "add_message_transaction() and close_task() and send_messages(Participants,'close',Reason)",
+                    "ontology": "get_participants(P) :- get_task_state_attribute(UserIds,'participants',[]), get_profile_id(Me), wenet_remove(P,Me,UserIds)."
+                }
             ],
             attributes={
                 "key": "value"
@@ -193,13 +188,12 @@ class TestTaskPostInterface(CommonTestCase):
                 description="description"
             ),
             norms=[
-                Norm(
-                    norm_id="norm-id",
-                    attribute="attribute",
-                    operator=NormOperator.EQUALS,
-                    comparison=True,
-                    negation=False
-                )
+                {
+                    "description": "Notify to all the participants that the task is closed.",
+                    "whenever": "is_received_do_transaction('close',Reason) and not(is_task_closed()) and get_profile_id(Me) and get_task_requester_id(RequesterId) and =(Me,RequesterId) and get_participants(Participants)",
+                    "thenceforth": "add_message_transaction() and close_task() and send_messages(Participants,'close',Reason)",
+                    "ontology": "get_participants(P) :- get_task_state_attribute(UserIds,'participants',[]), get_profile_id(Me), wenet_remove(P,Me,UserIds)."
+                }
             ],
             attributes={
                 "key": "value"
@@ -236,13 +230,12 @@ class TestTaskPostInterface(CommonTestCase):
                 description="description"
             ),
             norms=[
-                Norm(
-                    norm_id="norm-id",
-                    attribute="attribute",
-                    operator=NormOperator.EQUALS,
-                    comparison=True,
-                    negation=False
-                )
+                {
+                    "description": "Notify to all the participants that the task is closed.",
+                    "whenever": "is_received_do_transaction('close',Reason) and not(is_task_closed()) and get_profile_id(Me) and get_task_requester_id(RequesterId) and =(Me,RequesterId) and get_participants(Participants)",
+                    "thenceforth": "add_message_transaction() and close_task() and send_messages(Participants,'close',Reason)",
+                    "ontology": "get_participants(P) :- get_task_state_attribute(UserIds,'participants',[]), get_profile_id(Me), wenet_remove(P,Me,UserIds)."
+                }
             ],
             attributes={
                 "key": "value"
@@ -268,13 +261,12 @@ class TestTaskPostInterface(CommonTestCase):
                 description="description"
             ),
             norms=[
-                Norm(
-                    norm_id="norm-id",
-                    attribute="attribute",
-                    operator=NormOperator.EQUALS,
-                    comparison=True,
-                    negation=False
-                )
+                {
+                    "description": "Notify to all the participants that the task is closed.",
+                    "whenever": "is_received_do_transaction('close',Reason) and not(is_task_closed()) and get_profile_id(Me) and get_task_requester_id(RequesterId) and =(Me,RequesterId) and get_participants(Participants)",
+                    "thenceforth": "add_message_transaction() and close_task() and send_messages(Participants,'close',Reason)",
+                    "ontology": "get_participants(P) :- get_task_state_attribute(UserIds,'participants',[]), get_profile_id(Me), wenet_remove(P,Me,UserIds)."
+                }
             ],
             attributes={
                 "key": "value"

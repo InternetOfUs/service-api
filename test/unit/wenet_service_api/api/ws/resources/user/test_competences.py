@@ -8,7 +8,7 @@ from mock import Mock
 
 from wenet.model.app import App, AppStatus
 from wenet.model.user.common import Date, Gender
-from wenet.model.user.profile import WeNetUserProfile, UserName
+from wenet.model.user.profile import WeNetUserProfile, UserName, PatchWeNetUserProfile
 
 from test.unit.wenet_service_api.api.common.common_test_case import CommonTestCase
 from wenet_service_api.api.ws.resource.common import WenetSource, Scope
@@ -40,7 +40,7 @@ class TestWeNetUserCompetencesInterface(CommonTestCase):
         owner_id=1
     )
 
-    developer_lis = ["1"]
+    developer_list = ["1"]
     user_list = ["1", "11"]
 
     def setUp(self) -> None:
@@ -92,9 +92,7 @@ class TestWeNetUserCompetencesInterface(CommonTestCase):
 
         response = self.client.get("/user/profile/profile-id/competences", headers={"apikey": self.AUTHORIZED_APIKEY, "x-wenet-source": WenetSource.COMPONENT.value})
         self.assertEqual(response.status_code, 200)
-
         json_data = json.loads(response.data)
-
         self.assertEqual(profile.competences, json_data)
         mock_get.assert_called_once()
 
@@ -152,12 +150,12 @@ class TestWeNetUserCompetencesInterface(CommonTestCase):
             "X-Consumer-Username": "app_1"
         })
         self.assertEqual(200, response.status_code)
-
         json_data = json.loads(response.data)
-
         self.assertEqual(profile.competences, json_data)
+
         mock_get.assert_called_once()
         self.service_collector_connector.hub_connector.get_app_details.assert_called_once()
+        self.service_collector_connector.hub_connector.get_user_ids_for_app.assert_called_once()
 
     def test_get_oauth_2(self):
         profile_id = "2"
@@ -203,7 +201,7 @@ class TestWeNetUserCompetencesInterface(CommonTestCase):
         mock_get = Mock(return_value=deepcopy(profile))
         self.service_collector_connector.profile_manager_collector.get_user_profile = mock_get
         self.service_collector_connector.hub_connector.get_app_details = Mock(return_value=self.app1)
-        self.service_collector_connector.hub_connector.get_app_developers = Mock(return_value=self.developer_lis)
+        self.service_collector_connector.hub_connector.get_app_developers = Mock(return_value=self.developer_list)
 
         response = self.client.get(f"/user/profile/{profile_id}/competences", headers={
             "apikey": self.AUTHORIZED_APIKEY,
@@ -214,12 +212,16 @@ class TestWeNetUserCompetencesInterface(CommonTestCase):
         })
         self.assertEqual(403, response.status_code)
 
+        mock_get.assert_not_called()
         self.service_collector_connector.hub_connector.get_app_details.assert_called_once()
         self.service_collector_connector.hub_connector.get_app_developers.assert_called_once()
 
     def test_get_not_authorized(self):
-        response = self.client.get("/user/profile/1")
+        mock_get = Mock(return_value=None)
+        self.service_collector_connector.profile_manager_collector.get_user_profile = mock_get
+        response = self.client.get("/user/profile/1/competences")
         self.assertEqual(response.status_code, 401)
+        mock_get.assert_not_called()
 
     def test_put(self):
         profile_id = "1"
@@ -231,7 +233,9 @@ class TestWeNetUserCompetencesInterface(CommonTestCase):
           }
         ]
 
-        mock_patch = Mock(return_value=competences)
+        patched_profile = PatchWeNetUserProfile(profile_id=profile_id, competences=competences)
+
+        mock_patch = Mock(return_value=patched_profile)
         self.service_collector_connector.profile_manager_collector.patch_user_profile = mock_patch
 
         response = self.client.put(f"/user/profile/{profile_id}/competences", json=competences, headers={"apikey": self.AUTHORIZED_APIKEY, "x-wenet-source": WenetSource.COMPONENT.value})
@@ -250,10 +254,12 @@ class TestWeNetUserCompetencesInterface(CommonTestCase):
             }
         ]
 
-        mock_patch = Mock(return_value=competences)
+        patched_profile = PatchWeNetUserProfile(profile_id=profile_id, competences=competences)
+
+        mock_patch = Mock(return_value=patched_profile)
         self.service_collector_connector.profile_manager_collector.patch_user_profile = mock_patch
         self.service_collector_connector.hub_connector.get_app_details = Mock(return_value=self.app1)
-        self.service_collector_connector.hub_connector.get_app_developers = Mock(return_value=self.developer_lis)
+        self.service_collector_connector.hub_connector.get_app_developers = Mock(return_value=self.developer_list)
 
         response = self.client.put(f"/user/profile/{profile_id}/competences", json=competences, headers={
             "apikey": self.AUTHORIZED_APIKEY,
@@ -283,7 +289,7 @@ class TestWeNetUserCompetencesInterface(CommonTestCase):
         mock_put = Mock(return_value=None)
         self.service_collector_connector.profile_manager_collector.update_user_profile = mock_put
         self.service_collector_connector.hub_connector.get_app_details = Mock(return_value=self.app1)
-        self.service_collector_connector.hub_connector.get_app_developers = Mock(return_value=self.developer_lis)
+        self.service_collector_connector.hub_connector.get_app_developers = Mock(return_value=self.developer_list)
 
         response = self.client.put(f"/user/profile/2/competences", json=competences, headers={
             "apikey": self.AUTHORIZED_APIKEY,
@@ -308,5 +314,10 @@ class TestWeNetUserCompetencesInterface(CommonTestCase):
             }
         ]
 
+        mock_put = Mock(return_value=None)
+        self.service_collector_connector.profile_manager_collector.update_user_profile = mock_put
+
         response = self.client.put(f"/user/profile/{profile_id}/competences", json=competences)
         self.assertEqual(401, response.status_code)
+
+        mock_put.assert_not_called()
