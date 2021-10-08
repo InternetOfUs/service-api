@@ -11,6 +11,7 @@
   * The updateFrom and updateTo parameter are missing
   * The order parameter is missing
 * Updated the service api endpoint for updating the user profile in order to return the updated profile
+* Added endpoints for supporting the update of the extended user profile
 
 ## Version 2.*
 
