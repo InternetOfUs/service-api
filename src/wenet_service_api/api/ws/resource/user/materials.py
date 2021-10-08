@@ -11,10 +11,10 @@ from wenet.model.user.profile import PatchWeNetUserProfile
 from wenet_service_api.api.ws.resource.user.common import CommonWeNetUserInterface
 from wenet_service_api.api.ws.resource.common import WenetSource, Oauth2Result, ComponentAuthentication
 
-logger = logging.getLogger("api.api.ws.resource.user.competences")
+logger = logging.getLogger("api.api.ws.resource.user.materials")
 
 
-class WeNetUserCompetencesInterface(CommonWeNetUserInterface):
+class WeNetUserMaterialsInterface(CommonWeNetUserInterface):
 
     def get(self, profile_id: str):
 
@@ -41,10 +41,10 @@ class WeNetUserCompetencesInterface(CommonWeNetUserInterface):
             return
 
         if isinstance(authentication_result, ComponentAuthentication):
-            return profile.competences, 200
+            return profile.materials, 200
         elif isinstance(authentication_result, Oauth2Result):
-            if self._is_owner(authentication_result, profile_id):  # and authentication_result.has_scope(Scope.COMPETENCES):  # TODO check for the reading scope when will be added
-                return profile.competences, 200
+            if self._is_owner(authentication_result, profile_id):  # and authentication_result.has_scope(Scope.MATERIALS):  # TODO check for the reading scope when will be added
+                return profile.materials, 200
             else:
                 abort(403)
                 return
@@ -62,28 +62,28 @@ class WeNetUserCompetencesInterface(CommonWeNetUserInterface):
             return
 
         try:
-            posted_competences: list = request.get_json()
+            posted_materials: list = request.get_json()
         except Exception as e:
             logger.exception("Invalid message body", exc_info=e)
             abort(400, message="Invalid JSON - Unable to parse message body")
             return
 
-        logger.info("Updating competences [%s]" % posted_competences)
+        logger.info("Updating materials [%s]" % posted_materials)
 
-        patched_profile = PatchWeNetUserProfile(profile_id=profile_id, competences=posted_competences)
+        patched_profile = PatchWeNetUserProfile(profile_id=profile_id, materials=posted_materials)
 
         try:
             if not isinstance(authentication_result, Oauth2Result):
                 updated_profile = self._service_connector_collector.profile_manager_collector.patch_user_profile(patched_profile)
             else:
-                # if authentication_result.has_scope(Scope.COMPETENCES):  # TODO check for the writing scope when will be added
+                # if authentication_result.has_scope(Scope.MATERIALS):  # TODO check for the writing scope when will be added
                 updated_profile = self._service_connector_collector.profile_manager_collector.patch_user_profile(patched_profile)
                 # else:
                 #     abort(403)
                 #     return
-            logger.info("Updated successfully competences [%s]" % updated_profile.competences)
+            logger.info("Updated successfully materials [%s]" % updated_profile.materials)
         except AuthenticationException as e:
-            logger.exception(f"Unauthorized to update the competences of the profile [{profile_id}]", exc_info=e)
+            logger.exception(f"Unauthorized to update the materials of the profile [{profile_id}]", exc_info=e)
             abort(403)
             return
         # except ResourceNotFound as e:
@@ -100,10 +100,10 @@ class WeNetUserCompetencesInterface(CommonWeNetUserInterface):
             return
 
         if isinstance(authentication_result, ComponentAuthentication):
-            return updated_profile.competences, 200
+            return updated_profile.materials, 200
         elif isinstance(authentication_result, Oauth2Result):
-            if self._is_owner(authentication_result, profile_id):  # and authentication_result.has_scope(Scope.COMPETENCES):  # TODO check for the reading scope when will be added
-                return updated_profile.competences, 200
+            if self._is_owner(authentication_result, profile_id):  # and authentication_result.has_scope(Scope.MATERIALS):  # TODO check for the reading scope when will be added
+                return updated_profile.materials, 200
             else:
                 return [], 200
         else:

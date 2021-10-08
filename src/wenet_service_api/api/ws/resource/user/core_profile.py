@@ -114,7 +114,7 @@ class WeNetUserCoreProfileInterface(CommonWeNetUserInterface):
         #     abort(400, message=f"Bad request: {str(e)}")
         #     return
         except Exception as e:
-            logger.exception("Unable to retrieve the profile", exc_info=e)
+            logger.exception("Unable to update the profile", exc_info=e)
             abort(500)
             return
 
