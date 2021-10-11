@@ -3,7 +3,6 @@
 DEFAULT_VERSION="latest"
 
 
-
 clean () {
     echo "Cleaning."
     rm -R -f ${SCRIPT_DIR}/src
@@ -12,7 +11,6 @@ clean () {
 
     rm -R ${SCRIPT_DIR}/test
 
-    rm -R ${SCRIPT_DIR}/wenet-common-models-requirements.txt
 }
 
 SCRIPT_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
@@ -26,10 +24,7 @@ cp ${PROJECT_DIR}/requirements.txt ${SCRIPT_DIR}
 
 
 mkdir ${SCRIPT_DIR}/test
-cp -R ${PROJECT_DIR}/tests/* ${SCRIPT_DIR}/test
-
-cp -R ${PROJECT_DIR}/wenet-common-models/src/* ${SCRIPT_DIR}/src
-cp -R ${PROJECT_DIR}/wenet-common-models/requirements.txt ${SCRIPT_DIR}/wenet-common-models-requirements.txt
+cp -R ${PROJECT_DIR}/test/* ${SCRIPT_DIR}/test
 
 
 # Building image

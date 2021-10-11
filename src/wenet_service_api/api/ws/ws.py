@@ -5,14 +5,14 @@ from flask_restful import Api
 
 import logging
 
-from wenet_service_api.api.ws.resource.logging_interface import MessageLoggingInterfaceBuilder
-from wenet_service_api.api.ws.resource.task_list_interface import TaskListResourceInterfaceBuilder
-from wenet_service_api.api.ws.resource.token_deatils_interface import TokenDetailsInterfaceBuilder
+from wenet_service_api.api.ws.resource.logging import MessageLoggingInterfaceBuilder
+from wenet_service_api.api.ws.resource.task.task_list import TaskListResourceInterfaceBuilder
+from wenet_service_api.api.ws.resource.token_deatils import TokenDetailsInterfaceBuilder
+from wenet_service_api.api.ws.resource.user.builder import WeNetUserProfileInterfaceBuilder
 from wenet_service_api.connector.collector import ServiceConnectorCollector
-from wenet_service_api.api.ws.resource.app_interface import AppResourceInterfaceBuilder
-from wenet_service_api.api.ws.resource.task_interface import TaskResourceInterfaceBuilder
-from wenet_service_api.api.ws.resource.task_transaction import TaskTransactionInterfaceBuilder
-from wenet_service_api.api.ws.resource.user_profile import WeNetUserProfileInterfaceBuilder
+from wenet_service_api.api.ws.resource.app import AppResourceInterfaceBuilder
+from wenet_service_api.api.ws.resource.task.task import TaskResourceInterfaceBuilder
+from wenet_service_api.api.ws.resource.task.task_transaction import TaskTransactionInterfaceBuilder
 
 
 class WsInterface:
@@ -30,7 +30,6 @@ class WsInterface:
             (WeNetUserProfileInterfaceBuilder.routes(service_connector_collector, self._authorized_api_key), "/user"),
             (TaskResourceInterfaceBuilder.routes(service_connector_collector, self._authorized_api_key), "/task"),
             (TaskTransactionInterfaceBuilder.routes(service_connector_collector, self._authorized_api_key), "/task/transaction"),
-            #(MessageInterfaceBuilder.routes(self._authorized_api_key, self._dao_collector), "/messages"),
             (AppResourceInterfaceBuilder.routes(service_connector_collector, self._authorized_api_key), "/app"),
             (TaskListResourceInterfaceBuilder.routes(service_connector_collector, self._authorized_api_key), "/tasks"),
             (TokenDetailsInterfaceBuilder.routes(service_connector_collector, self._authorized_api_key), "/token"),

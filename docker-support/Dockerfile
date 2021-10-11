@@ -8,13 +8,10 @@ RUN echo "${PIP_CONF_DOCKER}" > /root/.config/pip/pip.conf
 ENV PIP_CONFIG_FILE /root/.config/pip/pip.conf
 
 
-
 RUN pip install --upgrade pip
 COPY requirements.txt .
 RUN pip install --user --no-cache-dir -r requirements.txt
 
-COPY wenet-common-models-requirements.txt .
-RUN pip install --user --no-cache-dir -r wenet-common-models-requirements.txt
 
 FROM public.registry.u-hopper.com/python:3.8
 
@@ -36,7 +33,7 @@ COPY  run.sh .
 
 ENV DOCUMENTATION_PATH /documentation
 
-ADD  test/ /scripts/tests/
+ADD  test/ /scripts/test/
 COPY  run_tests.sh .
 COPY  test.sh .
 
