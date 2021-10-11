@@ -2,6 +2,8 @@
 
 ## Version 3.*
 
+### 3.0.0
+
 * Removed wenet-common-model submodule
 * Added wenet-common library
 * Update the query params of task list endpoint:
