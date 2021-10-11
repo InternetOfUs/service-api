@@ -4,12 +4,12 @@ import logging
 
 from flask import request
 from flask_restful import abort
+from wenet.interface.exceptions import AuthenticationException
 
 from wenet.model.logging_message.message import BaseMessage
 from wenet.model.scope import Scope
 from wenet_service_api.api.ws.resource.common import AuthenticatedResource, WenetSource, AuthenticationResult, \
     ComponentAuthentication, Oauth2Result
-from wenet_service_api.common.exception.exceptions import BadRequestException
 from wenet_service_api.connector.collector import ServiceConnectorCollector
 
 logger = logging.getLogger("api.api.ws.resource.logging")
@@ -111,10 +111,14 @@ class MessageLoggingInterface(AuthenticatedResource):
                 return {
                     "warning": "Some of the messages has not been saved due to some scope problems"
                 }, 201
-        except BadRequestException as e:
-            logger.exception(f"Bad request during message logging of the messages [{messages}]", exc_info=e)
-            abort(400, messages="Bad request")
+        except AuthenticationException as e:
+            logger.exception(f"Unauthorized to post messages", exc_info=e)
+            abort(403)
             return
+        # except BadRequestException as e:
+        #     logger.exception(f"Bad request during message logging of the messages [{messages}]", exc_info=e)
+        #     abort(400, messages="Bad request")
+        #     return
         except Exception as e:
             logger.exception("Unable to store the messages", exc_info=e)
             abort(500)

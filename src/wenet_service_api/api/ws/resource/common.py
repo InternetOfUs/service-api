@@ -7,10 +7,10 @@ from typing import List, Optional
 
 from flask import request
 from flask_restful import Resource, abort
+from wenet.interface.exceptions import AuthenticationException, NotFound
 
 from wenet.model.scope import Scope
 from wenet.model.app import AppStatus, App
-from wenet_service_api.common.exception.exceptions import ResourceNotFound
 from wenet_service_api.connector.collector import ServiceConnectorCollector
 
 logger = logging.getLogger("api.api.ws.resource.authenticated_resource")
@@ -195,7 +195,11 @@ class AuthenticatedResource(Resource):
 
         try:
             app = self._service_connector_collector.hub_connector.get_app_details(app_id)
-        except ResourceNotFound:
+        except AuthenticationException as e:
+            logger.exception(f"Unauthorized to retrieve the resource with id [{app_id}]", exc_info=e)
+            abort(403)
+            return
+        except NotFound:
             logger.info(f"Invalid app [{app_id}]")
             abort(403, message="Invalid app")
             return
@@ -222,7 +226,3 @@ class AuthenticatedResource(Resource):
 
             abort(403, message="The application is in development mode, only the developer can access it")
             return
-
-
-
-

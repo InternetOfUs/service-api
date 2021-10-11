@@ -4,9 +4,9 @@ import logging
 
 from flask import request
 from flask_restful import abort
+from wenet.interface.exceptions import AuthenticationException, NotFound
 
 from wenet.model.task.task import Task
-from wenet_service_api.common.exception.exceptions import ResourceNotFound, NotAuthorized, BadRequestException
 from wenet_service_api.connector.collector import ServiceConnectorCollector
 from wenet_service_api.api.ws.resource.common import AuthenticatedResource, WenetSource
 
@@ -35,11 +35,11 @@ class TaskResourceInterface(AuthenticatedResource):
         try:
             task = self._service_connector_collector.task_manager_connector.get_task(task_id)
             logger.info(f"Retrieved task [{task_id}] from task manager connector")
-        except ResourceNotFound as e:
+        except NotFound as e:
             logger.exception("Unable to retrieve the task", exc_info=e)
             abort(404, message="Resource not found")
             return
-        except NotAuthorized as e:
+        except AuthenticationException as e:
             logger.exception(f"Unauthorized to retrieve the task [{task_id}]", exc_info=e)
             abort(403)
             return
@@ -75,15 +75,15 @@ class TaskResourceInterface(AuthenticatedResource):
 
         try:
             self._service_connector_collector.task_manager_connector.update_task(task)
-        except NotAuthorized as e:
+        except AuthenticationException as e:
             logger.exception(f"Unauthorized to update the task [{task_id}]", exc_info=e)
             abort(403)
             return
-        except BadRequestException as e:
-            logger.exception(f"Bad request exception during update for task [{task_id}] [{task}]", exc_info=e)
-            abort(400, message=str(e))
-            return
-        except ResourceNotFound:
+        # except BadRequestException as e:
+        #     logger.exception(f"Bad request exception during update for task [{task_id}] [{task}]", exc_info=e)
+        #     abort(400, message=str(e))
+        #     return
+        except NotFound:
             logger.warning(f"Resource [{task_id}] not found")
             abort(404, message=f"Resource [{task_id}] not found")
             return
@@ -124,14 +124,14 @@ class TaskResourcePostInterface(AuthenticatedResource):
 
         try:
             created_task = self._service_connector_collector.task_manager_connector.create_task(task)
-        except NotAuthorized as e:
+        except AuthenticationException as e:
             logger.exception(f"Not authorized to create the task [{task}]", exc_info=e)
             abort(403, message="Not authorized")
             return
-        except BadRequestException as e:
-            logger.exception(f"Bad request exception during creation of task [{task}]", exc_info=e)
-            abort(400, message=str(e))
-            return
+        # except BadRequestException as e:
+        #     logger.exception(f"Bad request exception during creation of task [{task}]", exc_info=e)
+        #     abort(400, message=str(e))
+        #     return
         except Exception as e:
             logger.exception(f"Unable to create the task [{task}]", exc_info=e)
             abort(500, message="Unable to create the task")
