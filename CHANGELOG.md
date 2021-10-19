@@ -2,6 +2,10 @@
 
 ## Version 3.*
 
+### 3.0.1
+
+* Updated common models to version `3.1.0` in order to fix the endpoint for the creation of a user
+
 ### 3.0.0
 
 * Removed wenet-common-model submodule
