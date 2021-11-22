@@ -72,6 +72,7 @@ The following environmental variables are required for the component to run prop
 - `SENTRY_DSN`: The data source name for sentry, if not set the project will not create any event
 - `SENTRY_RELEASE`: If set, sentry will associate the events to the given release
 - `SENTRY_ENVIRONMENT`: If set, sentry will associate the events to the given environment (ex. `production`, `staging`)
+- `SENTRY_SAMPLE_RATE`: The sample rate for the transaction that will be logged in sentry (1.0=all, 0.0=none). Default to `0.1`
 
 
 ## Documentation

@@ -1,0 +1,20 @@
+version: '3.1'
+
+services:
+
+  service-api:
+    image: internetofus/service-api:latest
+    restart: unless-stopped
+    container_name: wenet-service-api
+    environment:
+      APIKEY: "APIKEY" # An apikey required for authenticating kong to the service api.
+      COMP_AUTH_KEY: "COMP_APIKEY" # The apikey require for authenticate the service-api on kong (used to perform requests to the other components)
+      PROFILE_MANAGER_CONNECTOR_BASE_URL: https://... # the base url for the profile manager
+      TASK_MANAGER_CONNECTOR_BASE_URL: https://.. # the base url for task manager
+      HUB_CONNECTOR_BASE_URL: https://... # the base url for the wenet hub
+      LOGGER_CONNECTOR_BASE_URL: https://... # the base url for the logger
+      LOG_LEVEL: DEBUG
+      LOG_TO_FILE: 1
+      LOGS_DIR: /var/log/service-api
+    volumes:
+      - ./service-api-logs:/var/log/service-api
