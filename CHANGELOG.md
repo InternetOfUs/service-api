@@ -2,6 +2,10 @@
 
 ## Version 3.*
 
+### 3.0.2
+
+* Added the `SENTRY_SAMPLE_RATE` env variable in order to control the number of transaction stored in centry
+
 ### 3.0.1
 
 * Updated common models to version `3.1.0` in order to fix the endpoint for the creation of a user
