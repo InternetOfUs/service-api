@@ -21,6 +21,7 @@
           - ${PLATFORM_BASE_URL}
           - ${COMP_AUTH_KEY}
         gunicorn_app: service_api_app
+        gunicorn_extra_args: --timeout 60 --graceful-timeout 60
 
     ci_environments:
       production:
