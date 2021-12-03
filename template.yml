@@ -49,7 +49,6 @@
       default:
         stages:
           - name: build
-          - name: build
             type: badge
           - name: test
             type: coverage

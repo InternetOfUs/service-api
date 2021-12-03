@@ -355,22 +355,6 @@ coverage:mr:
 #
 
 
-docker image:default:
-  stage: build
-  script:
-    - *apk-before-script
-    - *docker-script
-
-    - ./docker-support/runner.sh -bs latest
-  artifacts:
-    paths:
-      - docker_image.tar.gz
-    expire_in: 1 day
-  needs: []
-  only:
-    - master
-
-
 badges:default:
   stage: build
   image: public.registry.u-hopper.com/python:3.8
