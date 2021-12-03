@@ -2,6 +2,13 @@
 
 ## Version 3.*
 
+### 3.0.3
+
+:house: Internal 
+
+* Updated project template to version 4.6.2
+* Updated gunicorn configuration in order to allow a timout of 60 seconds for the workers
+
 ### 3.0.2
 
 * Added the `SENTRY_SAMPLE_RATE` env variable in order to control the number of transaction stored in centry
