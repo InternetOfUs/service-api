@@ -28,4 +28,4 @@ if [[ -z "${GUNICORN_WORKERS}" ]]; then
     GUNICORN_WORKERS=${DEFAULT_WORKERS}
 fi
 
-exec gunicorn -w "${GUNICORN_WORKERS}" -b 0.0.0.0:80 "wenet_service_api.api.main:service_api_app"
+exec gunicorn -w "${GUNICORN_WORKERS}" -b 0.0.0.0:80 --timeout 60 --graceful-timeout 60 "wenet_service_api.api.main:service_api_app"
