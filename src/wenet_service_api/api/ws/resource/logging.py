@@ -39,7 +39,8 @@ class MessageLoggingInterface(AuthenticatedResource):
         if isinstance(authentication_result, ComponentAuthentication):
             return True
         elif isinstance(authentication_result, Oauth2Result):
-            return Scope.CONVERSATIONS_LEGACY in authentication_result.scopes
+            # TODO Legacy scopes
+            return Scope.CONVERSATIONS_LEGACY in authentication_result.scopes or Scope.CONVERSATIONS_WRITE in authentication_result.scopes
         else:
             return False
 
