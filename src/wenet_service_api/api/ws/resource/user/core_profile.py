@@ -159,6 +159,8 @@ class WeNetUserCoreProfileInterface(CommonWeNetUserInterface):
             return stored_user_profile
         else:
 
+            # TODO legacy scopes
+
             if user_profile.name is not None:
                 if authentication_result.has_scope(Scope.FIRST_NAME_WRITE) or authentication_result.has_scope(Scope.FIRST_NAME_LEGACY):
                     stored_user_profile.name.first = user_profile.name.first
