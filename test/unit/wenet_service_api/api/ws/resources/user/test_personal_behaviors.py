@@ -215,7 +215,7 @@ class TestWeNetUserPersonalBehaviorsInterface(CommonTestCase):
         response = self.client.get("/user/profile/1/personalBehaviors", headers={
             "apikey": self.AUTHORIZED_APIKEY,
             "x-wenet-source": WenetSource.OAUTH2_AUTHORIZATION_CODE.value,
-            "X-Authenticated-Scope": f"{Scope.ID.value} {Scope.FIRST_NAME.value}",  # TODO add reading scope when will be added
+            "X-Authenticated-Scope": f"{Scope.ID_READ.value} {Scope.FIRST_NAME_READ.value}",  # TODO add reading scope when will be added
             "X-Authenticated-Userid": profile_id,
             "X-Consumer-Username": "app_1"
         })
@@ -311,7 +311,7 @@ class TestWeNetUserPersonalBehaviorsInterface(CommonTestCase):
         response = self.client.get(f"/user/profile/{profile_id}/personalBehaviors", headers={
             "apikey": self.AUTHORIZED_APIKEY,
             "x-wenet-source": WenetSource.OAUTH2_AUTHORIZATION_CODE.value,
-            "X-Authenticated-Scope": f"{Scope.ID.value} {Scope.FIRST_NAME.value}",  # TODO add reading scope when will be added
+            "X-Authenticated-Scope": f"{Scope.ID_READ.value} {Scope.FIRST_NAME_READ.value}",  # TODO add reading scope when will be added
             "X-Authenticated-Userid": profile_id,
             "X-Consumer-Username": "app_2"
         })
@@ -439,7 +439,7 @@ class TestWeNetUserPersonalBehaviorsInterface(CommonTestCase):
         response = self.client.put(f"/user/profile/{profile_id}/personalBehaviors", json=personal_behaviors, headers={
             "apikey": self.AUTHORIZED_APIKEY,
             "x-wenet-source": WenetSource.OAUTH2_AUTHORIZATION_CODE.value,
-            "X-Authenticated-Scope": f"{Scope.ID.value} {Scope.FIRST_NAME.value}",  # TODO add writing scope when will be added
+            "X-Authenticated-Scope": f"{Scope.ID_READ.value} {Scope.FIRST_NAME_READ.value}",  # TODO add writing scope when will be added
             "X-Authenticated-Userid": profile_id,
             "X-Consumer-Username": "app_1"
         })
@@ -504,7 +504,7 @@ class TestWeNetUserPersonalBehaviorsInterface(CommonTestCase):
         response = self.client.put(f"/user/profile/2/personalBehaviors", json=personal_behaviors, headers={
             "apikey": self.AUTHORIZED_APIKEY,
             "x-wenet-source": WenetSource.OAUTH2_AUTHORIZATION_CODE.value,
-            "X-Authenticated-Scope": f"{Scope.ID.value} {Scope.FIRST_NAME.value}",  # TODO add writing scope when will be added
+            "X-Authenticated-Scope": f"{Scope.ID_READ.value} {Scope.FIRST_NAME_READ.value}",  # TODO add writing scope when will be added
             "X-Authenticated-Userid": profile_id,
             "X-Consumer-Username": "app_1"
         })
