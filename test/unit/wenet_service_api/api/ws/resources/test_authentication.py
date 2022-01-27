@@ -93,7 +93,7 @@ class TestAuthentication(CommonTestCase):
         response = self.client.get(f"/user/profile/1", headers={
             "x-wenet-source": WenetSource.OAUTH2_AUTHORIZATION_CODE.value,
             "X-Authenticated-Userid": "1",
-            "X-Authenticated-Scope": f"{Scope.ID.value} {Scope.NATIONALITY.value} {Scope.PHONE_NUMBER.value}",
+            "X-Authenticated-Scope": f"{Scope.ID_READ.value} {Scope.NATIONALITY_READ.value} {Scope.PHONE_NUMBER_READ.value}",
             "X-Consumer-Username": f"app_{self.app.app_id}",
             "apikey": self.AUTHORIZED_APIKEY
         })
@@ -112,7 +112,7 @@ class TestAuthentication(CommonTestCase):
         response = self.client.get(f"/user/profile/4", headers={
             "x-wenet-source": WenetSource.OAUTH2_AUTHORIZATION_CODE.value,
             "X-Authenticated-Userid": "4",
-            "X-Authenticated-Scope": f"{Scope.ID.value} {Scope.NATIONALITY.value} {Scope.PHONE_NUMBER.value}",
+            "X-Authenticated-Scope": f"{Scope.ID_READ.value} {Scope.NATIONALITY_READ.value} {Scope.PHONE_NUMBER_READ.value}",
             "X-Consumer-Username": f"app_{self.app.app_id}",
             "apikey": self.AUTHORIZED_APIKEY
         })
@@ -129,7 +129,7 @@ class TestAuthentication(CommonTestCase):
         response = self.client.get(f"/user/profile/2", headers={
             "x-wenet-source": WenetSource.OAUTH2_AUTHORIZATION_CODE.value,
             "X-Authenticated-Userid": "2",
-            "X-Authenticated-Scope": f"{Scope.ID.value} {Scope.NATIONALITY.value} {Scope.PHONE_NUMBER.value}",
+            "X-Authenticated-Scope": f"{Scope.ID_READ.value} {Scope.NATIONALITY_READ.value} {Scope.PHONE_NUMBER_READ.value}",
             "X-Consumer-Username": f"app_{self.app.app_id}",
             "apikey": self.AUTHORIZED_APIKEY
         })

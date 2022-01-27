@@ -158,43 +158,47 @@ class WeNetUserCoreProfileInterface(CommonWeNetUserInterface):
             stored_user_profile.update(user_profile)
             return stored_user_profile
         else:
-            if not authentication_result.has_scope(Scope.ID):
-                stored_user_profile.profile_id = None
+
+            # TODO legacy scopes
 
             if user_profile.name is not None:
-                if authentication_result.has_scope(Scope.FIRST_NAME):
+                if authentication_result.has_scope(Scope.FIRST_NAME_WRITE) or authentication_result.has_scope(Scope.FIRST_NAME_LEGACY):
                     stored_user_profile.name.first = user_profile.name.first
-                if authentication_result.has_scope(Scope.MIDDLE_NAME):
+                if authentication_result.has_scope(Scope.MIDDLE_NAME_WRITE) or authentication_result.has_scope(Scope.MIDDLE_NAME_LEGACY):
                     stored_user_profile.name.middle = user_profile.name.middle
-                if authentication_result.has_scope(Scope.LAST_NAME):
+                if authentication_result.has_scope(Scope.LAST_NAME_WRITE) or authentication_result.has_scope(Scope.LAST_NAME_LEGACY):
                     stored_user_profile.name.last = user_profile.name.last
-                if authentication_result.has_scope(Scope.PREFIX_NAME):
+                if authentication_result.has_scope(Scope.PREFIX_NAME_WRITE) or authentication_result.has_scope(Scope.PREFIX_NAME_LEGACY):
                     stored_user_profile.name.prefix = user_profile.name.prefix
-                if authentication_result.has_scope(Scope.SUFFIX_NAME):
+                if authentication_result.has_scope(Scope.SUFFIX_NAME_WRITE) or authentication_result.has_scope(Scope.SUFFIX_NAME_LEGACY):
                     stored_user_profile.name.suffix = user_profile.name.suffix
             else:
-                if authentication_result.has_scope(Scope.FIRST_NAME):
+                if authentication_result.has_scope(Scope.FIRST_NAME_WRITE) or authentication_result.has_scope(Scope.FIRST_NAME_LEGACY):
                     user_profile.name.first = None
-                if authentication_result.has_scope(Scope.MIDDLE_NAME):
+                if authentication_result.has_scope(Scope.MIDDLE_NAME_WRITE) or authentication_result.has_scope(Scope.MIDDLE_NAME_LEGACY):
                     user_profile.name.middle = None
-                if authentication_result.has_scope(Scope.LAST_NAME):
+                if authentication_result.has_scope(Scope.LAST_NAME_WRITE) or authentication_result.has_scope(Scope.LAST_NAME_LEGACY):
                     user_profile.name.last = None
-                if authentication_result.has_scope(Scope.PREFIX_NAME):
+                if authentication_result.has_scope(Scope.PREFIX_NAME_WRITE) or authentication_result.has_scope(Scope.PREFIX_NAME_LEGACY):
                     user_profile.name.prefix = None
-                if authentication_result.has_scope(Scope.SUFFIX_NAME):
+                if authentication_result.has_scope(Scope.SUFFIX_NAME_WRITE) or authentication_result.has_scope(Scope.SUFFIX_NAME_LEGACY):
                     user_profile.name.suffix = None
 
-            if authentication_result.has_scope(Scope.BIRTHDATE):
+            if authentication_result.has_scope(Scope.BIRTHDATE_WRITE) or authentication_result.has_scope(Scope.BIRTHDATE_LEGACY):
                 stored_user_profile.date_of_birth = user_profile.date_of_birth
-            if authentication_result.has_scope(Scope.GENDER):
+            if authentication_result.has_scope(Scope.GENDER_WRITE) or authentication_result.has_scope(Scope.GENDER_LEGACY):
                 stored_user_profile.gender = user_profile.gender
-            if authentication_result.has_scope(Scope.EMAIL):
+            if authentication_result.has_scope(Scope.EMAIL_WRITE) or authentication_result.has_scope(Scope.EMAIL_LEGACY):
                 stored_user_profile.email = user_profile.email
-            if authentication_result.has_scope(Scope.PHONE_NUMBER):
+            if authentication_result.has_scope(Scope.PHONE_NUMBER_WRITE) or authentication_result.has_scope(Scope.PHONE_NUMBER_LEGACY):
                 stored_user_profile.phone_number = user_profile.phone_number
-            if authentication_result.has_scope(Scope.LOCALE):
+            if authentication_result.has_scope(Scope.LOCALE_WRITE) or authentication_result.has_scope(Scope.LOCALE_LEGACY):
                 stored_user_profile.locale = user_profile.locale
-            if authentication_result.has_scope(Scope.NATIONALITY):
+            if authentication_result.has_scope(Scope.NATIONALITY_WRITE) or authentication_result.has_scope(Scope.NATIONALITY_LEGACY):
+                stored_user_profile.nationality = user_profile.nationality
+            if authentication_result.has_scope(Scope.AVATAR_WRITE):
+                stored_user_profile.avatar = user_profile.avatar
+            if authentication_result.has_scope(Scope.OCCUPATION_WRITE):
                 stored_user_profile.nationality = user_profile.nationality
 
             return stored_user_profile

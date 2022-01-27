@@ -156,7 +156,7 @@ class TestLoggingInterface(CommonTestCase):
         response = self.client.post("/log/messages", json=json_messages, headers={
             "apikey": self.AUTHORIZED_APIKEY,
             "x-wenet-source": WenetSource.OAUTH2_AUTHORIZATION_CODE.value,
-            "X-Authenticated-Scope": f"{Scope.CONVERSATIONS.value} {Scope.FIRST_NAME.value}",
+            "X-Authenticated-Scope": f"{Scope.CONVERSATIONS_WRITE.value} {Scope.FIRST_NAME_READ.value}",
             "X-Authenticated-Userid": "user_id",
             "X-Consumer-Username": "app_1"
         })
@@ -203,7 +203,7 @@ class TestLoggingInterface(CommonTestCase):
         response = self.client.post("/log/messages", json=json_messages, headers={
             "apikey": self.AUTHORIZED_APIKEY,
             "x-wenet-source": WenetSource.OAUTH2_AUTHORIZATION_CODE.value,
-            "X-Authenticated-Scope": f"{Scope.CONVERSATIONS.value} {Scope.FIRST_NAME.value}",
+            "X-Authenticated-Scope": f"{Scope.CONVERSATIONS_WRITE.value} {Scope.FIRST_NAME_READ.value}",
             "X-Authenticated-Userid": "user_id",
             "X-Consumer-Username": "app_1"
         })
@@ -250,7 +250,7 @@ class TestLoggingInterface(CommonTestCase):
         response = self.client.post("/log/messages", json=json_messages, headers={
             "apikey": self.AUTHORIZED_APIKEY,
             "x-wenet-source": WenetSource.OAUTH2_AUTHORIZATION_CODE.value,
-            "X-Authenticated-Scope": f"{Scope.FIRST_NAME.value}",
+            "X-Authenticated-Scope": f"{Scope.FIRST_NAME_READ.value}",
             "X-Authenticated-Userid": "11",
             "X-Consumer-Username": "app_1"
         })

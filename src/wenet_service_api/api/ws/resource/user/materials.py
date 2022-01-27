@@ -9,7 +9,7 @@ from wenet.interface.exceptions import NotFound, AuthenticationException
 from wenet.model.user.profile import PatchWeNetUserProfile
 
 from wenet_service_api.api.ws.resource.user.common import CommonWeNetUserInterface
-from wenet_service_api.api.ws.resource.common import WenetSource, Oauth2Result, ComponentAuthentication
+from wenet_service_api.api.ws.resource.common import WenetSource, Oauth2Result, ComponentAuthentication, Scope
 
 logger = logging.getLogger("api.api.ws.resource.user.materials")
 
@@ -20,9 +20,13 @@ class WeNetUserMaterialsInterface(CommonWeNetUserInterface):
 
         authentication_result = self._check_authentication([WenetSource.COMPONENT, WenetSource.OAUTH2_AUTHORIZATION_CODE])
 
-        if not self._can_view_profile(authentication_result, profile_id):
-            abort(401)
-            return
+        if isinstance(authentication_result, Oauth2Result):
+            if not self._is_owner(authentication_result, profile_id):
+                abort(403, message=f"Unauthorized to retrieve the profile [{profile_id}]")
+                return
+            if Scope.MATERIALS_READ not in authentication_result.scopes:
+                abort(403, message="Unauthorized to read the user materials")
+                return
 
         try:
             profile = self._service_connector_collector.profile_manager_collector.get_user_profile(profile_id)
@@ -40,18 +44,7 @@ class WeNetUserMaterialsInterface(CommonWeNetUserInterface):
             abort(500)
             return
 
-        if isinstance(authentication_result, ComponentAuthentication):
-            return profile.materials, 200
-        elif isinstance(authentication_result, Oauth2Result):
-            if self._is_owner(authentication_result, profile_id):  # and authentication_result.has_scope(Scope.MATERIALS):  # TODO check for the reading scope when will be added
-                return profile.materials, 200
-            else:
-                abort(403)
-                return
-        else:
-            logger.error(f"Unable to handle authentication of type {type(authentication_result)}")
-            abort(500)
-            return
+        return profile.materials, 200
 
     def put(self, profile_id: str):
 
@@ -61,6 +54,10 @@ class WeNetUserMaterialsInterface(CommonWeNetUserInterface):
             abort(401)
             return
 
+        if isinstance(authentication_result, Oauth2Result):
+            if Scope.MATERIALS_WRITE not in authentication_result.scopes:
+                abort(403, message="Unauthorized to write the user materials")
+                return
         try:
             posted_materials: list = request.get_json()
         except Exception as e:
@@ -73,14 +70,7 @@ class WeNetUserMaterialsInterface(CommonWeNetUserInterface):
         patched_profile = PatchWeNetUserProfile(profile_id=profile_id, materials=posted_materials)
 
         try:
-            if not isinstance(authentication_result, Oauth2Result):
-                updated_profile = self._service_connector_collector.profile_manager_collector.patch_user_profile(patched_profile)
-            else:
-                # if authentication_result.has_scope(Scope.MATERIALS):  # TODO check for the writing scope when will be added
-                updated_profile = self._service_connector_collector.profile_manager_collector.patch_user_profile(patched_profile)
-                # else:
-                #     abort(403)
-                #     return
+            updated_profile = self._service_connector_collector.profile_manager_collector.patch_user_profile(patched_profile)
             logger.info("Updated successfully materials [%s]" % updated_profile.materials)
         except AuthenticationException as e:
             logger.exception(f"Unauthorized to update the materials of the profile [{profile_id}]", exc_info=e)
@@ -102,7 +92,7 @@ class WeNetUserMaterialsInterface(CommonWeNetUserInterface):
         if isinstance(authentication_result, ComponentAuthentication):
             return updated_profile.materials, 200
         elif isinstance(authentication_result, Oauth2Result):
-            if self._is_owner(authentication_result, profile_id):  # and authentication_result.has_scope(Scope.MATERIALS):  # TODO check for the reading scope when will be added
+            if self._is_owner(authentication_result, profile_id) and authentication_result.has_scope(Scope.MATERIALS_READ):
                 return updated_profile.materials, 200
             else:
                 return [], 200
