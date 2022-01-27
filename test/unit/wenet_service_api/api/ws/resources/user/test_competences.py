@@ -145,7 +145,7 @@ class TestWeNetUserCompetencesInterface(CommonTestCase):
         response = self.client.get("/user/profile/1/competences", headers={
             "apikey": self.AUTHORIZED_APIKEY,
             "x-wenet-source": WenetSource.OAUTH2_AUTHORIZATION_CODE.value,
-            "X-Authenticated-Scope": f"{Scope.ID_READ.value} {Scope.FIRST_NAME_READ.value}",  # TODO add reading scope when will be added
+            "X-Authenticated-Scope": f"{Scope.ID_READ.value} {Scope.FIRST_NAME_READ.value} {Scope.COMPETENCES_READ.value}",
             "X-Authenticated-Userid": profile_id,
             "X-Consumer-Username": "app_1"
         })
@@ -155,7 +155,66 @@ class TestWeNetUserCompetencesInterface(CommonTestCase):
 
         mock_get.assert_called_once()
         self.service_collector_connector.hub_connector.get_app_details.assert_called_once()
-        self.service_collector_connector.hub_connector.get_user_ids_for_app.assert_called_once()
+        self.service_collector_connector.hub_connector.get_user_ids_for_app.assert_not_called()
+
+    def test_get_oauth_no_permission(self):
+        profile_id = "1"
+        profile = WeNetUserProfile(
+            name=UserName(
+                first="first",
+                middle="middle",
+                last="last",
+                prefix="prefix",
+                suffix="suffix"
+            ),
+            date_of_birth=Date(
+                year=2020,
+                month=1,
+                day=20
+            ),
+            gender=Gender.MALE,
+            email="email@example.com",
+            phone_number="phone number",
+            locale="it_IT",
+            avatar="avatar",
+            nationality="it",
+            occupation="occupation",
+            creation_ts=1579536160,
+            last_update_ts=1579536160,
+            profile_id=profile_id,
+            norms=[],
+            planned_activities=[],
+            relevant_locations=[],
+            relationships=[],
+            personal_behaviours=[],
+            materials=[],
+            competences=[
+              {
+                "name": "language_Italian_C1",
+                "ontology": "esco",
+                "level": 0.8
+              }
+            ],
+            meanings=[]
+        )
+
+        mock_get = Mock(return_value=deepcopy(profile))
+        self.service_collector_connector.hub_connector.get_app_details = Mock(return_value=self.app)
+        self.service_collector_connector.profile_manager_collector.get_user_profile = mock_get
+        self.service_collector_connector.hub_connector.get_user_ids_for_app = Mock(return_value=self.user_list)
+
+        response = self.client.get("/user/profile/1/competences", headers={
+            "apikey": self.AUTHORIZED_APIKEY,
+            "x-wenet-source": WenetSource.OAUTH2_AUTHORIZATION_CODE.value,
+            "X-Authenticated-Scope": f"{Scope.ID_READ.value} {Scope.FIRST_NAME_READ.value}",
+            "X-Authenticated-Userid": profile_id,
+            "X-Consumer-Username": "app_1"
+        })
+        self.assertEqual(403, response.status_code)
+
+        mock_get.assert_not_called()
+        self.service_collector_connector.hub_connector.get_app_details.assert_called_once()
+        self.service_collector_connector.hub_connector.get_user_ids_for_app.assert_not_called()
 
     def test_get_oauth_2(self):
         profile_id = "2"
@@ -264,7 +323,7 @@ class TestWeNetUserCompetencesInterface(CommonTestCase):
         response = self.client.put(f"/user/profile/{profile_id}/competences", json=competences, headers={
             "apikey": self.AUTHORIZED_APIKEY,
             "x-wenet-source": WenetSource.OAUTH2_AUTHORIZATION_CODE.value,
-            "X-Authenticated-Scope": f"{Scope.ID_READ.value} {Scope.FIRST_NAME_WRITE.value}",  # TODO add writing scope when will be added
+            "X-Authenticated-Scope": f"{Scope.ID_READ.value} {Scope.FIRST_NAME_WRITE.value} {Scope.COMPETENCES_WRITE.value} {Scope.COMPETENCES_READ.value}",
             "X-Authenticated-Userid": profile_id,
             "X-Consumer-Username": "app_1"
         })
@@ -273,6 +332,68 @@ class TestWeNetUserCompetencesInterface(CommonTestCase):
         self.assertEqual(competences, json_response)
 
         mock_patch.assert_called_once()
+        self.service_collector_connector.hub_connector.get_app_details.assert_called_once()
+        self.service_collector_connector.hub_connector.get_app_developers.assert_called_once()
+
+    def test_put_oauth_no_read_permission(self):
+        profile_id = "1"
+        competences = [
+            {
+                "name": "language_Italian_C1",
+                "ontology": "esco",
+                "level": 0.8
+            }
+        ]
+
+        patched_profile = PatchWeNetUserProfile(profile_id=profile_id, competences=competences)
+
+        mock_patch = Mock(return_value=patched_profile)
+        self.service_collector_connector.profile_manager_collector.patch_user_profile = mock_patch
+        self.service_collector_connector.hub_connector.get_app_details = Mock(return_value=self.app1)
+        self.service_collector_connector.hub_connector.get_app_developers = Mock(return_value=self.developer_list)
+
+        response = self.client.put(f"/user/profile/{profile_id}/competences", json=competences, headers={
+            "apikey": self.AUTHORIZED_APIKEY,
+            "x-wenet-source": WenetSource.OAUTH2_AUTHORIZATION_CODE.value,
+            "X-Authenticated-Scope": f"{Scope.ID_READ.value} {Scope.FIRST_NAME_WRITE.value} {Scope.COMPETENCES_WRITE.value}",
+            "X-Authenticated-Userid": profile_id,
+            "X-Consumer-Username": "app_1"
+        })
+        self.assertEqual(200, response.status_code)
+        json_response = json.loads(response.data)
+        self.assertEqual([], json_response)
+
+        mock_patch.assert_called_once()
+        self.service_collector_connector.hub_connector.get_app_details.assert_called_once()
+        self.service_collector_connector.hub_connector.get_app_developers.assert_called_once()
+
+    def test_put_oauth_no_permission(self):
+        profile_id = "1"
+        competences = [
+            {
+                "name": "language_Italian_C1",
+                "ontology": "esco",
+                "level": 0.8
+            }
+        ]
+
+        patched_profile = PatchWeNetUserProfile(profile_id=profile_id, competences=competences)
+
+        mock_patch = Mock(return_value=patched_profile)
+        self.service_collector_connector.profile_manager_collector.patch_user_profile = mock_patch
+        self.service_collector_connector.hub_connector.get_app_details = Mock(return_value=self.app1)
+        self.service_collector_connector.hub_connector.get_app_developers = Mock(return_value=self.developer_list)
+
+        response = self.client.put(f"/user/profile/{profile_id}/competences", json=competences, headers={
+            "apikey": self.AUTHORIZED_APIKEY,
+            "x-wenet-source": WenetSource.OAUTH2_AUTHORIZATION_CODE.value,
+            "X-Authenticated-Scope": f"{Scope.ID_READ.value} {Scope.FIRST_NAME_WRITE.value} {Scope.COMPETENCES_READ.value}",
+            "X-Authenticated-Userid": profile_id,
+            "X-Consumer-Username": "app_1"
+        })
+        self.assertEqual(403, response.status_code)
+
+        mock_patch.assert_not_called()
         self.service_collector_connector.hub_connector.get_app_details.assert_called_once()
         self.service_collector_connector.hub_connector.get_app_developers.assert_called_once()
 
