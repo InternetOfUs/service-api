@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 4.*
+
+### 4.0.0
+
+* Updated the user profile and logging endpoints in order to use the updated scope list
+
 ## Version 3.*
 
 ### 3.0.3
