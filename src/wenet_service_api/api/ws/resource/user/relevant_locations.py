@@ -25,7 +25,7 @@ class WeNetUserRelevantLocationsInterface(CommonWeNetUserInterface):
                 abort(403, message=f"Unauthorized to retrieve the profile [{profile_id}]")
                 return
             if Scope.LOCATIONS_READ not in authentication_result.scopes:
-                abort(403, message="Unauthorized to read the user norms")
+                abort(403, message="Unauthorized to read the user locations")
                 return
 
         try:
@@ -56,7 +56,7 @@ class WeNetUserRelevantLocationsInterface(CommonWeNetUserInterface):
 
         if isinstance(authentication_result, Oauth2Result):
             if Scope.LOCATIONS_WRITE not in authentication_result.scopes:
-                abort(403, message="Unauthorized to write the user norms")
+                abort(403, message="Unauthorized to write the user locations")
                 return
 
         try:

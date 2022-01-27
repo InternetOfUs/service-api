@@ -56,7 +56,7 @@ class WeNetUserPlannedActivitiesInterface(CommonWeNetUserInterface):
 
         if isinstance(authentication_result, Oauth2Result):
             if Scope.ACTIVITIES_WRITE not in authentication_result.scopes:
-                abort(403, message="Unauthorized to write the user norms")
+                abort(403, message="Unauthorized to write the user activities")
                 return
 
         try:

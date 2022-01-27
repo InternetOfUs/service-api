@@ -25,7 +25,7 @@ class WeNetUserRelationshipsInterface(CommonWeNetUserInterface):
                 abort(403, message=f"Unauthorized to retrieve the profile [{profile_id}]")
                 return
             if Scope.RELATIONSHIPS_READ not in authentication_result.scopes:
-                abort(403, message="Unauthorized to read the user norms")
+                abort(403, message="Unauthorized to read the user relationship")
                 return
 
         try:
