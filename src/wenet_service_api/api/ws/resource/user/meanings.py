@@ -9,7 +9,7 @@ from wenet.interface.exceptions import NotFound, AuthenticationException
 from wenet.model.user.profile import PatchWeNetUserProfile
 
 from wenet_service_api.api.ws.resource.user.common import CommonWeNetUserInterface
-from wenet_service_api.api.ws.resource.common import WenetSource, Oauth2Result, ComponentAuthentication
+from wenet_service_api.api.ws.resource.common import WenetSource, Oauth2Result, ComponentAuthentication, Scope
 
 logger = logging.getLogger("api.api.ws.resource.user.meanings")
 
@@ -20,9 +20,13 @@ class WeNetUserMeaningsInterface(CommonWeNetUserInterface):
 
         authentication_result = self._check_authentication([WenetSource.COMPONENT, WenetSource.OAUTH2_AUTHORIZATION_CODE])
 
-        if not self._can_view_profile(authentication_result, profile_id):
-            abort(401)
-            return
+        if isinstance(authentication_result, Oauth2Result):
+            if not self._is_owner(authentication_result, profile_id):
+                abort(403, message=f"Unauthorized to retrieve the profile [{profile_id}]")
+                return
+            if Scope.MEANINGS_READ not in authentication_result.scopes:
+                abort(403, message="Unauthorized to read the user meanings")
+                return
 
         try:
             profile = self._service_connector_collector.profile_manager_collector.get_user_profile(profile_id)
@@ -40,18 +44,7 @@ class WeNetUserMeaningsInterface(CommonWeNetUserInterface):
             abort(500)
             return
 
-        if isinstance(authentication_result, ComponentAuthentication):
-            return profile.meanings, 200
-        elif isinstance(authentication_result, Oauth2Result):
-            if self._is_owner(authentication_result, profile_id):  # and authentication_result.has_scope(Scope.MEANINGS):  # TODO check for the reading scope when will be added
-                return profile.meanings, 200
-            else:
-                abort(403)
-                return
-        else:
-            logger.error(f"Unable to handle authentication of type {type(authentication_result)}")
-            abort(500)
-            return
+        return profile.meanings, 200
 
     def put(self, profile_id: str):
 
@@ -60,6 +53,11 @@ class WeNetUserMeaningsInterface(CommonWeNetUserInterface):
         if not self._can_edit_profile(authentication_result, profile_id):
             abort(401)
             return
+
+        if isinstance(authentication_result, Oauth2Result):
+            if Scope.MEANINGS_WRITE not in authentication_result.scopes:
+                abort(403, message="Unauthorized to write the user meanings")
+                return
 
         try:
             posted_meanings: list = request.get_json()
@@ -73,14 +71,7 @@ class WeNetUserMeaningsInterface(CommonWeNetUserInterface):
         patched_profile = PatchWeNetUserProfile(profile_id=profile_id, meanings=posted_meanings)
 
         try:
-            if not isinstance(authentication_result, Oauth2Result):
-                updated_profile = self._service_connector_collector.profile_manager_collector.patch_user_profile(patched_profile)
-            else:
-                # if authentication_result.has_scope(Scope.MEANINGS):  # TODO check for the writing scope when will be added
-                updated_profile = self._service_connector_collector.profile_manager_collector.patch_user_profile(patched_profile)
-                # else:
-                #     abort(403)
-                #     return
+            updated_profile = self._service_connector_collector.profile_manager_collector.patch_user_profile(patched_profile)
             logger.info("Updated successfully meanings [%s]" % updated_profile.meanings)
         except AuthenticationException as e:
             logger.exception(f"Unauthorized to update the meanings of the profile [{profile_id}]", exc_info=e)
@@ -102,7 +93,7 @@ class WeNetUserMeaningsInterface(CommonWeNetUserInterface):
         if isinstance(authentication_result, ComponentAuthentication):
             return updated_profile.meanings, 200
         elif isinstance(authentication_result, Oauth2Result):
-            if self._is_owner(authentication_result, profile_id):  # and authentication_result.has_scope(Scope.MEANINGS):  # TODO check for the reading scope when will be added
+            if self._is_owner(authentication_result, profile_id) and authentication_result.has_scope(Scope.MEANINGS_READ):
                 return updated_profile.meanings, 200
             else:
                 return [], 200
