@@ -81,7 +81,7 @@ class MessageLoggingInterface(AuthenticatedResource):
         if isinstance(posted_data, list):
             try:
                 messages = [BaseMessage.from_repr(x) for x in posted_data]
-            except (ValueError, TypeError, KeyError) as v:
+            except (ValueError, TypeError, KeyError):
                 logger.exception(f"Unable to build a list of messages from payload [{posted_data}]")
                 abort(400, message="Malformed message")
                 return
@@ -113,7 +113,7 @@ class MessageLoggingInterface(AuthenticatedResource):
                     "warning": "Some of the messages has not been saved due to some scope problems"
                 }, 201
         except AuthenticationException as e:
-            logger.exception(f"Unauthorized to post messages", exc_info=e)
+            logger.exception("Unauthorized to post messages", exc_info=e)
             abort(403)
             return
         # except BadRequestException as e:

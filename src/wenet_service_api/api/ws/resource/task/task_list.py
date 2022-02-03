@@ -65,7 +65,7 @@ class TaskListResourceInterface(AuthenticatedResource):
                 limit=limit
             )
         except AuthenticationException as e:
-            logger.exception(f"Unauthorized to retrieve the task list", exc_info=e)
+            logger.exception("Unauthorized to retrieve the task list", exc_info=e)
             abort(403)
             return
         except Exception as e:

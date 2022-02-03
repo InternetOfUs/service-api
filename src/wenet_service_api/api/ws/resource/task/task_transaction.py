@@ -56,7 +56,7 @@ class TaskTransactionInterface(AuthenticatedResource):
         try:
             self._service_connector_collector.task_manager_connector.create_task_transaction(task_transaction)
         except AuthenticationException as n:
-            logger.exception(f"User unauthorized to post the task transaction", exc_info=n)
+            logger.exception("User unauthorized to post the task transaction", exc_info=n)
         # except BadRequestException as e:
         #     logger.exception(f"Bad request exception during creation of task transaction[{task_transaction}]", exc_info=e)
         #     abort(400, message=str(e))

@@ -61,7 +61,7 @@ class ListAppUserInterface(AuthenticatedResource):
         self._check_authentication([WenetSource.COMPONENT])
 
         try:
-            app = self._service_connector_collector.hub_connector.get_app_details(app_id)
+            self._service_connector_collector.hub_connector.get_app_details(app_id)  # check if the application exist
             users = self._service_connector_collector.hub_connector.get_user_ids_for_app(app_id)
         except AuthenticationException as e:
             logger.exception(f"Unauthorized to retrieve the resource with id [{app_id}]", exc_info=e)
