@@ -4,7 +4,7 @@ import logging
 
 from flask import request
 from flask_restful import abort
-from wenet.interface.exceptions import AuthenticationException
+from wenet.interface.exceptions import NotFound, BadRequest
 
 from wenet_service_api.api.ws.resource.common import AuthenticatedResource, WenetSource
 from wenet_service_api.connector.collector import ServiceConnectorCollector
@@ -27,7 +27,6 @@ class TaskListResourceInterface(AuthenticatedResource):
         super().__init__(authorized_apikey, service_connector_collector)
 
     def get(self):
-        # TODO check source
         self._check_authentication([WenetSource.COMPONENT, WenetSource.OAUTH2_AUTHORIZATION_CODE])
 
         app_id = request.args.get('appId', None)
@@ -64,10 +63,9 @@ class TaskListResourceInterface(AuthenticatedResource):
                 offset=offset,
                 limit=limit
             )
-        except AuthenticationException as e:
-            logger.exception("Unauthorized to retrieve the task list", exc_info=e)
-            abort(403)
-            return
+        except (NotFound, BadRequest) as e:
+            logger.info(f"Unable to retrieve the task list, server replay with [{e.http_status_code} [{e.server_response}]")
+            return self.build_api_exception_response(e)
         except Exception as e:
             logger.exception("Unable to retrieve the task", exc_info=e)
             abort(500)

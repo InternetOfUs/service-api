@@ -100,6 +100,28 @@ class TestTaskInterface(CommonTestCase):
         self.assertIsInstance(task, Task)
         mock_put.assert_called_once()
 
+    def test_put_invalid_json(self):
+        task_id = "task-id"
+
+        mock_put = Mock()
+        self.service_collector_connector.task_manager_connector.update_task = mock_put
+
+        response = self.client.put("/task/%s" % task_id, data='{invalid_json', headers={"apikey": self.AUTHORIZED_APIKEY, "x-wenet-source": WenetSource.COMPONENT.value, "Content-Type": "application/json"})
+        self.assertEqual(response.status_code, 400)
+
+        mock_put.assert_not_called()
+
+    def test_put_no_json(self):
+        task_id = "task-id"
+
+        mock_put = Mock()
+        self.service_collector_connector.task_manager_connector.update_task = mock_put
+
+        response = self.client.put("/task/%s" % task_id, data='invalid_json', headers={"apikey": self.AUTHORIZED_APIKEY, "x-wenet-source": WenetSource.COMPONENT.value})
+        self.assertEqual(response.status_code, 400)
+
+        mock_put.assert_not_called()
+
     def test_put_not_authorized(self):
         task_id = "task-id"
         task = Task(

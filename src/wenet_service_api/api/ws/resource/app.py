@@ -4,7 +4,7 @@ from flask_restful import abort
 
 import logging
 
-from wenet.interface.exceptions import AuthenticationException, NotFound
+from wenet.interface.exceptions import NotFound, BadRequest
 from wenet.model.app import AppDTO
 from wenet_service_api.connector.collector import ServiceConnectorCollector
 from wenet_service_api.api.ws.resource.common import AuthenticatedResource, WenetSource
@@ -33,14 +33,9 @@ class AppResourceInterface(AuthenticatedResource):
 
         try:
             app = self._service_connector_collector.hub_connector.get_app_details(app_id=app_id)
-        except AuthenticationException as e:
-            logger.exception(f"Unauthorized to retrieve the resource with id [{app_id}]", exc_info=e)
-            abort(403)
-            return
-        except NotFound:
-            logger.info(f"Resource with id [{app_id}] not found")
-            abort(404, message=f"Resource with id [{app_id}] not found")
-            return
+        except (NotFound, BadRequest) as e:
+            logger.info(f"Unable to retrieve the application with id [{app_id}], server replay with [{e.http_status_code}] [{e.server_response}]")
+            return self.build_api_exception_response(e)
         except Exception as e:
             logger.exception(f"Unable to retrieve the resource with id [{app_id}]", exc_info=e)
             abort(500, message=f"Unable to retrieve the resource with id [{app_id}]")
@@ -63,13 +58,9 @@ class ListAppUserInterface(AuthenticatedResource):
         try:
             self._service_connector_collector.hub_connector.get_app_details(app_id)  # check if the application exist
             users = self._service_connector_collector.hub_connector.get_user_ids_for_app(app_id)
-        except AuthenticationException as e:
-            logger.exception(f"Unauthorized to retrieve the resource with id [{app_id}]", exc_info=e)
-            abort(403)
-            return
-        except NotFound:
-            abort(404, message="Application not found")
-            return
+        except (NotFound, BadRequest) as e:
+            logger.info(f"Unable to retrieve the list of user of the application with id [{app_id}], server replay with [{e.http_status_code}] [{e.server_response}]")
+            return self.build_api_exception_response(e)
         except Exception as e:
             logger.exception(f"Unable to retrieve the list of account for app {app_id}", exc_info=e)
             abort(500, message=f"Unable to retrieve the list of account for app {app_id}")

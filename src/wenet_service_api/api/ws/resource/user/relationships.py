@@ -1,11 +1,13 @@
 from __future__ import absolute_import, annotations
 
+from typing import Optional, List
+
 from flask import request
 from flask_restful import abort
 
 import logging
 
-from wenet.interface.exceptions import NotFound, AuthenticationException
+from wenet.interface.exceptions import NotFound, AuthenticationException, BadRequest
 from wenet.model.user.profile import PatchWeNetUserProfile
 
 from wenet_service_api.api.ws.resource.user.common import CommonWeNetUserInterface
@@ -31,14 +33,9 @@ class WeNetUserRelationshipsInterface(CommonWeNetUserInterface):
         try:
             profile = self._service_connector_collector.profile_manager_collector.get_user_profile(profile_id)
             logger.info(f"Retrieved profile [{profile_id}] from profile manager connector")
-        except NotFound as e:
-            logger.exception("Unable to retrieve the profile", exc_info=e)
-            abort(404, message="Resource not found")
-            return
-        except AuthenticationException as e:
-            logger.exception(f"Unauthorized to retrieve the profile [{profile_id}]", exc_info=e)
-            abort(403)
-            return
+        except (NotFound, BadRequest) as e:
+            logger.info(f"Unable to retrieve the profile with id [{profile_id}], server replay with [{e.http_status_code}] [{e.server_response}]")
+            return self.build_api_exception_response(e)
         except Exception as e:
             logger.exception("Unable to retrieve the profile", exc_info=e)
             abort(500)
@@ -59,11 +56,11 @@ class WeNetUserRelationshipsInterface(CommonWeNetUserInterface):
                 abort(403, message="Unauthorized to write the user norms")
                 return
 
-        try:
-            posted_relationships: list = request.get_json()
-        except Exception as e:
-            logger.exception("Invalid message body", exc_info=e)
-            abort(400, message="Invalid JSON - Unable to parse message body")
+        # Will raise a BadRequest if an invalid json is provided with the ContentType application/json. None with a different ContentType
+        posted_relationships: Optional[List[dict]] = request.get_json()
+
+        if posted_relationships is None:
+            abort(400, message="The body should be a json object")
             return
 
         logger.info("Updating relationships [%s]" % posted_relationships)
@@ -74,17 +71,8 @@ class WeNetUserRelationshipsInterface(CommonWeNetUserInterface):
             updated_profile = self._service_connector_collector.profile_manager_collector.patch_user_profile(patched_profile)
             logger.info("Updated successfully relationships [%s]" % updated_profile.relationships)
         except AuthenticationException as e:
-            logger.exception(f"Unauthorized to update the relationships of the profile [{profile_id}]", exc_info=e)
-            abort(403)
-            return
-        # except NotFound as e:
-        #     logger.exception(f"Unable to find the profile [{profile_id}]", exc_info=e)
-        #     abort(404, message="Resource not found")
-        #     return
-        # except BadRequestException as e:
-        #     logger.exception(f"Bad request during update of profile [{profile_id}] - [{str(e)}")
-        #     abort(400, message=f"Bad request: {str(e)}")
-        #     return
+            logger.info(f"Unable to update the relationships of the profile [{profile_id}], server replay with [{e.http_status_code}] [{e.server_response}]")
+            return self.build_api_exception_response(e)
         except Exception as e:
             logger.exception("Unable to update the profile", exc_info=e)
             abort(500)

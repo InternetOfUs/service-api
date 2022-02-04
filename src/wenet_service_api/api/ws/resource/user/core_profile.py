@@ -1,11 +1,13 @@
 from __future__ import absolute_import, annotations
 
+from typing import Optional
+
 from flask import request
 from flask_restful import abort
 
 import logging
 
-from wenet.interface.exceptions import AuthenticationException, NotFound
+from wenet.interface.exceptions import NotFound, BadRequest
 from wenet.model.user.profile import CoreWeNetUserProfile, WeNetUserProfile
 
 from wenet_service_api.api.ws.resource.user.common import CommonWeNetUserInterface
@@ -27,17 +29,12 @@ class WeNetUserCoreProfileInterface(CommonWeNetUserInterface):
         try:
             profile = self._service_connector_collector.profile_manager_collector.get_user_profile(profile_id)
             logger.info(f"Retrieved profile [{profile_id}] from profile manager connector")
-        except NotFound as e:
-            logger.exception("Unable to retrieve the profile", exc_info=e)
-            abort(404, message="Resource not found")
-            return
-        except AuthenticationException as e:
-            logger.exception(f"Unauthorized to retrieve the task [{profile_id}]", exc_info=e)
-            abort(403)
-            return
+        except (NotFound, BadRequest) as e:
+            logger.info(f"Unable to retrieve the profile with id [{profile_id}], server replay with [{e.http_status_code}] [{e.server_response}]")
+            return self.build_api_exception_response(e)
         except Exception as e:
             logger.exception("Unable to retrieve the profile", exc_info=e)
-            abort(500)
+            abort(500, message="Unable to retrieve the profile")
             return
 
         if isinstance(authentication_result, ComponentAuthentication):
@@ -60,11 +57,11 @@ class WeNetUserCoreProfileInterface(CommonWeNetUserInterface):
             abort(401)
             return
 
-        try:
-            posted_data: dict = request.get_json()
-        except Exception as e:
-            logger.exception("Invalid message body", exc_info=e)
-            abort(400, message="Invalid JSON - Unable to parse message body")
+        # Will raise a BadRequest if an invalid json is provided with the ContentType application/json. None with a different ContentType
+        posted_data: Optional[dict] = request.get_json()
+
+        if posted_data is None:
+            abort(400, message="The body should be a json object")
             return
 
         try:
@@ -82,13 +79,8 @@ class WeNetUserCoreProfileInterface(CommonWeNetUserInterface):
             stored_user_profile = self._service_connector_collector.profile_manager_collector.get_user_profile(profile_id)
             logger.info(f"Retrieved profile [{profile_id}] from profile manager connector")
         except NotFound as e:
-            logger.exception("Unable to retrieve the profile", exc_info=e)
-            abort(404, message="Resource not found")
-            return
-        except AuthenticationException as e:
-            logger.exception(f"Unauthorized to retrieve the task [{profile_id}]", exc_info=e)
-            abort(403)
-            return
+            logger.info(f"Unable to retrieve the user profile [{profile_id}], server replay with [{e.http_status_code}] [{e.server_response}]")
+            return self.build_api_exception_response(e)
         except Exception as e:
             logger.exception("Unable to retrieve the profile", exc_info=e)
             abort(500)
@@ -101,18 +93,9 @@ class WeNetUserCoreProfileInterface(CommonWeNetUserInterface):
         try:
             updated_profile = self._service_connector_collector.profile_manager_collector.update_user_profile(stored_user_profile)
             logger.info("Profile [%s] updated successfully" % profile_id)
-        except AuthenticationException as e:
-            logger.exception(f"Unauthorized to update the profile [{profile_id}]", exc_info=e)
-            abort(403)
-            return
-        # except NotFound as e:
-        #     logger.exception("Unable to retrieve the profile [{profile_id}]", exc_info=e)
-        #     abort(404, message="Resource not found")
-        #     return
-        # except BadRequestException as e:
-        #     logger.exception(f"Bad request during update of profile [{profile_id}][{user_profile}] - [{str(e)}")
-        #     abort(400, message=f"Bad request: {str(e)}")
-        #     return
+        except (NotFound, BadRequest) as e:
+            logger.info(f"Unable to update the profile with id [{profile_id}], server replay with [{e.http_status_code}] [{e.server_response}]")
+            return self.build_api_exception_response(e)
         except Exception as e:
             logger.exception("Unable to update the profile", exc_info=e)
             abort(500)
@@ -135,14 +118,6 @@ class WeNetUserCoreProfileInterface(CommonWeNetUserInterface):
 
         try:
             user_profile = self._service_connector_collector.profile_manager_collector.create_empty_user_profile(profile_id)
-        except AuthenticationException as e:
-            logger.exception(f"Unauthorized to create the profile [{profile_id}]", exc_info=e)
-            abort(403)
-            return
-        # except BadRequestException as e:
-        #     logger.exception(f"Bad request during profile creation [{str(e)}")
-        #     abort(400, message=f"Bad request: {str(e)}")
-        #     return
         except Exception as e:
             logger.exception("Unable to create the profile", exc_info=e)
             abort(500)
