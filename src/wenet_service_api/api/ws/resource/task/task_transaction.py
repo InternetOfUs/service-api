@@ -1,11 +1,13 @@
 from __future__ import absolute_import, annotations
 
+from typing import Optional
+
 from flask import request
 
 import logging
 
 from flask_restful import abort
-from wenet.interface.exceptions import AuthenticationException
+from wenet.interface.exceptions import BadRequest
 
 from wenet.model.task.transaction import TaskTransaction
 from wenet_service_api.connector.collector import ServiceConnectorCollector
@@ -30,24 +32,23 @@ class TaskTransactionInterface(AuthenticatedResource):
 
     def post(self):
 
-        # TODO check source
         self._check_authentication([WenetSource.COMPONENT, WenetSource.OAUTH2_AUTHORIZATION_CODE])
 
-        try:
-            posted_data: dict = request.get_json()
-        except Exception as e:
-            logger.exception("Invalid message body", exc_info=e)
-            abort(400, message="Invalid JSON - Unable to parse message body")
+        # Will raise a BadRequest if an invalid json is provided with the ContentType application/json. None with a different ContentType
+        posted_data: Optional[dict] = request.get_json()
+
+        if posted_data is None:
+            abort(400, message="The body should be a json object")
             return
 
         try:
             task_transaction = TaskTransaction.from_repr(posted_data)
-        except (ValueError, TypeError) as v:
-            logger.exception(f"Unable to build a TaskTransaction from [{posted_data}]", exc_info=v)
-            abort(400, message="Some fields contains invalid parameters")
+        except (ValueError, TypeError):
+            logger.info(f"Unable to build a TaskTransaction from [{posted_data}]")
+            abort(400, message="Unable to build a TaskTransactions")
             return
         except KeyError as k:
-            logger.exception(f"Unable to build a TaskTransaction from [{posted_data}]", exc_info=k)
+            logger.info(f"Unable to build a TaskTransaction from [{posted_data}]")
             abort(400, message=f"The field [{k}] is missing")
             return
 
@@ -55,12 +56,9 @@ class TaskTransactionInterface(AuthenticatedResource):
 
         try:
             self._service_connector_collector.task_manager_connector.create_task_transaction(task_transaction)
-        except AuthenticationException as n:
-            logger.exception(f"User unauthorized to post the task transaction", exc_info=n)
-        # except BadRequestException as e:
-        #     logger.exception(f"Bad request exception during creation of task transaction[{task_transaction}]", exc_info=e)
-        #     abort(400, message=str(e))
-        #     return
+        except BadRequest as e:
+            logger.info(f"Unable to store a task transaction, server replay with [{e.http_status_code}] [{e.server_response}]")
+            return self.build_api_exception_response(e)
         except Exception as e:
             logger.exception(f"Unable to create the task transaction [{task_transaction}]", exc_info=e)
             abort(500, message="Unable to create the task transaction")

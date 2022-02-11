@@ -3,7 +3,7 @@ from __future__ import absolute_import, annotations
 import logging
 
 from flask_restful import abort
-from wenet.interface.exceptions import NotFound, AuthenticationException
+from wenet.interface.exceptions import NotFound, BadRequest
 
 from wenet.model.user.token import TokenDetails
 from wenet_service_api.api.ws.resource.common import AuthenticatedResource, WenetSource, Oauth2Result
@@ -38,14 +38,9 @@ class TokenDetailsInterface(AuthenticatedResource):
         try:
             profile = self._service_connector_collector.profile_manager_collector.get_user_profile(profile_id)
             logger.info(f"Retrieved profile [{profile_id}] from profile manager connector")
-        except NotFound as e:
-            logger.exception("Unable to retrieve the profile", exc_info=e)
-            abort(404, message="Resource not found")
-            return
-        except AuthenticationException as e:
-            logger.exception(f"Unauthorized to retrieve the profile [{profile_id}]", exc_info=e)
-            abort(403)
-            return
+        except (NotFound, BadRequest) as e:
+            logger.info(f"Unable to retrieve the token details, server replay with [{e.http_status_code}] [{e.server_response}]")
+            return self.build_api_exception_response(e)
         except Exception as e:
             logger.exception("Unable to retrieve the profile", exc_info=e)
             abort(500)
