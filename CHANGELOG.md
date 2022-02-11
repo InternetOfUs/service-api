@@ -8,6 +8,10 @@
 
 * Updated the user profile and logging endpoints in order to use the updated scope list
 
+:nail_care: Polish
+
+* Better exception handling in the communication with the platform components
+
 :house: Internal
 
 * Updated to project template version 4.7.0 and enabled linter
