@@ -66,13 +66,13 @@ class WeNetUserCoreProfileInterface(CommonWeNetUserInterface):
 
         try:
             user_profile = CoreWeNetUserProfile.from_repr(posted_data, profile_id)
-        except (ValueError, TypeError) as v:
-            logger.exception("Unable to build a WeNetUserProfile from [%s]" % posted_data, exc_info=v)
+        except (ValueError, TypeError):
+            logger.info(f"Unable to build a WeNetUserProfile from [{posted_data}]")
             abort(400, message="Some fields contains invalid parameters")
             return
         except KeyError as k:
-            logger.exception("Unable to build a WeNetUserProfile from [%s]" % posted_data, exc_info=k)
-            abort(400, message="The field [%s] is missing" % k)
+            logger.info(f"Unable to build a WeNetUserProfile from [{posted_data}]")
+            abort(400, message=f"The field [{k}] is missing")
             return
 
         try:

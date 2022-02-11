@@ -66,13 +66,18 @@ class WeNetUserMeaningsInterface(CommonWeNetUserInterface):
 
         logger.info("Updating meanings [%s]" % posted_meanings)
 
-        patched_profile = PatchWeNetUserProfile(profile_id=profile_id, meanings=posted_meanings)
+        try:
+            patched_profile = PatchWeNetUserProfile(profile_id=profile_id, meanings=posted_meanings)
+        except TypeError:
+            logger.info(f"Unable to build a patch for the wenet profile from [{posted_meanings}]")
+            abort(400, message="Invalid data")
+            return
 
         try:
             updated_profile = self._service_connector_collector.profile_manager_collector.patch_user_profile(patched_profile)
             logger.info("Updated successfully meanings [%s]" % updated_profile.meanings)
         except (NotFound, BadRequest) as e:
-            logger.exception(f"Unauthorized to update the meanings of the profile [{profile_id}], server replay with [{e.http_status_code}] [{e.server_response}]")
+            logger.info(f"Unauthorized to update the meanings of the profile [{profile_id}], server replay with [{e.http_status_code}] [{e.server_response}]")
             return self.build_api_exception_response(e)
         except Exception as e:
             logger.exception("Unable to update the profile", exc_info=e)

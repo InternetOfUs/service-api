@@ -65,7 +65,12 @@ class WeNetUserRelevantLocationsInterface(CommonWeNetUserInterface):
 
         logger.info("Updating relevant locations [%s]" % posted_relevant_locations)
 
-        patched_profile = PatchWeNetUserProfile(profile_id=profile_id, relevant_locations=posted_relevant_locations)
+        try:
+            patched_profile = PatchWeNetUserProfile(profile_id=profile_id, relevant_locations=posted_relevant_locations)
+        except TypeError:
+            logger.info(f"Unable to build a patch for the wenet profile from [{posted_relevant_locations}]")
+            abort(400, message="Invalid data")
+            return
 
         try:
             updated_profile = self._service_connector_collector.profile_manager_collector.patch_user_profile(patched_profile)

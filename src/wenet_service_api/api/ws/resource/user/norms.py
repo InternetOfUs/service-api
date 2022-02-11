@@ -63,7 +63,12 @@ class WeNetUserNormsInterface(CommonWeNetUserInterface):
 
         logger.info("Updating norms [%s]" % posted_norms)
 
-        patched_profile = PatchWeNetUserProfile(profile_id=profile_id, norms=posted_norms)
+        try:
+            patched_profile = PatchWeNetUserProfile(profile_id=profile_id, norms=posted_norms)
+        except TypeError:
+            logger.info(f"Unable to build a patch for the wenet profile from [{posted_norms}]")
+            abort(400, message="Invalid data")
+            return
 
         try:
             updated_profile = self._service_connector_collector.profile_manager_collector.patch_user_profile(patched_profile)

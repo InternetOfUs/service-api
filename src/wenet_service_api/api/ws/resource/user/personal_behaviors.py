@@ -65,7 +65,12 @@ class WeNetUserPersonalBehaviorsInterface(CommonWeNetUserInterface):
 
         logger.info("Updating personal behaviors [%s]" % posted_personal_behaviors)
 
-        patched_profile = PatchWeNetUserProfile(profile_id=profile_id, personal_behaviours=posted_personal_behaviors)
+        try:
+            patched_profile = PatchWeNetUserProfile(profile_id=profile_id, personal_behaviours=posted_personal_behaviors)
+        except TypeError:
+            logger.info(f"Unable to build a patch for the wenet profile from [{posted_personal_behaviors}]")
+            abort(400, message="Invalid data")
+            return
 
         try:
             updated_profile = self._service_connector_collector.profile_manager_collector.patch_user_profile(patched_profile)

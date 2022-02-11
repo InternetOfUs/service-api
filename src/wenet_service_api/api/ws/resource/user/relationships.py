@@ -65,7 +65,12 @@ class WeNetUserRelationshipsInterface(CommonWeNetUserInterface):
 
         logger.info("Updating relationships [%s]" % posted_relationships)
 
-        patched_profile = PatchWeNetUserProfile(profile_id=profile_id, relationships=posted_relationships)
+        try:
+            patched_profile = PatchWeNetUserProfile(profile_id=profile_id, relationships=posted_relationships)
+        except TypeError:
+            logger.info(f"Unable to build a patch for the wenet profile from [{posted_relationships}]")
+            abort(400, message="Invalid data")
+            return
 
         try:
             updated_profile = self._service_connector_collector.profile_manager_collector.patch_user_profile(patched_profile)

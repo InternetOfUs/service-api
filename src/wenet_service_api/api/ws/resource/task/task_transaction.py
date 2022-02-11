@@ -43,12 +43,12 @@ class TaskTransactionInterface(AuthenticatedResource):
 
         try:
             task_transaction = TaskTransaction.from_repr(posted_data)
-        except (ValueError, TypeError) as v:
-            logger.exception(f"Unable to build a TaskTransaction from [{posted_data}]", exc_info=v)
+        except (ValueError, TypeError):
+            logger.info(f"Unable to build a TaskTransaction from [{posted_data}]")
             abort(400, message="Unable to build a TaskTransactions")
             return
         except KeyError as k:
-            logger.exception(f"Unable to build a TaskTransaction from [{posted_data}]", exc_info=k)
+            logger.info(f"Unable to build a TaskTransaction from [{posted_data}]")
             abort(400, message=f"The field [{k}] is missing")
             return
 

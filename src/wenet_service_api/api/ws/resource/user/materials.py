@@ -65,7 +65,12 @@ class WeNetUserMaterialsInterface(CommonWeNetUserInterface):
 
         logger.info("Updating materials [%s]" % posted_materials)
 
-        patched_profile = PatchWeNetUserProfile(profile_id=profile_id, materials=posted_materials)
+        try:
+            patched_profile = PatchWeNetUserProfile(profile_id=profile_id, materials=posted_materials)
+        except TypeError:
+            logger.info(f"Unable to build a patch for the wenet profile from [{posted_materials}]")
+            abort(400, message="Invalid data")
+            return
 
         try:
             updated_profile = self._service_connector_collector.profile_manager_collector.patch_user_profile(patched_profile)
