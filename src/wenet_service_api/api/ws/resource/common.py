@@ -1,5 +1,6 @@
 from __future__ import absolute_import, annotations
 
+import json
 import logging
 import os
 from enum import Enum
@@ -7,7 +8,7 @@ from typing import List, Optional
 
 from flask import request
 from flask_restful import Resource, abort
-from wenet.interface.exceptions import AuthenticationException, NotFound
+from wenet.interface.exceptions import AuthenticationException, NotFound, ApiException
 
 from wenet.model.scope import Scope
 from wenet.model.app import AppStatus, App
@@ -101,6 +102,17 @@ class AuthenticatedResource(Resource):
         super().__init__()
         self._authorized_api_key = authorized_api_key
         self._service_connector_collector = connector_collector
+
+    @staticmethod
+    def build_api_exception_response(exc: ApiException) -> (str, int):
+        try:
+            message_response = json.loads(exc.server_response)
+        except Exception:
+            message_response = {
+                "message": exc.server_response
+            }
+
+        return message_response, exc.http_status_code
 
     @staticmethod
     def _get_user_id(authentication_result: AuthenticationResult) -> str:

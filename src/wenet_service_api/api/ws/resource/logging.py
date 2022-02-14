@@ -4,7 +4,7 @@ import logging
 
 from flask import request
 from flask_restful import abort
-from wenet.interface.exceptions import AuthenticationException
+from wenet.interface.exceptions import NotFound, BadRequest
 
 from wenet.model.logging_message.message import BaseMessage
 from wenet.model.scope import Scope
@@ -71,17 +71,17 @@ class MessageLoggingInterface(AuthenticatedResource):
             abort(401, message=message)
             return
 
-        try:
-            posted_data: dict = request.get_json()
-        except Exception as e:
-            logger.exception("Invalid body message", exc_info=e)
-            abort(400, message="Invalid JSON - Unable to parse message body")
+        # Will raise a BadRequest if an invalid json is provided with the ContentType application/json. None with a different ContentType
+        posted_data = request.get_json()
+
+        if posted_data is None:
+            abort(400, message="The body should be a json object")
             return
 
         if isinstance(posted_data, list):
             try:
                 messages = [BaseMessage.from_repr(x) for x in posted_data]
-            except (ValueError, TypeError, KeyError) as v:
+            except (ValueError, TypeError, KeyError):
                 logger.exception(f"Unable to build a list of messages from payload [{posted_data}]")
                 abort(400, message="Malformed message")
                 return
@@ -112,14 +112,9 @@ class MessageLoggingInterface(AuthenticatedResource):
                 return {
                     "warning": "Some of the messages has not been saved due to some scope problems"
                 }, 201
-        except AuthenticationException as e:
-            logger.exception(f"Unauthorized to post messages", exc_info=e)
-            abort(403)
-            return
-        # except BadRequestException as e:
-        #     logger.exception(f"Bad request during message logging of the messages [{messages}]", exc_info=e)
-        #     abort(400, messages="Bad request")
-        #     return
+        except (NotFound, BadRequest) as e:
+            logger.info(f"Unable to post messages server replay with [{e.http_status_code}] [{e.server_response}]")
+            return self.build_api_exception_response(e)
         except Exception as e:
             logger.exception("Unable to store the messages", exc_info=e)
             abort(500)
