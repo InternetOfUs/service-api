@@ -14,7 +14,8 @@
 
 :house: Internal
 
-* Updated to project template version 4.7.0 and enabled linter
+* Updated to wenet-common version 4.0.0
+* Updated to project template version 4.9.1 and enabled linter and ci release stage
 
 ## Version 3.*
 
