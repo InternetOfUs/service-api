@@ -12,6 +12,7 @@ class MessageType(Enum):
 
     REQUEST = "request"
 
+
 # TODO old, remove
 class MessageIntent:
 

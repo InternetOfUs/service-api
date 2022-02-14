@@ -1,5 +1,22 @@
 # Changelog
 
+## Version 4.*
+
+### 4.0.0
+
+:boom: Breaking changes
+
+* Updated the user profile and logging endpoints in order to use the updated scope list
+
+:nail_care: Polish
+
+* Better exception handling in the communication with the platform components
+
+:house: Internal
+
+* Updated to wenet-common version 4.0.0
+* Updated to project template version 4.9.1 and enabled linter and ci release stage
+
 ## Version 3.*
 
 ### 3.0.3

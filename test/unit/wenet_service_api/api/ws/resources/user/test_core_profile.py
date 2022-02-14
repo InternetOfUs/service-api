@@ -8,7 +8,7 @@ from mock import Mock
 
 from wenet.model.app import App, AppStatus
 from wenet.model.user.common import Date, Gender
-from wenet.model.user.profile import WeNetUserProfile, UserName
+from wenet.model.user.profile import WeNetUserProfile, UserName, CoreWeNetUserProfile
 
 from test.unit.wenet_service_api.api.common.common_test_case import CommonTestCase
 from wenet_service_api.api.ws.resource.common import WenetSource, Scope
@@ -153,7 +153,7 @@ class TestWeNetUserCoreProfileInterface(CommonTestCase):
         response = self.client.get("/user/profile/1", headers={
             "apikey": self.AUTHORIZED_APIKEY,
             "x-wenet-source": WenetSource.OAUTH2_AUTHORIZATION_CODE.value,
-            "X-Authenticated-Scope": f"{Scope.ID.value} {Scope.FIRST_NAME.value}",
+            "X-Authenticated-Scope": f"{Scope.ID_READ.value} {Scope.FIRST_NAME_READ.value}",
             "X-Authenticated-Userid": profile_id,
             "X-Consumer-Username": "app_1"
         })
@@ -234,7 +234,7 @@ class TestWeNetUserCoreProfileInterface(CommonTestCase):
         response = self.client.get(f"/user/profile/{profile_id}", headers={
             "apikey": self.AUTHORIZED_APIKEY,
             "x-wenet-source": WenetSource.OAUTH2_AUTHORIZATION_CODE.value,
-            "X-Authenticated-Scope": f"{Scope.ID.value} {Scope.FIRST_NAME.value} {Scope.LAST_NAME.value} {Scope.PHONE_NUMBER.value}",
+            "X-Authenticated-Scope": f"{Scope.ID_READ.value} {Scope.FIRST_NAME_READ.value} {Scope.LAST_NAME_READ.value} {Scope.PHONE_NUMBER_READ.value}",
             "X-Authenticated-Userid": "11",
             "X-Consumer-Username": "app_1"
         })
@@ -316,7 +316,7 @@ class TestWeNetUserCoreProfileInterface(CommonTestCase):
         response = self.client.get(f"/user/profile/{profile_id}", headers={
             "apikey": self.AUTHORIZED_APIKEY,
             "x-wenet-source": WenetSource.OAUTH2_AUTHORIZATION_CODE.value,
-            "X-Authenticated-Scope": f"{Scope.ID.value} {Scope.FIRST_NAME.value}",
+            "X-Authenticated-Scope": f"{Scope.ID_READ.value} {Scope.FIRST_NAME_READ.value}",
             "X-Authenticated-Userid": profile_id,
             "X-Consumer-Username": "app_2"
         })
@@ -398,7 +398,7 @@ class TestWeNetUserCoreProfileInterface(CommonTestCase):
         response = self.client.get(f"/user/profile/{profile_id}", headers={
             "apikey": self.AUTHORIZED_APIKEY,
             "x-wenet-source": WenetSource.OAUTH2_AUTHORIZATION_CODE.value,
-            "X-Authenticated-Scope": f"{Scope.ID.value} {Scope.FIRST_NAME.value}",
+            "X-Authenticated-Scope": f"{Scope.ID_READ.value} {Scope.FIRST_NAME_READ.value}",
             "X-Authenticated-Userid": profile_id,
             "X-Consumer-Username": "app_2"
         })
@@ -477,9 +477,9 @@ class TestWeNetUserCoreProfileInterface(CommonTestCase):
         profile_id = "1"
         user_profile = WeNetUserProfile(
             name=UserName(
-                first="first",
-                middle="middle",
-                last="last",
+                first="Mario",
+                middle=None,
+                last="Rossi",
                 prefix="prefix",
                 suffix="suffix"
             ),
@@ -515,7 +515,28 @@ class TestWeNetUserCoreProfileInterface(CommonTestCase):
             meanings=[]
         )
 
-        mock_put = Mock(return_value=user_profile)
+        profile_update = CoreWeNetUserProfile(
+            name=UserName(
+                first="Mario",
+                middle=None,
+                last="Rossi",
+                prefix="prefix",
+                suffix="suffix"
+            ),
+            date_of_birth=None,
+            gender=Gender.FEMALE,
+            email="email1@example.com",
+            phone_number=None,
+            locale="it_IT",
+            avatar=None,
+            nationality=None,
+            occupation=None,
+            creation_ts=None,
+            last_update_ts=None,
+            profile_id=profile_id,
+        )
+
+        mock_put = Mock(return_value=deepcopy(user_profile))
         self.service_collector_connector.profile_manager_collector.update_user_profile = mock_put
         self.service_collector_connector.hub_connector.get_app_details = Mock(return_value=self.app1)
         self.service_collector_connector.hub_connector.get_app_developers = Mock(return_value=self.developer_list)
@@ -523,10 +544,10 @@ class TestWeNetUserCoreProfileInterface(CommonTestCase):
         mock_get = Mock(return_value=deepcopy(user_profile))
         self.service_collector_connector.profile_manager_collector.get_user_profile = mock_get
 
-        response = self.client.put(f"/user/profile/{profile_id}", json=user_profile.to_repr(), headers={
+        response = self.client.put(f"/user/profile/{profile_id}", json=profile_update.to_repr(), headers={
             "apikey": self.AUTHORIZED_APIKEY,
             "x-wenet-source": WenetSource.OAUTH2_AUTHORIZATION_CODE.value,
-            "X-Authenticated-Scope": f"{Scope.ID.value} {Scope.FIRST_NAME.value}",
+            "X-Authenticated-Scope": f"{Scope.ID_READ.value} {Scope.FIRST_NAME_READ.value} {Scope.GENDER_WRITE.value}",
             "X-Authenticated-Userid": profile_id,
             "X-Consumer-Username": "app_1"
         })
@@ -536,6 +557,12 @@ class TestWeNetUserCoreProfileInterface(CommonTestCase):
         mock_get.assert_called_once()
         self.service_collector_connector.hub_connector.get_app_details.assert_called_once()
         self.service_collector_connector.hub_connector.get_app_developers.assert_called_once()
+
+        call_arg: WeNetUserProfile = mock_put.call_args[0][0]
+        self.assertEqual(call_arg.gender, profile_update.gender)
+        self.assertNotEqual(call_arg.gender, user_profile.gender)
+        self.assertEqual(call_arg.email, user_profile.email)
+        self.assertNotEqual(call_arg.email, profile_update.email)
 
     def test_put_oauth3(self):
         profile_id = "1"
@@ -589,7 +616,7 @@ class TestWeNetUserCoreProfileInterface(CommonTestCase):
         response = self.client.put(f"/user/profile/2", json=user_profile.to_repr(), headers={
             "apikey": self.AUTHORIZED_APIKEY,
             "x-wenet-source": WenetSource.OAUTH2_AUTHORIZATION_CODE.value,
-            "X-Authenticated-Scope": f"{Scope.ID.value} {Scope.FIRST_NAME.value}",
+            "X-Authenticated-Scope": f"{Scope.ID_READ.value} {Scope.FIRST_NAME_READ.value}",
             "X-Authenticated-Userid": profile_id,
             "X-Consumer-Username": "app_1"
         })
