@@ -23,6 +23,7 @@
         gunicorn_app: service_api_app
         gunicorn_extra_args: --timeout 60 --graceful-timeout 60
 
+    ci_release: true
     ci_environments:
       production:
         stages:
