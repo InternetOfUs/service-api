@@ -1,14 +1,10 @@
 from __future__ import absolute_import, annotations
 
 import json
-from copy import deepcopy
 from datetime import datetime
 
 from mock import Mock
-
 from wenet.model.app import App, AppStatus
-from wenet.model.user.common import Date, Gender
-from wenet.model.user.profile import WeNetUserProfile, UserName, PatchWeNetUserProfile
 from wenet.model.user.relationship import RelationshipPage, Relationship, RelationType
 
 from test.unit.wenet_service_api.api.common.common_test_case import CommonTestCase

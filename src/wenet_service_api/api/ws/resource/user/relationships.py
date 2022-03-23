@@ -1,18 +1,15 @@
 from __future__ import absolute_import, annotations
 
+import logging
 from typing import Optional, List
 
 from flask import request
 from flask_restful import abort, reqparse
-
-import logging
-
 from wenet.interface.exceptions import NotFound, AuthenticationException, BadRequest
-from wenet.model.user.profile import PatchWeNetUserProfile
 from wenet.model.user.relationship import Relationship
 
-from wenet_service_api.api.ws.resource.user.common import CommonWeNetUserInterface
 from wenet_service_api.api.ws.resource.common import WenetSource, Oauth2Result, ComponentAuthentication, Scope
+from wenet_service_api.api.ws.resource.user.common import CommonWeNetUserInterface
 
 logger = logging.getLogger("api.api.ws.resource.user.relationships")
 
