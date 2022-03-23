@@ -81,7 +81,6 @@ class TestWeNetUserRelevantLocationsInterface(CommonTestCase):
                     "longitude": -3.588622
                 }
             ],
-            relationships=[],
             personal_behaviours=[],
             materials=[],
             competences=[],
@@ -132,7 +131,6 @@ class TestWeNetUserRelevantLocationsInterface(CommonTestCase):
                     "longitude": -3.588622
                 }
             ],
-            relationships=[],
             personal_behaviours=[],
             materials=[],
             competences=[],
@@ -194,7 +192,6 @@ class TestWeNetUserRelevantLocationsInterface(CommonTestCase):
                     "longitude": -3.588622
                 }
             ],
-            relationships=[],
             personal_behaviours=[],
             materials=[],
             competences=[],
@@ -254,7 +251,6 @@ class TestWeNetUserRelevantLocationsInterface(CommonTestCase):
                     "longitude": -3.588622
                 }
             ],
-            relationships=[],
             personal_behaviours=[],
             materials=[],
             competences=[],
