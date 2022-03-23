@@ -1,5 +1,13 @@
 # Changelog
 
+## Version 5.*
+
+### 5.0.0
+
+:house: Internal
+
+* Updated project template to version 4.10.4
+
 ## Version 4.*
 
 ### 4.0.0
