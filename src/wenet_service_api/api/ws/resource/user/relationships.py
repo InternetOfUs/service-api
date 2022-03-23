@@ -3,7 +3,7 @@ from __future__ import absolute_import, annotations
 from typing import Optional, List
 
 from flask import request
-from flask_restful import abort
+from flask_restful import abort, reqparse
 
 import logging
 
@@ -22,6 +22,17 @@ class WeNetUserRelationshipsInterface(CommonWeNetUserInterface):
 
         authentication_result = self._check_authentication([WenetSource.COMPONENT, WenetSource.OAUTH2_AUTHORIZATION_CODE])
 
+        parser = reqparse.RequestParser()
+        parser.add_argument("offset", type=int, required=False, help="The index of the first social network relationship to return.")
+        parser.add_argument("limit", type=int, required=False, help="The number maximum of social network relationships to return")
+
+        parser.add_argument("targetId", type=str, required=False, help="A user identifier to be equals on the relationships target to return. You can use a Perl compatible regular expressions (PCRE) that has to match the user identifier of the relationships target if you write between '/'. For example to get the relationships with the target users '1' and '2' you must pass as 'target' '/^[1|2]$/'.")
+        parser.add_argument("type", type=str, required=False, help="The number maximum of social network relationships to return")
+        parser.add_argument("weightFrom", type=float, required=False, help="The minimal weight, inclusive, of the relationships to return.")
+        parser.add_argument("weightTo", type=float, required=False, help="The maximal weight, inclusive, of the relationships to return.")
+        parser.add_argument("order", type=str, required=False, help="The order in witch the relationships has to be returned. For each field it has be separated by a ',' and each field can start with '+' (or without it) to order on ascending order, or with the prefix '-' to do on descendant order. Example : sourceId,-weight,+type")
+        args = parser.parse_args()
+
         if isinstance(authentication_result, Oauth2Result):
             if not self._is_owner(authentication_result, profile_id):
                 abort(403, message=f"Unauthorized to retrieve the profile [{profile_id}]")
@@ -29,19 +40,32 @@ class WeNetUserRelationshipsInterface(CommonWeNetUserInterface):
             if Scope.RELATIONSHIPS_READ not in authentication_result.scopes:
                 abort(403, message="Unauthorized to read the user relationship")
                 return
+            app_id = authentication_result.app.app_id
+        else:
+            app_id = None
 
         try:
-            profile = self._service_connector_collector.profile_manager_collector.get_user_profile(profile_id)
-            logger.info(f"Retrieved profile [{profile_id}] from profile manager connector")
+            relationship_page = self._service_connector_collector.profile_manager_collector.get_relationship_page(
+                app_id=app_id,
+                source_id=profile_id,
+                target_id=args.get("targetId"),
+                relation_type=args.get("type"),
+                weight_from=args.get("weightFrom"),
+                weight_to=args.get("weightTo"),
+                order=args.get("order"),
+                offset=args.get("offset", 0),
+                limit=args.get("limit", 10)
+            )
+            logger.info(f"Retrieved the relationships for profile [{profile_id}] from profile manager connector")
         except (NotFound, BadRequest) as e:
-            logger.info(f"Unable to retrieve the profile with id [{profile_id}], server replay with [{e.http_status_code}] [{e.server_response}]")
+            logger.info(f"Unable to retrieve the relationships for the profile with id [{profile_id}], server replay with [{e.http_status_code}] [{e.server_response}]")
             return self.build_api_exception_response(e)
         except Exception as e:
-            logger.exception("Unable to retrieve the profile", exc_info=e)
+            logger.exception(f"Unable to retrieve the user relationship for user [{profile_id}]", exc_info=e)
             abort(500)
             return
 
-        return profile.relationships, 200
+        return relationship_page.to_repr(), 200
 
     def put(self, profile_id: str):
 

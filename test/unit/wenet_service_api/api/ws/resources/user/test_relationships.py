@@ -9,6 +9,7 @@ from mock import Mock
 from wenet.model.app import App, AppStatus
 from wenet.model.user.common import Date, Gender
 from wenet.model.user.profile import WeNetUserProfile, UserName, PatchWeNetUserProfile
+from wenet.model.user.relationship import RelationshipPage, Relationship, RelationType
 
 from test.unit.wenet_service_api.api.common.common_test_case import CommonTestCase
 from wenet_service_api.api.ws.resource.common import WenetSource, Scope
@@ -48,100 +49,53 @@ class TestWeNetUserRelationshipsInterface(CommonTestCase):
 
     def test_get(self):
         profile_id = "profile-id"
-        profile = WeNetUserProfile(
-            name=UserName(
-                first="first",
-                middle="middle",
-                last="last",
-                prefix="prefix",
-                suffix="suffix"
-            ),
-            date_of_birth=Date(
-                year=2020,
-                month=1,
-                day=20
-            ),
-            gender=Gender.MALE,
-            email="email@example.com",
-            phone_number="phone number",
-            locale="it_IT",
-            avatar="avatar",
-            nationality="it",
-            occupation="occupation",
-            creation_ts=1579536160,
-            last_update_ts=1579536160,
-            profile_id=profile_id,
-            norms=[],
-            planned_activities=[],
-            relevant_locations=[],
+
+        expected_relationship_page = RelationshipPage(
+            offset=0,
+            total=1,
             relationships=[
-                {
-                    "appId": "4",
-                    "userId": "4c51ee0b-b7ec-4577-9b21-ae6832656e33",
-                    "type": "friend",
-                    "weight": 0.2
-                }
-            ],
-            personal_behaviours=[],
-            materials=[],
-            competences=[],
-            meanings=[]
+                Relationship(
+                    app_id="1",
+                    source_id=profile_id,
+                    target_id="target-id",
+                    relation_type=RelationType.FRIEND,
+                    weight=0.5
+                )
+            ]
         )
 
-        mock_get = Mock(return_value=profile)
-        self.service_collector_connector.profile_manager_collector.get_user_profile = mock_get
+        mock_get = Mock(return_value=expected_relationship_page)
+        self.service_collector_connector.profile_manager_collector.get_relationship_page = mock_get
 
-        response = self.client.get("/user/profile/profile-id/relationships", headers={"apikey": self.AUTHORIZED_APIKEY, "x-wenet-source": WenetSource.COMPONENT.value})
+        response = self.client.get(f"/user/profile/{profile_id}/relationships", headers={"apikey": self.AUTHORIZED_APIKEY, "x-wenet-source": WenetSource.COMPONENT.value})
         self.assertEqual(response.status_code, 200)
         json_data = json.loads(response.data)
-        self.assertEqual(profile.relationships, json_data)
+
+        relationship_page = RelationshipPage.from_repr(json_data)
+
+        self.assertEqual(expected_relationship_page, relationship_page)
         mock_get.assert_called_once()
 
     def test_get_oauth(self):
         profile_id = "1"
-        profile = WeNetUserProfile(
-            name=UserName(
-                first="first",
-                middle="middle",
-                last="last",
-                prefix="prefix",
-                suffix="suffix"
-            ),
-            date_of_birth=Date(
-                year=2020,
-                month=1,
-                day=20
-            ),
-            gender=Gender.MALE,
-            email="email@example.com",
-            phone_number="phone number",
-            locale="it_IT",
-            avatar="avatar",
-            nationality="it",
-            occupation="occupation",
-            creation_ts=1579536160,
-            last_update_ts=1579536160,
-            profile_id=profile_id,
-            norms=[],
-            planned_activities=[],
-            relevant_locations=[],
+
+        expected_relationship_page = RelationshipPage(
+            offset=0,
+            total=1,
             relationships=[
-                {
-                    "appId": "4",
-                    "userId": "4c51ee0b-b7ec-4577-9b21-ae6832656e33",
-                    "type": "friend",
-                    "weight": 0.2
-                }
-            ],
-            personal_behaviours=[],
-            materials=[],
-            competences=[],
-            meanings=[]
+                Relationship(
+                    app_id="1",
+                    source_id=profile_id,
+                    target_id="target-id",
+                    relation_type=RelationType.FRIEND,
+                    weight=0.5
+                )
+            ]
         )
 
-        mock_get = Mock(return_value=deepcopy(profile))
+        mock_get = Mock(return_value=expected_relationship_page)
         self.service_collector_connector.hub_connector.get_app_details = Mock(return_value=self.app)
-        self.service_collector_connector.profile_manager_collector.get_user_profile = mock_get
+        self.service_collector_connector.profile_manager_collector.get_relationship_page = mock_get
         self.service_collector_connector.hub_connector.get_user_ids_for_app = Mock(return_value=self.user_list)
 
         response = self.client.get("/user/profile/1/relationships", headers={
@@ -152,8 +106,11 @@ class TestWeNetUserRelationshipsInterface(CommonTestCase):
             "X-Consumer-Username": "app_1"
         })
         self.assertEqual(200, response.status_code)
+
         json_data = json.loads(response.data)
-        self.assertEqual(profile.relationships, json_data)
+        relationship_page = RelationshipPage.from_repr(json_data)
+
+        self.assertEqual(expected_relationship_page, relationship_page)
 
         mock_get.assert_called_once()
         self.service_collector_connector.hub_connector.get_app_details.assert_called_once()
@@ -161,49 +118,24 @@ class TestWeNetUserRelationshipsInterface(CommonTestCase):
 
     def test_get_oauth_no_permission(self):
         profile_id = "1"
-        profile = WeNetUserProfile(
-            name=UserName(
-                first="first",
-                middle="middle",
-                last="last",
-                prefix="prefix",
-                suffix="suffix"
-            ),
-            date_of_birth=Date(
-                year=2020,
-                month=1,
-                day=20
-            ),
-            gender=Gender.MALE,
-            email="email@example.com",
-            phone_number="phone number",
-            locale="it_IT",
-            avatar="avatar",
-            nationality="it",
-            occupation="occupation",
-            creation_ts=1579536160,
-            last_update_ts=1579536160,
-            profile_id=profile_id,
-            norms=[],
-            planned_activities=[],
-            relevant_locations=[],
+
+        expected_relationship_page = RelationshipPage(
+            offset=0,
+            total=1,
             relationships=[
-                {
-                    "appId": "4",
-                    "userId": "4c51ee0b-b7ec-4577-9b21-ae6832656e33",
-                    "type": "friend",
-                    "weight": 0.2
-                }
-            ],
-            personal_behaviours=[],
-            materials=[],
-            competences=[],
-            meanings=[]
+                Relationship(
+                    app_id="1",
+                    source_id=profile_id,
+                    target_id="target-id",
+                    relation_type=RelationType.FRIEND,
+                    weight=0.5
+                )
+            ]
         )
 
-        mock_get = Mock(return_value=deepcopy(profile))
+        mock_get = Mock(return_value=expected_relationship_page)
         self.service_collector_connector.hub_connector.get_app_details = Mock(return_value=self.app)
-        self.service_collector_connector.profile_manager_collector.get_user_profile = mock_get
+        self.service_collector_connector.profile_manager_collector.get_relationship_page = mock_get
         self.service_collector_connector.hub_connector.get_user_ids_for_app = Mock(return_value=self.user_list)
 
         response = self.client.get("/user/profile/1/relationships", headers={
@@ -221,48 +153,23 @@ class TestWeNetUserRelationshipsInterface(CommonTestCase):
 
     def test_get_oauth_2(self):
         profile_id = "2"
-        profile = WeNetUserProfile(
-            name=UserName(
-                first="first",
-                middle="middle",
-                last="last",
-                prefix="prefix",
-                suffix="suffix"
-            ),
-            date_of_birth=Date(
-                year=2020,
-                month=1,
-                day=20
-            ),
-            gender=Gender.MALE,
-            email="email@example.com",
-            phone_number="phone number",
-            locale="it_IT",
-            avatar="avatar",
-            nationality="it",
-            occupation="occupation",
-            creation_ts=1579536160,
-            last_update_ts=1579536160,
-            profile_id=profile_id,
-            norms=[],
-            planned_activities=[],
-            relevant_locations=[],
+
+        expected_relationship_page = RelationshipPage(
+            offset=0,
+            total=1,
             relationships=[
-                {
-                    "appId": "4",
-                    "userId": "4c51ee0b-b7ec-4577-9b21-ae6832656e33",
-                    "type": "friend",
-                    "weight": 0.2
-                }
-            ],
-            personal_behaviours=[],
-            materials=[],
-            competences=[],
-            meanings=[]
+                Relationship(
+                    app_id="1",
+                    source_id=profile_id,
+                    target_id="target-id",
+                    relation_type=RelationType.FRIEND,
+                    weight=0.5
+                )
+            ]
         )
 
-        mock_get = Mock(return_value=deepcopy(profile))
-        self.service_collector_connector.profile_manager_collector.get_user_profile = mock_get
+        mock_get = Mock(return_value=expected_relationship_page)
+        self.service_collector_connector.profile_manager_collector.get_relationship_page = mock_get
         self.service_collector_connector.hub_connector.get_app_details = Mock(return_value=self.app1)
         self.service_collector_connector.hub_connector.get_app_developers = Mock(return_value=self.developer_list)
 
@@ -281,7 +188,7 @@ class TestWeNetUserRelationshipsInterface(CommonTestCase):
 
     def test_get_not_authorized(self):
         mock_get = Mock(return_value=None)
-        self.service_collector_connector.profile_manager_collector.get_user_profile = mock_get
+        self.service_collector_connector.profile_manager_collector.get_relationship_page = mock_get
         response = self.client.get("/user/profile/1/relationships")
         self.assertEqual(response.status_code, 401)
         mock_get.assert_not_called()
