@@ -195,45 +195,48 @@ class TestWeNetUserRelationshipsInterface(CommonTestCase):
 
     def test_put(self):
         profile_id = "1"
-        relationships = [
-            {
-                "appId": "4",
-                "userId": "4c51ee0b-b7ec-4577-9b21-ae6832656e33",
-                "type": "friend",
-                "weight": 0.2
-            }
+        expected_relationships = [
+            Relationship(
+                app_id="4",
+                source_id=profile_id,
+                target_id="4c51ee0b-b7ec-4577-9b21-ae6832656e33",
+                relation_type=RelationType.FRIEND,
+                weight=0.3
+            )
         ]
 
-        patched_profile = PatchWeNetUserProfile(profile_id=profile_id, relationships=relationships)
+        json_relationships = [x.to_repr() for x in expected_relationships]
 
-        mock_patch = Mock(return_value=patched_profile)
-        self.service_collector_connector.profile_manager_collector.patch_user_profile = mock_patch
+        self.service_collector_connector.profile_manager_collector.update_relationship_batch = Mock(return_value=expected_relationships)
 
-        response = self.client.put(f"/user/profile/{profile_id}/relationships", json=relationships, headers={"apikey": self.AUTHORIZED_APIKEY, "x-wenet-source": WenetSource.COMPONENT.value})
+        response = self.client.put(f"/user/profile/{profile_id}/relationships", json=json_relationships, headers={"apikey": self.AUTHORIZED_APIKEY, "x-wenet-source": WenetSource.COMPONENT.value})
         self.assertEqual(200, response.status_code)
         json_response = json.loads(response.data)
-        self.assertEqual(relationships, json_response)
-        mock_patch.assert_called_once()
+
+        relationships = [Relationship.from_repr(x) for x in json_response]
+
+        self.assertEqual(expected_relationships, relationships)
+        self.service_collector_connector.profile_manager_collector.update_relationship_batch.assert_called_once()
 
     def test_put_oauth(self):
         profile_id = "1"
-        relationships = [
-            {
-                "appId": "4",
-                "userId": "4c51ee0b-b7ec-4577-9b21-ae6832656e33",
-                "type": "friend",
-                "weight": 0.2
-            }
+        expected_relationships = [
+            Relationship(
+                app_id="4",
+                source_id=profile_id,
+                target_id="4c51ee0b-b7ec-4577-9b21-ae6832656e33",
+                relation_type=RelationType.FRIEND,
+                weight=0.3
+            )
         ]
 
-        patched_profile = PatchWeNetUserProfile(profile_id=profile_id, relationships=relationships)
+        json_relationships = [x.to_repr() for x in expected_relationships]
 
-        mock_patch = Mock(return_value=patched_profile)
-        self.service_collector_connector.profile_manager_collector.patch_user_profile = mock_patch
+        self.service_collector_connector.profile_manager_collector.update_relationship_batch = Mock(return_value=expected_relationships)
         self.service_collector_connector.hub_connector.get_app_details = Mock(return_value=self.app1)
         self.service_collector_connector.hub_connector.get_app_developers = Mock(return_value=self.developer_list)
 
-        response = self.client.put(f"/user/profile/{profile_id}/relationships", json=relationships, headers={
+        response = self.client.put(f"/user/profile/{profile_id}/relationships", json=json_relationships, headers={
             "apikey": self.AUTHORIZED_APIKEY,
             "x-wenet-source": WenetSource.OAUTH2_AUTHORIZATION_CODE.value,
             "X-Authenticated-Scope": f"{Scope.ID_READ.value} {Scope.FIRST_NAME_READ.value} {Scope.RELATIONSHIPS_READ.value} {Scope.RELATIONSHIPS_WRITE.value}",
@@ -242,31 +245,35 @@ class TestWeNetUserRelationshipsInterface(CommonTestCase):
         })
         self.assertEqual(200, response.status_code)
         json_response = json.loads(response.data)
-        self.assertEqual(relationships, json_response)
 
-        mock_patch.assert_called_once()
+        relationships = [Relationship.from_repr(x) for x in json_response]
+
+        self.assertEqual(expected_relationships, relationships)
+
+        self.service_collector_connector.profile_manager_collector.update_relationship_batch.assert_called_once()
         self.service_collector_connector.hub_connector.get_app_details.assert_called_once()
         self.service_collector_connector.hub_connector.get_app_developers.assert_called_once()
 
     def test_put_oauth_no_read_permission(self):
         profile_id = "1"
-        relationships = [
-            {
-                "appId": "4",
-                "userId": "4c51ee0b-b7ec-4577-9b21-ae6832656e33",
-                "type": "friend",
-                "weight": 0.2
-            }
+        expected_relationships = [
+            Relationship(
+                app_id="app_1",
+                source_id=profile_id,
+                target_id="4c51ee0b-b7ec-4577-9b21-ae6832656e33",
+                relation_type=RelationType.FRIEND,
+                weight=0.3
+            )
         ]
 
-        patched_profile = PatchWeNetUserProfile(profile_id=profile_id, relationships=relationships)
+        json_relationships = [x.to_repr() for x in expected_relationships]
 
-        mock_patch = Mock(return_value=patched_profile)
-        self.service_collector_connector.profile_manager_collector.patch_user_profile = mock_patch
+        self.service_collector_connector.profile_manager_collector.update_relationship_batch = Mock(return_value=expected_relationships)
+
         self.service_collector_connector.hub_connector.get_app_details = Mock(return_value=self.app1)
         self.service_collector_connector.hub_connector.get_app_developers = Mock(return_value=self.developer_list)
 
-        response = self.client.put(f"/user/profile/{profile_id}/relationships", json=relationships, headers={
+        response = self.client.put(f"/user/profile/{profile_id}/relationships", json=json_relationships, headers={
             "apikey": self.AUTHORIZED_APIKEY,
             "x-wenet-source": WenetSource.OAUTH2_AUTHORIZATION_CODE.value,
             "X-Authenticated-Scope": f"{Scope.ID_READ.value} {Scope.FIRST_NAME_READ.value} {Scope.RELATIONSHIPS_WRITE.value}",
@@ -277,29 +284,29 @@ class TestWeNetUserRelationshipsInterface(CommonTestCase):
         json_response = json.loads(response.data)
         self.assertEqual([], json_response)
 
-        mock_patch.assert_called_once()
+        self.service_collector_connector.profile_manager_collector.update_relationship_batch.assert_called_once()
         self.service_collector_connector.hub_connector.get_app_details.assert_called_once()
         self.service_collector_connector.hub_connector.get_app_developers.assert_called_once()
 
     def test_put_oauth_no_permission(self):
         profile_id = "1"
-        relationships = [
-            {
-                "appId": "4",
-                "userId": "4c51ee0b-b7ec-4577-9b21-ae6832656e33",
-                "type": "friend",
-                "weight": 0.2
-            }
+        expected_relationships = [
+            Relationship(
+                app_id="4",
+                source_id=profile_id,
+                target_id="4c51ee0b-b7ec-4577-9b21-ae6832656e33",
+                relation_type=RelationType.FRIEND,
+                weight=0.3
+            )
         ]
 
-        patched_profile = PatchWeNetUserProfile(profile_id=profile_id, relationships=relationships)
+        json_relationships = [x.to_repr() for x in expected_relationships]
 
-        mock_patch = Mock(return_value=patched_profile)
-        self.service_collector_connector.profile_manager_collector.patch_user_profile = mock_patch
+        self.service_collector_connector.profile_manager_collector.update_relationship_batch = Mock(return_value=expected_relationships)
         self.service_collector_connector.hub_connector.get_app_details = Mock(return_value=self.app1)
         self.service_collector_connector.hub_connector.get_app_developers = Mock(return_value=self.developer_list)
 
-        response = self.client.put(f"/user/profile/{profile_id}/relationships", json=relationships, headers={
+        response = self.client.put(f"/user/profile/{profile_id}/relationships", json=json_relationships, headers={
             "apikey": self.AUTHORIZED_APIKEY,
             "x-wenet-source": WenetSource.OAUTH2_AUTHORIZATION_CODE.value,
             "X-Authenticated-Scope": f"{Scope.ID_READ.value} {Scope.FIRST_NAME_READ.value} {Scope.RELATIONSHIPS_READ.value}",
@@ -308,54 +315,58 @@ class TestWeNetUserRelationshipsInterface(CommonTestCase):
         })
         self.assertEqual(403, response.status_code)
 
-        mock_patch.assert_not_called()
+        self.service_collector_connector.profile_manager_collector.update_relationship_batch.assert_not_called()
         self.service_collector_connector.hub_connector.get_app_details.assert_called_once()
         self.service_collector_connector.hub_connector.get_app_developers.assert_called_once()
 
     def test_put_oauth_2(self):
         profile_id = "1"
-        relationships = [
-            {
-                "appId": "4",
-                "userId": "4c51ee0b-b7ec-4577-9b21-ae6832656e33",
-                "type": "friend",
-                "weight": 0.2
-            }
+        expected_relationships = [
+            Relationship(
+                app_id="4",
+                source_id=profile_id,
+                target_id="4c51ee0b-b7ec-4577-9b21-ae6832656e33",
+                relation_type=RelationType.FRIEND,
+                weight=0.3
+            )
         ]
 
-        mock_put = Mock(return_value=None)
-        self.service_collector_connector.profile_manager_collector.update_user_profile = mock_put
+        json_relationships = [x.to_repr() for x in expected_relationships]
+        self.service_collector_connector.profile_manager_collector.update_relationship_batch = Mock(
+            return_value=expected_relationships)
         self.service_collector_connector.hub_connector.get_app_details = Mock(return_value=self.app1)
         self.service_collector_connector.hub_connector.get_app_developers = Mock(return_value=self.developer_list)
 
-        response = self.client.put(f"/user/profile/2/relationships", json=relationships, headers={
+        response = self.client.put(f"/user/profile/2/relationships", json=json_relationships, headers={
             "apikey": self.AUTHORIZED_APIKEY,
             "x-wenet-source": WenetSource.OAUTH2_AUTHORIZATION_CODE.value,
-            "X-Authenticated-Scope": f"{Scope.ID_READ.value} {Scope.FIRST_NAME_READ.value}",  # TODO add writing scope when will be added
+            "X-Authenticated-Scope": f"{Scope.ID_READ.value} {Scope.FIRST_NAME_READ.value}",
             "X-Authenticated-Userid": profile_id,
             "X-Consumer-Username": "app_1"
         })
         self.assertEqual(401, response.status_code)
 
-        mock_put.assert_not_called()
+        self.service_collector_connector.profile_manager_collector.update_relationship_batch.assert_not_called()
         self.service_collector_connector.hub_connector.get_app_details.assert_called_once()
         self.service_collector_connector.hub_connector.get_app_developers.assert_called_once()
 
     def test_put_not_authorized(self):
-        profile_id = "profile_id"
-        relationships = [
-            {
-                "appId": "4",
-                "userId": "4c51ee0b-b7ec-4577-9b21-ae6832656e33",
-                "type": "friend",
-                "weight": 0.2
-            }
+        profile_id = "1"
+        expected_relationships = [
+            Relationship(
+                app_id="4",
+                source_id=profile_id,
+                target_id="4c51ee0b-b7ec-4577-9b21-ae6832656e33",
+                relation_type=RelationType.FRIEND,
+                weight=0.3
+            )
         ]
 
-        mock_put = Mock(return_value=None)
-        self.service_collector_connector.profile_manager_collector.update_user_profile = mock_put
+        json_relationships = [x.to_repr() for x in expected_relationships]
+        self.service_collector_connector.profile_manager_collector.update_relationship_batch = Mock(
+            return_value=expected_relationships)
 
-        response = self.client.put(f"/user/profile/{profile_id}/relationships", json=relationships)
+        response = self.client.put(f"/user/profile/{profile_id}/relationships", json=json_relationships)
         self.assertEqual(401, response.status_code)
 
-        mock_put.assert_not_called()
+        self.service_collector_connector.profile_manager_collector.update_relationship_batch.assert_not_called()
