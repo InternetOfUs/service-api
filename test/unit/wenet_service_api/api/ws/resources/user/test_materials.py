@@ -74,7 +74,6 @@ class TestWeNetUserMaterialsInterface(CommonTestCase):
             norms=[],
             planned_activities=[],
             relevant_locations=[],
-            relationships=[],
             personal_behaviours=[],
             materials=[
                 {
@@ -125,7 +124,6 @@ class TestWeNetUserMaterialsInterface(CommonTestCase):
             norms=[],
             planned_activities=[],
             relevant_locations=[],
-            relationships=[],
             personal_behaviours=[],
             materials=[
                 {
@@ -187,7 +185,6 @@ class TestWeNetUserMaterialsInterface(CommonTestCase):
             norms=[],
             planned_activities=[],
             relevant_locations=[],
-            relationships=[],
             personal_behaviours=[],
             materials=[
                 {
@@ -247,7 +244,6 @@ class TestWeNetUserMaterialsInterface(CommonTestCase):
             norms=[],
             planned_activities=[],
             relevant_locations=[],
-            relationships=[],
             personal_behaviours=[],
             materials=[
                 {

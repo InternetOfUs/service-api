@@ -85,7 +85,6 @@ class TestWeNetUserPlannedActivitiesInterface(CommonTestCase):
                 }
             ],
             relevant_locations=[],
-            relationships=[],
             personal_behaviours=[],
             materials=[],
             competences=[],
@@ -140,7 +139,6 @@ class TestWeNetUserPlannedActivitiesInterface(CommonTestCase):
                 }
             ],
             relevant_locations=[],
-            relationships=[],
             personal_behaviours=[],
             materials=[],
             competences=[],
@@ -206,7 +204,6 @@ class TestWeNetUserPlannedActivitiesInterface(CommonTestCase):
                 }
             ],
             relevant_locations=[],
-            relationships=[],
             personal_behaviours=[],
             materials=[],
             competences=[],
@@ -270,7 +267,6 @@ class TestWeNetUserPlannedActivitiesInterface(CommonTestCase):
                 }
             ],
             relevant_locations=[],
-            relationships=[],
             personal_behaviours=[],
             materials=[],
             competences=[],

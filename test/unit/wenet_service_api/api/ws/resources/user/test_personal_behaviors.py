@@ -74,7 +74,6 @@ class TestWeNetUserPersonalBehaviorsInterface(CommonTestCase):
             norms=[],
             planned_activities=[],
             relevant_locations=[],
-            relationships=[],
             personal_behaviours=[
                 {
                     "user_id": "string",
@@ -159,7 +158,6 @@ class TestWeNetUserPersonalBehaviorsInterface(CommonTestCase):
             norms=[],
             planned_activities=[],
             relevant_locations=[],
-            relationships=[],
             personal_behaviours=[
                 {
                     "user_id": "string",
@@ -255,7 +253,6 @@ class TestWeNetUserPersonalBehaviorsInterface(CommonTestCase):
             norms=[],
             planned_activities=[],
             relevant_locations=[],
-            relationships=[],
             personal_behaviours=[
                 {
                     "user_id": "string",
@@ -349,7 +346,6 @@ class TestWeNetUserPersonalBehaviorsInterface(CommonTestCase):
             norms=[],
             planned_activities=[],
             relevant_locations=[],
-            relationships=[],
             personal_behaviours=[
                 {
                     "user_id": "string",
