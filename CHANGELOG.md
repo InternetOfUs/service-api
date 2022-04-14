@@ -14,8 +14,8 @@
 
 :house: Internal
 
-* Updated project template to version 4.12.0
-* Updated to wenet-common version 5.0.0-alpha.2
+* Updated project template to version 4.12.1
+* Updated to wenet-common version 5.0.0
 
 ## Version 4.*
 
