@@ -18,6 +18,8 @@ class WeNetUserRelationshipsInterface(CommonWeNetUserInterface):
 
     def get(self, profile_id: str):
 
+        logger.debug(f"Retrieving the relationships for profile [{profile_id}] from profile manager connector")
+
         authentication_result = self._check_authentication([WenetSource.COMPONENT, WenetSource.OAUTH2_AUTHORIZATION_CODE])
 
         parser = reqparse.RequestParser()
