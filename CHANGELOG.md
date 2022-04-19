@@ -1,5 +1,22 @@
 # Changelog
 
+## Version 5.*
+
+### 5.0.0
+
+:boom: Breaking changes
+
+* The relationship are no longer part of the user profile:
+  * Updated the profile endpoint in order to return the updated profile without the relationship
+  * Updated the relationships endpoints in order to properly handle the relationships
+  * Updated to the new relationship model
+  * Updated the relationships endpoints in order to paginate the results
+
+:house: Internal
+
+* Updated project template to version 4.12.1
+* Updated to wenet-common version 5.0.0
+
 ## Version 4.*
 
 ### 4.0.0
