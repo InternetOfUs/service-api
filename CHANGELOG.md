@@ -2,6 +2,12 @@
 
 ## Version 5.*
 
+### 5.0.1
+
+:house: Internal
+
+* Updated to wenet-common version 5.0.1
+
 ### 5.0.0
 
 :boom: Breaking changes
